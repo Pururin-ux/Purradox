@@ -1,0 +1,114 @@
+.trainer-task-figure {
+  --figure-text:#4e3c5b;
+  display:grid;
+  gap:8px;
+  width:100%;
+  max-width:410px;
+  margin:18px 0 0;
+  padding:10px;
+  border-radius:18px;
+  background:#f1ebf6;
+  color:var(--figure-text);
+}
+.trainer-task-figure[data-tone="sand"] { background:#fbf0df; }
+.trainer-task-figure[data-tone="mint"] { background:#e9f2ee; }
+.trainer-task-figure[data-tone="scene"] { display:block; max-width:650px; padding:0; overflow:hidden; background:#251934; }
+.trainer-task-figure > svg { display:block; width:100%; height:auto; }
+.trainer-plate text { font-family:var(--resume-type); font-size:16px; font-weight:560; }
+.trainer-area-plot { --plot-fill:#e6cd9d; }
+.trainer-task-figure text:not([fill]) { fill:var(--figure-text); }
+.trainer-task-figure figcaption { padding:0 4px 3px; font-size:14px; line-height:1.5; text-wrap:pretty; }
+.trainer-task-figure .trainer-scene { display:block; width:100%; height:auto; }
+.trainer-graphic .study-task-content > .study-hint-toggle { margin-top:11px; }
+.trainer-graphic .study-hint-toggle + .study-hint { margin-top:3px; }
+.trainer-graphic :is(.study-hint-toggle,.study-hint) + .study-answer { margin-top:13px; }
+.trainer-figure-controls {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-start;
+  align-items:center;
+  gap:6px;
+}
+.trainer-figure-controls > button {
+  min-height:44px;
+  height:auto;
+  padding:7px 10px;
+  color:var(--figure-text);
+  font-family:inherit;
+  font-size:14px;
+  border-radius:11px;
+  white-space:normal;
+  transition:background-color 160ms,color 160ms;
+}
+.trainer-figure-controls > button:hover { background:#e6d8ed; color:#4d3064; }
+.trainer-figure-controls > button[data-state="on"] { background:#6a4983; color:#fffaf8; }
+.trainer-energy-transfer {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:1px;
+  margin:0;
+  background:#efdcbc;
+  border-radius:12px;
+  overflow:hidden;
+}
+.trainer-energy-transfer > div { background:#fbf0df; padding:7px 8px; font-size:14px; }
+.trainer-energy-transfer dd { margin:5px 0 0; line-height:1.4; }
+.trainer-energy-transfer b { display:block; color:#795021; font-size:20px; }
+.trainer-melt-ledger { display:grid; gap:12px; padding:4px; }
+.trainer-melt-bar { display:flex; height:11px; gap:3px; border-radius:99px; overflow:hidden; }
+.trainer-melt-bar > :nth-child(1) { background:#80699a; }
+.trainer-melt-bar > :nth-child(2) { background:#ab6a2d; }
+.trainer-melt-bar > :nth-child(3) { background:#43837b; }
+.trainer-melt-ledger dl { margin:0; }
+.trainer-melt-ledger dl > div {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:baseline;
+  gap:6px;
+  margin:4px 0;
+  font-size:14px;
+  font-variant-numeric:tabular-nums;
+}
+.trainer-melt-ledger dt::before {
+  display:inline-block;
+  width:6px;
+  height:0.72em;
+  margin-right:6px;
+  border-radius:3px;
+  background:#80699a;
+  content:"";
+}
+.trainer-melt-ledger dl > :nth-child(2) dt::before { background:#ab6a2d; }
+.trainer-melt-ledger dl > :nth-child(3) dt::before { background:#43837b; }
+.trainer-melt-ledger dd { margin:0; font-weight:650; white-space:nowrap; }
+.trainer-midpoint-sum {
+  display:grid;
+  gap:6px;
+  margin:0;
+  font-size:14px;
+  line-height:1.45;
+}
+.trainer-midpoint-sum > div {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:6px;
+  padding:7px 8px;
+  border-radius:10px;
+  background:#fff8ea;
+}
+.trainer-midpoint-sum dd { margin:0; font-weight:600; }
+.trainer-decay { width:100%; border-collapse:collapse; text-align:right; font-size:14px; font-variant-numeric:tabular-nums; }
+.trainer-decay caption { padding:2px 0 8px; text-align:left; font-weight:650; }
+.trainer-decay :is(th,td) { padding:6px; }
+.trainer-decay :is(thead,tbody) th:first-child { text-align:left; }
+.trainer-decay tbody tr:last-child { background:#e8dbf0; }
+@media(max-width:380px) {
+  .trainer-task-figure { padding:6px; }
+  .trainer-plate text { font-size:19px; }
+  .trainer-task-figure[data-tone="scene"] { padding:0; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .trainer-figure-controls > button { transition:none; }
+}

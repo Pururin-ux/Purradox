@@ -1,0 +1,162 @@
+{
+  "target": "http://127.0.0.1:4183",
+  "started_utc": "2026-11-07T00:28:03.021359+00:00",
+  "duration_sec": 6.063,
+  "passed": true,
+  "groups": {
+    "transport": {
+      "checks": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "catalog": {
+      "checks": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "public_lessons": {
+      "checks": 49,
+      "passed": 49,
+      "failed": 0
+    },
+    "public_trainers": {
+      "checks": 49,
+      "passed": 49,
+      "failed": 0
+    },
+    "all_tasks": {
+      "checks": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "legacy": {
+      "checks": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "authored_quiz_grading": {
+      "checks": 149,
+      "passed": 149,
+      "failed": 0
+    },
+    "authored_task_grading": {
+      "checks": 298,
+      "passed": 298,
+      "failed": 0
+    },
+    "ct_forms": {
+      "checks": 3,
+      "passed": 3,
+      "failed": 0
+    },
+    "ct_submissions": {
+      "checks": 12,
+      "passed": 12,
+      "failed": 0
+    },
+    "ct_source_spotlight": {
+      "checks": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "unknown_404": {
+      "checks": 9,
+      "passed": 9,
+      "failed": 0
+    },
+    "strict_input_422": {
+      "checks": 10,
+      "passed": 10,
+      "failed": 0
+    },
+    "grading_boundaries": {
+      "checks": 12,
+      "passed": 12,
+      "failed": 0
+    },
+    "source_stability": {
+      "checks": 1,
+      "passed": 1,
+      "failed": 0
+    }
+  },
+  "http_requests": {
+    "GET": 109,
+    "POST": 487
+  },
+  "http_statuses": {
+    "200": 577,
+    "404": 9,
+    "422": 10
+  },
+  "observed": {
+    "catalog": {
+      "lessons": 49,
+      "sections": 6,
+      "section_counts": {
+        "mechanics": 15,
+        "thermal": 7,
+        "electricity": 14,
+        "optics": 7,
+        "quantum": 3,
+        "nucleus": 3
+      }
+    },
+    "questions": {
+      "quiz": 149,
+      "tasks": 298,
+      "unique_combined_ids": 447
+    },
+    "legacy_payloads": {
+      "lesson": {
+        "exact": true,
+        "canonical_json_sha256": "a1b9d0946efb124015b622bc67ea8b7afa49febe33bf65d3f09f2a900eb5c767"
+      },
+      "trainer": {
+        "exact": true,
+        "canonical_json_sha256": "54ba7753ecb108c07336dad78a39dc85432f28b0c762f68ec06ba6f722ae2461"
+      },
+      "ct_demo": {
+        "exact": true,
+        "canonical_json_sha256": "9aaf518dc1ea8f1bf0db4a324d51f6953169e57dc2b7d39e324b27afe83e7ab1"
+      }
+    },
+    "ct_forms": {
+      "01": {
+        "total": 30,
+        "part_a": 10,
+        "part_b": 20,
+        "minutes": 210,
+        "multi": 1,
+        "unique_ids": 30
+      },
+      "02": {
+        "total": 30,
+        "part_a": 10,
+        "part_b": 20,
+        "minutes": 210,
+        "multi": 3,
+        "unique_ids": 30
+      }
+    },
+    "form_01_B17": {
+      "trainerTaskId": "rabota-i-moshchnost-toka:t4",
+      "answer": 720,
+      "unit": "Дж",
+      "calculation": "12*2*30"
+    }
+  },
+  "source_file_count": 52,
+  "source_manifest_sha256": "172a9b802a038adff62c2e22227aac038e6cfd005bcd3d7d1e59e59d03603ab8",
+  "source_changed": [],
+  "failures": [],
+  "notes": [
+    "Unknown CT answer-map keys were ignored and earned 0 points; check endpoints reject unknown IDs with HTTP 404.",
+    "Strict-boolean checks apply to answers, including list items; elapsed checks cover integer clamping and malformed text."
+  ],
+  "limits": [
+    "Local HTTP and authored data only; no browser or rendered UI.",
+    "No build, dependency install, service restart, or user-game writes.",
+    "This pass checks delivery/grading contracts, not an independent scientific review of all content."
+  ]
+}

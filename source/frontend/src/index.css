@@ -1,0 +1,351 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Shared story UI palette, including object inspection. */
+:root {
+    --world-ink: #fff9e8;
+    --world-muted: #c0cec3;
+    --world-ground: #152b2c;
+    --world-line: #d4e3ce45;
+    --world-focus: #e8ba66;
+    --world-highlight: #fff0bf;
+    --world-shade-rgb: 16 44 44;
+    --world-panel: #f4efe1;
+    --world-panel-ink: #2c3b35;
+    --world-panel-muted: #4e5c50;
+    --world-panel-secondary: #687562;
+    --world-panel-border: #e6dbc5;
+    --world-rule: #cbd1bd;
+    --world-note-paper: #fffdf5;
+    --world-font-body: "Manrope", sans-serif;
+    --world-font-display: Georgia, "Times New Roman", serif;
+    --world-radius: 6px;
+    --world-space-1: 6px;
+    --world-space-2: 12px;
+    --world-space-3: 18px;
+    --world-space-4: 24px;
+    --world-space-5: 30px;
+    --world-panel-width: 320px;
+}
+
+/* Semantic shadcn tokens are scoped to the story's paper surfaces. */
+.relic-inspector, .story-dialog, .learning-resume {
+    --background: 44 46% 92%;
+    --foreground: 153 15% 20%;
+    --primary: 155 35% 22%;
+    --primary-foreground: 44 100% 95%;
+    --secondary: 65 17% 84%;
+    --secondary-foreground: 153 15% 20%;
+    --muted: 65 17% 84%;
+    --muted-foreground: 101 8% 42%;
+    --accent: 65 17% 84%;
+    --accent-foreground: 153 15% 20%;
+    --input: 88 14% 61%;
+    --border: 41 39% 84%;
+    --ring: 40 74% 65%;
+    --radius: var(--world-radius);
+}
+.world-chrome {
+    --secondary: 172 44% 14%;
+    --secondary-foreground: 44 100% 95%;
+    --input: 100 27% 86%;
+    --accent: 155 35% 22%;
+    --accent-foreground: 44 100% 95%;
+    --ring: 40 74% 65%;
+}
+
+/* Returning to a familiar place. One quiet surface, with the approved cast. */
+.va:is(:has(.learning-resume), .va-study), .ct-modal, .ct-calculator-surface, .shop-dialog, .study-quests-dialog {
+    --resume-bg: #fdfaf6;
+    --resume-ink: #4b343d;
+    --resume-muted: #7b646c;
+    --resume-wine: #913d59;
+    --resume-soft: #f4ebe8;
+    --resume-type: "Onest", sans-serif;
+    --fh: "Onest", sans-serif;
+    --fb: "Onest", sans-serif;
+    --fm: "Onest", sans-serif;
+}
+.va:is(:has(.learning-resume), .va-study) { background: var(--resume-bg); }
+main:has(> .learning-resume) { padding-bottom: 0; }
+.learning-resume {
+    --card: 28 45% 98%;
+    --card-foreground: 336 18% 25%;
+    --ring: 340 40% 40%;
+    display: grid;
+    align-items: center;
+    min-height: calc(100svh - 76px);
+    padding: 40px 48px 52px;
+    color: var(--resume-ink);
+    background: var(--resume-bg);
+    font-family: var(--resume-type);
+    font-synthesis: none;
+}
+.learning-resume .draft-resume-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr);
+    grid-template-areas: "illustration body";
+    align-items: center;
+    column-gap: clamp(30px, 4vw, 64px);
+    width: 100%;
+    max-width: 1240px;
+    margin-inline: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: inherit;
+}
+.draft-resume-illustration {
+    grid-area: illustration;
+    align-self: center;
+    min-width: 0;
+    margin: 0;
+}
+.draft-resume-illustration picture, .draft-resume-illustration img { display: block; width: 100%; height: auto; }
+.draft-resume-body { grid-area: body; min-width: 0; }
+.learning-resume .draft-resume-heading { padding: 0 0 14px; }
+.draft-resume-line { max-width:40ch; margin:0 0 20px; color:var(--resume-ink); font-size:16px; font-weight:450; line-height:1.55; text-wrap:pretty; }
+.learning-resume .draft-resume-heading > * { margin: 0; }
+.learning-resume .draft-resume-title {
+    font-family: var(--resume-type);
+    font-size: clamp(30px, 3.1vw, 42px);
+    font-weight: 600;
+    line-height: 1.16;
+    letter-spacing: -.025em;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+}
+.learning-resume .draft-resume-content { grid-area: content; padding: 0; }
+.draft-resume-position {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-height: 70px;
+    padding: 12px 18px 12px 12px;
+    border-radius: 16px;
+    background: var(--resume-soft);
+    color: #725560;
+    font-size: 15px;
+    font-weight: 450;
+}
+.draft-resume-place-icon { display: grid; place-items: center; width: 40px; height: 42px; flex-shrink: 0; color: #985069; background: #fdf8f4; border-radius: 16px; }
+.draft-resume-place-icon svg { width: 21px; height: 21px; stroke-width: 1.7; }
+.draft-resume-counter { display: flex; align-items: baseline; gap: 5px; margin-left: auto; font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.draft-resume-counter b { color: var(--resume-ink); font-size: 24px; font-weight: 550; line-height: 1.2; }
+.learning-resume .draft-resume-detail { margin: 13px 0 0; color: var(--resume-muted); font-size: 15px; font-weight: 400; line-height: 1.55; }
+.draft-resume-actions { display: flex; align-items: center; gap: 16px; margin-top: 25px; }
+.learning-resume .draft-resume-continue {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    flex: 1;
+    justify-content: space-between;
+    min-width: 0;
+    height: 60px;
+    padding: 8px 9px 8px 23px;
+    border: 0;
+    border-radius: 18px;
+    background: linear-gradient(110deg, #a34b68, #8a3653);
+    color: #fffaf6;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 550;
+    letter-spacing: -.01em;
+    box-shadow: 0 8px 20px #8e365022, inset 0 1px 0 #ffffff1f;
+    transition: box-shadow 220ms ease, background-color 220ms ease;
+}
+.draft-resume-continue > span { position: relative; z-index: 1; }
+.draft-resume-arrow { display: grid; place-items: center; flex-shrink: 0; width: 42px; height: 42px; border-radius: 16px; background: #fff8ef1c; }
+.learning-resume .draft-resume-arrow svg { width: 23px; height: 23px; stroke-width: 1.8; transition: transform 220ms cubic-bezier(.22,1,.36,1); }
+.draft-resume-button-tail { display:flex; align-items:center; gap:14px; flex-shrink:0; }
+.draft-resume-tracks { display:flex; align-items:center; gap:8px; opacity:.9; pointer-events:none; transition:opacity 180ms ease; }
+.draft-resume-tracks svg { width:18px; height:18px; fill:currentColor; stroke-width:1; transform:rotate(15deg); }
+.draft-resume-tracks svg + svg { margin-top:-10px; transform:rotate(-12deg); }
+.draft-resume-continue:focus-visible .draft-resume-tracks { opacity:1; }
+.draft-resume-continue:focus-visible .draft-resume-tracks svg { animation:resume-paw-step 540ms cubic-bezier(.22,1,.36,1) both; }
+.draft-resume-continue:focus-visible .draft-resume-tracks svg + svg { animation-delay:100ms; }
+@keyframes resume-paw-step {
+    0% { translate:0 3px; }
+    45% { translate:0 -4px; }
+    100% { translate:0 0; }
+}
+@media(hover:hover) {
+    .learning-resume .draft-resume-continue:hover { box-shadow: 0 12px 24px #8e365034, inset 0 1px 0 #ffffff30; }
+    .learning-resume .draft-resume-continue:hover .draft-resume-arrow svg { transform: translateX(3px); }
+    .draft-resume-continue:hover .draft-resume-tracks { opacity:1; }
+    .draft-resume-continue:hover .draft-resume-tracks svg { animation:resume-paw-step 540ms cubic-bezier(.22,1,.36,1) both; }
+    .draft-resume-continue:hover .draft-resume-tracks svg + svg { animation-delay:100ms; }
+}
+.learning-resume .draft-resume-continue:active { box-shadow: 0 3px 9px #8e36502b, inset 0 2px 3px #43162c1c; }
+.va:is(:has(.learning-resume), .va-study) .draft-resume-actions button:focus-visible { outline: 2px solid var(--resume-wine); outline-offset: 5px; }
+.learning-resume .draft-resume-restart { flex-shrink: 0; height: 46px; padding: 8px 0; gap: 8px; border-radius: 16px; background: transparent; color: #795661; font-family: inherit; font-size: 14px; font-weight: 500; }
+.learning-resume .draft-resume-restart:hover { background: transparent; color: var(--resume-wine); text-decoration: underline; text-underline-offset: 5px; text-decoration-color: #b88796; }
+.learning-resume .draft-resume-restart svg { width: 15px; height: 15px; stroke-width: 1.7; transition: transform 220ms cubic-bezier(.22,1,.36,1); }
+.learning-resume .draft-resume-restart:hover svg { transform: rotate(-25deg); }
+.draft-restart-dialog {
+    --background:28 45% 98%;
+    --foreground:336 18% 25%;
+    --primary:340 41% 40%;
+    --primary-foreground:28 100% 98%;
+    --muted-foreground:339 11% 44%;
+    --accent:340 28% 93%;
+    --accent-foreground:336 18% 25%;
+    --ring:340 41% 40%;
+    width:calc(100% - 40px);
+    max-width:440px;
+    padding:28px;
+    border:0;
+    border-radius:24px;
+    box-shadow:0 22px 70px #321c2933;
+    background:#fdfaf6;
+    color:#4b343d;
+    font-family:"Onest",sans-serif;
+    font-synthesis:none;
+    animation:none;
+}
+.draft-restart-dialog h2 { font-size:24px; font-weight:600; line-height:1.2; letter-spacing:-.02em; }
+.draft-restart-dialog p { color:#7b646c; font-size:15px; line-height:1.55; }
+.draft-restart-dialog-actions { display:flex; gap:10px; margin-top:8px; }
+.draft-restart-dialog-actions > button { flex:1; min-height:46px; margin:0; border:0; border-radius:16px; font-family:inherit; font-size:14px; font-weight:550; }
+.draft-restart-dialog .draft-restart-cancel { background:#f4ebe8; color:#4b343d; }
+.draft-restart-dialog .draft-restart-cancel:hover { background:#ebdcd9; }
+.draft-restart-dialog .draft-restart-confirm { background:#913d59; color:#fffaf6; }
+.draft-restart-dialog .draft-restart-confirm:hover { background:#7d304b; }
+.draft-restart-dialog button:focus-visible { outline:2px solid #913d59; outline-offset:3px; box-shadow:none; }
+.learning-resume ::selection { background: #edd1d8; color: #5a2f40; }
+
+.va:is(:has(.learning-resume), .va-study) .a-sky { display: none; }
+.va:is(:has(.learning-resume), .va-study) .a-top, .va:is(:has(.learning-resume), .va-study) .a-bottom {
+    --text: #503941; --text2: #7a616b; --muted: #806b72; --lamp: #93405d;
+    --cyan: #b78393; --bg: #fdfaf6; --line: #d6bbc52b;
+    color: var(--text);
+    font-family: "Onest", sans-serif;
+}
+.va:is(:has(.learning-resume), .va-study) .a-top { background: #fdfaf6; border-color: transparent; backdrop-filter: none; }
+.va:is(:has(.learning-resume), .va-study) .topbar-inner { max-width: 1440px; min-height: 76px; padding: 12px 32px; }
+.va:is(:has(.learning-resume), .va-study) .site-logo { color: #60444d; font-size: 18px; font-weight: 600; letter-spacing: -.015em; }
+.va:is(:has(.learning-resume), .va-study) .a-navlink { min-height: 44px; padding: 10px 11px; border: 0; border-radius: 16px; background: transparent; color: #795f69; font-size: 14px; font-weight: 500; }
+.va:is(:has(.learning-resume), .va-study) .a-navlink.active { color: #873c56; background: #f4e7eb; box-shadow: none; }
+.va:is(:has(.learning-resume), .va-study) .a-navlink:hover { color: #873c56; background: #f5ecee; transform: none; }
+.va:is(:has(.learning-resume), .va-study) .a-stat { padding: 7px 5px; border: 0; border-radius: 0; background: transparent; font-family: "Onest", sans-serif; font-size: 14px; font-weight: 500; box-shadow: none; }
+.va:is(:has(.learning-resume), .va-study) .a-iconbtn { border: 0; background: #f5eeeb; color: #795862; border-radius: 16px; box-shadow: none; }
+.va:is(:has(.learning-resume), .va-study) .a-iconbtn:hover { transform: none; background: #f0e4e6; }
+.va:is(:has(.learning-resume), .va-study) .a-iconbtn.hud-quests { width:auto; min-width:68px; min-height:40px; padding:0 10px; gap:6px; color:#795862; font-family:"Onest",sans-serif; font-size:14px; }
+.va:is(:has(.learning-resume), .va-study) .level-caption { display: none; }
+.va:is(:has(.learning-resume), .va-study) .lvl-num { font-family: "Onest", sans-serif; font-weight: 600; }
+.va:is(:has(.learning-resume), .va-study) .lvl-ring .track { stroke: #ecdedf; }
+.va:is(:has(.learning-resume), .va-study) .a-stat.streak { color: #806b72; }
+.va:is(:has(.learning-resume), .va-study) .a-top :is(a,button):focus-visible, .va:is(:has(.learning-resume), .va-study) .a-bottom a:focus-visible { outline-color: #93405d; }
+.va:is(:has(.learning-resume), .va-study) .a-bottom { background: var(--resume-bg); border-color: #ebdfde; }
+.va:is(:has(.learning-resume), .va-study) .a-tab { margin: 0 2px; padding: 8px 0; border-radius: 16px; font-family: "Onest", sans-serif; font-size: 14px; font-weight: 500; }
+.va:is(:has(.learning-resume), .va-study) .a-tab.active { color: #8a3d58; background: #f4e7eb; }
+.va:is(:has(.learning-resume), .va-study) .a-tab.active svg { filter: none; }
+.va:is(:has(.learning-resume), .va-study) .a-tab:active { transform: none; }
+.va:is(:has(.learning-resume), .va-study) .mobile-nav { display:none; grid-template-columns:repeat(6,minmax(0,1fr)); padding-inline:calc(6px + var(--safe-left, env(safe-area-inset-left, 0px))) calc(6px + var(--safe-right, env(safe-area-inset-right, 0px))); }
+.va:is(:has(.learning-resume), .va-study) .a-tab { min-width:0; min-height:60px; margin-inline:0; white-space:nowrap; }
+@media(min-width:1280px) {
+    .va:is(:has(.learning-resume), .va-study) .desktop-nav { display:flex; }
+}
+/* Complement the same boundary so zoom cannot leave a fractional-width gap. */
+@media not all and (min-width:1280px) {
+    .va:is(:has(.learning-resume), .va-study) .desktop-nav { display:none; }
+    .va:is(:has(.learning-resume), .va-study) .mobile-nav { display:grid; }
+    .va:is(:has(.learning-resume), .va-study) main:has(+ .mobile-nav) { padding-bottom:calc(100px + env(safe-area-inset-bottom)); }
+    /* Keep automatic keyboard-focus scrolling above the fixed study navigation. */
+    html:has(.va:is(:has(.learning-resume), .va-study) .mobile-nav) { scroll-padding-bottom:calc(100px + env(safe-area-inset-bottom)); }
+}
+
+@media(max-width:1150px) {
+    .learning-resume { padding: 30px 32px 108px; }
+    .learning-resume .draft-resume-card { column-gap: 30px; }
+    .draft-resume-actions { flex-wrap: wrap; gap: 6px; margin-top: 21px; }
+    .learning-resume .draft-resume-continue { flex-basis: 100%; }
+    .learning-resume .draft-resume-restart { margin-inline: auto; padding: 8px 12px; height: 42px; }
+}
+@media(min-width:661px) and (max-width:800px) {
+    .learning-resume { padding-inline: 26px; }
+    .learning-resume .draft-resume-card { grid-template-columns: minmax(0,.9fr) minmax(0,1fr); column-gap: 24px; }
+    .learning-resume .draft-resume-title { font-size: 30px; }
+    .draft-resume-position { min-height: 62px; padding: 10px 12px; gap: 10px; font-size: 14px; }
+    .draft-resume-place-icon { width: 34px; height: 38px; }
+}
+@media(max-width:660px) {
+    .learning-resume { display: block; min-height: 0; padding: 12px 24px 102px; }
+    .learning-resume .draft-resume-card { grid-template-columns: minmax(0,1fr); grid-template-areas: "illustration" "body"; max-width: 430px; }
+    .draft-resume-illustration { justify-self: center; width: 100%; max-width: 360px; margin-bottom: 22px; }
+    .learning-resume .draft-resume-heading { padding-bottom: 20px; }
+    .learning-resume .draft-resume-title { font-size: clamp(28px,7vw,34px); line-height: 1.16; letter-spacing: -.02em; }
+    .draft-resume-position { min-height: 64px; padding: 10px 15px 10px 10px; font-size: 14px; }
+    .draft-resume-place-icon { width: 38px; height: 40px; }
+    .draft-resume-counter { font-size: 14px; }
+    .draft-resume-counter b { font-size: 22px; }
+    .learning-resume .draft-resume-detail { font-size: 14px; margin-top: 12px; }
+    .draft-resume-actions { margin-top: 20px; }
+    .learning-resume .draft-resume-continue { height: 58px; }
+    .va:is(:has(.learning-resume), .va-study) .topbar-inner { padding-inline: 16px; gap: 8px; }
+}
+@media(max-width:480px) {
+    .va:is(:has(.learning-resume), .va-study) .site-logo { gap: 7px; font-size: 17px; }
+    .va:is(:has(.learning-resume), .va-study) .brand-name { white-space: nowrap; line-height: 1.1; }
+    .va:is(:has(.learning-resume), .va-study) .brand-cat { width: 32px; height: 32px; }
+    .va:is(:has(.learning-resume), .va-study) .a-stat { font-size: 14px; padding-inline: 2px; }
+    .va:is(:has(.learning-resume), .va-study) .a-iconbtn { width: 36px; height: 38px; border-radius: 16px; }
+}
+@media(max-width:365px) {
+    .va:is(:has(.learning-resume), .va-study) .topbar-inner { flex-wrap:wrap; gap:4px 8px; padding-inline:8px; }
+    .va:is(:has(.learning-resume), .va-study) .hud-stats { flex:0 1 auto; gap:4px; }
+    .va:is(:has(.learning-resume), .va-study) .site-logo { gap:5px; }
+    .va:is(:has(.learning-resume), .va-study) .site-logo .brand-cat { width:25px; height:25px; }
+    .va:is(:has(.learning-resume), .va-study) .site-logo .brand-name svg { width:61px; }
+    .va:is(:has(.learning-resume), .va-study) .a-stat { gap:3px; font-size:13px; }
+    .va:is(:has(.learning-resume), .va-study) .a-iconbtn.hud-quests { min-width:55px; min-height:44px; padding-inline:6px; gap:3px; }
+    .va:is(:has(.learning-resume), .va-study) .hud-quests > svg { width:15px; height:15px; }
+    .va:is(:has(.learning-resume), .va-study) .a-tab { font-size:clamp(10px,3.6vw,13px); }
+}
+@media(prefers-reduced-motion:reduce) {
+    .learning-resume .draft-resume-arrow svg, .learning-resume .draft-resume-restart svg { transform:none!important; transition:none; }
+    .learning-resume .draft-resume-tracks svg { animation:none!important; translate:none!important; }
+    .learning-resume .draft-resume-tracks { transition:none; }
+}
+
+
+html,
+body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body { background: #080D1A; }
+body:has(.va.va-study) { background: #fdfaf6; }
+
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+
+.katex { font-size: 1.08em; }
+.katex-display { margin: 0.4em 0; overflow-x: auto; overflow-y: hidden; padding: 0.2em 0; }
+
+.math-equations { display:flex; flex-wrap:wrap; align-items:center; gap:8px 18px; max-width:100%; margin:.4em 0; }
+.math-equations.math-centered { justify-content:center; }
+.math-part { display:block; position:relative; min-width:0; max-width:100%; }
+.math-scroll { display:block; max-width:100%; overflow-x:auto; overflow-y:hidden; scrollbar-width:thin; scrollbar-color:var(--resume-muted, #7a6470) var(--resume-soft, #f3e8eb); }
+.math-equations .math-scroll .katex-display { width:max-content; min-width:0; max-width:none; margin:0; padding:.2em .2em; overflow:visible; text-align:left; }
+.math-equations .math-scroll .katex-display > .katex { text-align:left; }
+.math-part[data-overflow] .math-scroll { padding-bottom:18px; }
+.math-scroll:focus-visible { outline:2px solid var(--resume-wine, #843d58); outline-offset:3px; border-radius:8px; }
+.math-overflow-cue { position:absolute; right:1px; bottom:0; display:flex; color:var(--resume-muted, #7a6470); pointer-events:none; }
+.math-overflow-cue svg { width:16px; height:16px; }
+
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}

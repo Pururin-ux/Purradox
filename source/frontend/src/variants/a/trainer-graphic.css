@@ -1,0 +1,124 @@
+/* The active trainer shares the provisional evening-room study. Resume keeps its accepted rig. */
+.va.va-study:has(.trainer-graphic) {
+  --trainer-room:#342747; --trainer-room-text:#fff3ee; --trainer-room-muted:#e4d4ef;
+  --trainer-paper:var(--graphic-paper); --trainer-lilac:var(--graphic-lilac);
+  --trainer-leaf:var(--graphic-leaf); --trainer-success:var(--graphic-success); --trainer-error:var(--graphic-error);
+}
+.va.va-study:has(.trainer-graphic) main {
+  background:linear-gradient(180deg,var(--trainer-room) 0,var(--trainer-room) 550px,#765b8a 760px,var(--resume-bg) 1030px);
+}
+.trainer-graphic {
+  position:relative; isolation:isolate; max-width:1280px; min-height:790px;
+  margin:0 auto; padding:38px 32px 58px; overflow:clip;
+}
+.trainer-room {
+  position:absolute; z-index:-1; top:6px; right:-130px; display:block; width:990px;
+  pointer-events:none;
+  mask-image:linear-gradient(to right,transparent,#000 18%,#000 95%,transparent),linear-gradient(to bottom,transparent,#000 7%,#000 76%,transparent);
+  mask-composite:intersect;
+}
+.trainer-room img { display:block; width:100%; height:auto; }
+.trainer-graphic .study-heading {
+  position:relative; display:flex; flex-direction:column; align-items:flex-start;
+  justify-content:flex-start; gap:18px; width:min(100%,550px); min-height:184px; margin:0 0 20px;
+  color:var(--trainer-room-text);
+}
+.trainer-graphic .study-heading h1 { max-width:22ch; font-size:clamp(30px,3.5vw,43px); font-weight:650; line-height:1.18; }
+.trainer-graphic .study-topic-meta { flex-direction:row; align-items:center; gap:20px; width:100%; }
+.trainer-graphic .study-grade { padding:8px 11px; background:#503c63; color:#f1dff5; }
+.trainer-graphic .study-progress { min-width:155px; color:var(--trainer-room-muted); }
+.trainer-graphic .study-progress > span { text-align:left; }
+.trainer-graphic .study-progress b { color:var(--trainer-room-text); }
+.trainer-graphic .study-progress [role="progressbar"] { background:#665077; }
+.trainer-graphic .study-progress [role="progressbar"] > div { background:#d2b7f0; }
+.trainer-progress-track { position:relative; padding-block:4px; }
+.trainer-progress-paw { position:absolute; top:-1px; width:17px; height:17px; color:var(--graphic-primary); fill:currentColor; stroke-width:1.4; transform:translateX(-50%) rotate(13deg); pointer-events:none; transition:left 440ms cubic-bezier(.16,1,.3,1); }
+body .trainer-tab-tooltip { padding:10px 14px; border:0; border-radius:16px; background:#eee4f5; color:#624479; font-family:var(--resume-type,"Onest",sans-serif); font-size:14px; font-weight:500; line-height:1.5; box-shadow:0 8px 24px #21112b26; }
+.trainer-next-paws { display:inline-flex; align-items:center; gap:7px; margin-left:auto; color:#77519a; }
+.trainer-next-paws svg { width:16px; height:16px; fill:currentColor; stroke-width:1.3; opacity:.85; }
+.trainer-next-paws svg:first-child { transform:rotate(-14deg); --paw-turn:-14deg; }
+.trainer-next-paws svg:last-child { transform:translateY(3px) rotate(8deg); --paw-turn:8deg; }
+.trainer-graphic .study-verdict-next:is(:hover,:focus-visible) .trainer-next-paws svg { animation:trainer-paw-step 440ms cubic-bezier(.16,1,.3,1) both; }
+.trainer-graphic .study-verdict-next:is(:hover,:focus-visible) .trainer-next-paws svg:last-child { animation-delay:100ms; }
+@keyframes trainer-paw-step { 0% { opacity:.65; transform:translateY(4px) rotate(var(--paw-turn)); } 55% { opacity:1; transform:translateY(-3px) rotate(var(--paw-turn)); } 100% { opacity:.85; transform:translateY(0) rotate(var(--paw-turn)); } }
+.trainer-graphic .study-level-filter { position:relative; width:fit-content; max-width:100%; margin-bottom:18px; gap:5px; }
+.trainer-graphic .study-level-filter > button { color:#edddf6; }
+.trainer-graphic .study-level-filter > button:hover { color:#fff3ee; background:#584166; }
+.trainer-graphic .study-level-filter > button[data-state="on"] { background:#e5d4f3; color:#5b3c75; }
+.trainer-graphic .study-task-tabs { position:relative; max-width:730px; }
+.trainer-graphic .study-task-strip { gap:8px; margin-bottom:22px; }
+.trainer-graphic .study-task-strip .study-task-tab { min-width:0; flex:1; padding-inline:8px; background:#594368; color:#f0e3f8; }
+.trainer-graphic .study-task-strip .study-task-tab[data-outcome="right"] { background:#e5f0e3; color:#476b4e; }
+.trainer-graphic .study-task-strip .study-task-tab[data-outcome="wrong"] { background:#fae5eb; color:#97475e; }
+.trainer-graphic .study-task-strip .study-task-tab:hover { background:#735789; color:#fff3ee; }
+.trainer-graphic .study-task-strip .study-task-tab[aria-selected="true"] { background:#ffda98; color:#573b4e; box-shadow:0 5px 16px #180d2726; }
+.va .trainer-graphic .study-task-card { background:var(--trainer-paper); box-shadow:0 20px 50px #2010292b; }
+.trainer-graphic .study-task-title .study-task-code { color:#74508b; background:linear-gradient(135deg,#eadcf6,#f3e1ec); }
+.trainer-graphic .study-graph { background:#f1eaf7; }
+.trainer-graphic .a-opt { background:#f2ebf6; color:var(--resume-ink); }
+.trainer-graphic .a-opt:hover { background:#eadef2; }
+.trainer-graphic .a-opt .num { background:#fffcfa; color:#785b88; }
+.trainer-graphic .a-opt[data-state="selected"] { background:var(--trainer-lilac); color:#533766; }
+.trainer-graphic .a-opt[data-state="selected"] .num { background:#77519a; color:#fff8f3; }
+.trainer-graphic .a-opt[data-state="right"] { color:#36523c; background:var(--trainer-leaf); }
+.trainer-graphic .a-opt[data-state="right"] .num { color:#fcfef9; background:#527557; }
+.trainer-graphic .a-opt[data-state="wrong"] { color:var(--trainer-error); background:#fae5eb; }
+.trainer-graphic .a-opt[data-state="wrong"] .num { color:#fff8f3; background:#97475e; }
+.trainer-graphic .a-input { border-color:#9a7aa9; background:#fcf7ff; caret-color:#77519a; }
+.trainer-graphic .a-input:focus { border-color:#77519a; box-shadow:none; }
+.trainer-graphic .a-input.is-right { border-color:#527557; background:#eff6ec; }
+.trainer-graphic .a-input.is-wrong { border-color:#a55770; background:#fbecf1; }
+.trainer-graphic .study-task-content[data-resolved] .a-input { border-color:#d4bfdc; background:#f2eaf5; }
+.trainer-graphic .study-task-content[data-resolved] .a-opt[data-state="wrong"] { color:var(--resume-ink); background:#f2eaf5; }
+.trainer-graphic .study-task-content[data-resolved] .a-opt[data-state="wrong"] .num { color:#fff8f3; background:#84689a; }
+.va .trainer-graphic .a-btn,.trainer-graphic .study-next {
+  background:linear-gradient(135deg,#ffdf9f,#ffc983); color:#553850;
+  box-shadow:0 8px 22px #b56b3926; transition:transform 180ms cubic-bezier(.16,1,.3,1),box-shadow 180ms;
+}
+.va .trainer-graphic .a-btn:hover,.trainer-graphic .study-next:hover { background:linear-gradient(135deg,#ffe6af,#ffcf8e); transform:translateY(-2px); box-shadow:0 12px 26px #b56b3933; }
+.va .trainer-graphic .a-btn:active,.trainer-graphic .study-next:active { transform:translateY(1px); box-shadow:0 4px 14px #b56b3926; }
+.trainer-graphic .study-hint { background:#f0e8f6; color:#634c71; }
+.trainer-graphic .study-hint-toggle:hover { color:#624080; }
+.trainer-graphic .study-verdict { color:var(--trainer-success); background:var(--trainer-leaf); }
+.trainer-graphic .study-verdict[data-outcome="wrong"] { color:var(--trainer-error); background:#fae5eb; }
+.trainer-graphic .study-verdict[data-illustrated="true"] { background:linear-gradient(110deg,#f1f6eb,#e5f0e3); }
+.trainer-graphic .study-verdict[data-outcome="wrong"][data-illustrated="true"] { background:linear-gradient(110deg,#fcf0f4,#f3e4ef); }
+.trainer-graphic :is(.study-solution-toggle,.study-retry):hover { color:#654180; background:#e5d7f0; }
+.trainer-graphic .a-step > span { background:#eee4f5; }
+.trainer-graphic .study-task-strip { scrollbar-color:#b99ace transparent; }
+.trainer-graphic ::selection { background:#d8bdea; color:#45334f; }
+.trainer-graphic :is(button,a,input):focus-visible { outline-color:#77519a; }
+.va.va-study .trainer-graphic :is(.study-task-strip,.study-level-filter) button:focus-visible { outline-color:#ffda98; }
+@media(min-width:661px) and (max-width:1100px) {
+  .trainer-graphic { padding:28px 26px 46px; min-height:0; }
+  .trainer-room { top:0; right:-24px; width:60%; mask-image:linear-gradient(to right,transparent,#000 10%,#000 95%,transparent),linear-gradient(to bottom,transparent,#000 7%,#000 76%,transparent); }
+  .trainer-graphic .study-heading { width:47%; min-height:224px; gap:15px; }
+  .trainer-graphic .study-heading h1 { font-size:32px; }
+  .trainer-graphic .study-topic-meta { flex-direction:column; align-items:flex-start; gap:12px; }
+  .trainer-graphic .study-progress { width:165px; }
+  .trainer-graphic .study-task-tabs { max-width:none; }
+}
+@media(max-width:660px) {
+  .va.va-study:has(.trainer-graphic) main { background:linear-gradient(180deg,var(--trainer-room),var(--trainer-room) 425px,#896b9b 670px,var(--resume-bg) 980px); }
+  .trainer-graphic { min-height:0; padding:24px 20px 30px; }
+  .trainer-room { top:86px; right:-18px; width:67%; mask-image:linear-gradient(to right,transparent,#000 12%,#000 95%,transparent),linear-gradient(to bottom,transparent,#000 9%,#000 76%,transparent); }
+  .trainer-graphic .study-heading { width:100%; min-height:174px; gap:16px; margin-bottom:14px; }
+  .trainer-graphic .study-heading h1 { max-width:100%; font-size:29px; }
+  .trainer-graphic .study-topic-meta { flex-direction:column; align-items:flex-start; gap:14px; width:44%; }
+  .trainer-graphic .study-grade { margin:0; padding:7px 9px; }
+  .trainer-graphic .study-progress { width:128px; min-width:0; }
+  .trainer-graphic .study-level-filter { gap:3px; margin-bottom:16px; }
+  .trainer-graphic .study-level-filter > button { padding:9px 8px; }
+  .trainer-graphic .study-task-strip { gap:7px; margin-bottom:18px; }
+  .trainer-graphic .study-task-strip .study-task-tab { min-height:44px; flex:auto; }
+  .trainer-graphic .study-task-heading { flex-wrap:wrap; gap:2px 8px; }
+  .trainer-graphic .study-task-title { gap:8px; }
+  .trainer-graphic .study-task-tools { margin-left:auto!important; }
+  .trainer-graphic .study-difficulty { white-space:normal; text-align:right; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .trainer-progress-paw { transition:none; }
+  body .trainer-tab-tooltip,.trainer-graphic .study-verdict-next:is(:hover,:focus-visible) .trainer-next-paws svg { animation:none; }
+  .va .trainer-graphic .a-btn,.trainer-graphic .study-next { transition:none; }
+  .va .trainer-graphic .a-btn:is(:hover,:active),.trainer-graphic .study-next:is(:hover,:active) { transform:none; }
+}

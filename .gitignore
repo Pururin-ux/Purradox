@@ -1,0 +1,44 @@
+# dependencies
+node_modules/
+**/node_modules/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# builds
+source/frontend/build/
+source/frontend/dist/
+build/
+dist/
+
+# runtime and logs
+local/runtime*/
+*.log
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# heavy evidence media and generated archives
+snapshots/
+evidence/**/*.jpg
+evidence/**/*.jpeg
+evidence/**/*.png
+evidence/**/*.webp
+*.zip
+*.b64
+*.b64.txt
+
+# Local configuration
+.env
+.env.*
+!.env.example
+.npmrc
+*.pem
+*.p12
+*.pfx
+.pytest_cache/

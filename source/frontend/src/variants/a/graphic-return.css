@@ -1,0 +1,31 @@
+.companion-surface { position:relative; width:135%; margin-inline:-17.5%; }
+.draft-resume-illustration { overflow:visible; }
+.learning-resume { overflow:hidden; --resume-bg:#f3edf9; --resume-soft:#e9ddf3; --resume-ink:#45334f; --resume-muted:#80658d; --resume-wine:#77519a; }
+.learning-resume .draft-resume-position { background:#e8ddf1; color:#71517d; }
+.learning-resume .draft-resume-place-icon { background:#f8f1fc; color:#a482b7; }
+.learning-resume .draft-resume-continue { background:linear-gradient(120deg,#ffdfa0,#ffc887); color:#62405d; box-shadow:0 12px 28px #b8774b20; }
+.learning-resume .draft-resume-continue:hover { background:linear-gradient(120deg,#ffe7b5,#ffd496); box-shadow:0 16px 32px #b8774b30; }
+.learning-resume .draft-resume-button-tail { color:#8c587f; }
+.learning-resume .draft-resume-tracks svg { color:#9e6686; opacity:.85; }
+.learning-resume .draft-resume-detail { color:#765f7d; }
+.learning-resume .draft-resume-restart { color:#77519a; }
+.learning-resume .draft-resume-restart:hover { background:#e8dcf1; color:#77519a; }
+.learning-resume .companion-name { color:#77519a; }
+.draft-restart-dialog {
+ --background:24 100% 99%; --foreground:274 21% 25%; --primary:271 31% 46%; --primary-foreground:24 100% 98%;
+ --muted-foreground:282 14% 43%; --accent:276 46% 91%; --accent-foreground:274 21% 25%; --ring:271 31% 46%;
+ background:var(--graphic-paper,#fffcfa); color:var(--resume-ink,#45334f); box-shadow:0 22px 70px #35214933;
+}
+.draft-restart-dialog p { color:var(--resume-muted,#765f7d); }
+.draft-restart-dialog .draft-restart-cancel { background:#e9ddf3; color:#553b66; }
+.draft-restart-dialog .draft-restart-cancel:hover { background:#deceeb; }
+.draft-restart-dialog .draft-restart-confirm { background:#77519a; color:#fffaf7; }
+.draft-restart-dialog .draft-restart-confirm:hover { background:#654281; }
+.draft-restart-dialog button:focus-visible { outline-color:#77519a; }
+.ct-return-portrait .companion-surface { width:135%; margin-inline:-17.5%; }
+@media(max-width:660px) {
+ .companion-portrait { padding-top:20px; }
+ .companion-surface { width:130%; margin-inline:-15%; }
+ .learning-resume .draft-resume-illustration { max-width:440px; margin:-10px auto 0; }
+ .learning-resume .draft-resume-card { row-gap:4px; }
+}

@@ -1,0 +1,416 @@
+.lesson-figure:is([data-figure="orbit-comparison"], [data-figure="power-lifts"], [data-figure="vapor-balance"], [data-figure="refraction-fronts"], [data-figure="potential-routes"]) {
+  grid-template-columns:minmax(0,1fr);
+  max-width:560px;
+}
+
+.lesson-figure[data-figure="orbit-comparison"] {
+  padding:0;
+  background:none;
+}
+.orbit-comparison {
+  overflow:hidden;
+  border-radius:20px;
+  background:#28263f;
+  color:#f4e8f5;
+}
+.orbit-comparison > svg {
+  display:block;
+  width:100%;
+  max-height:360px;
+  background:radial-gradient(ellipse at 33% 49%,#514364,#28263f 72%);
+}
+.orbit-readings {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:6px;
+  margin:-8px 14px 14px;
+  position:relative;
+}
+.orbit-readings > div {
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  padding:9px 6px;
+  border-top:1px solid #665b79;
+}
+.orbit-readings dt {
+  color:#e6d6ea;
+  font-size:14px;
+  line-height:1.28;
+}
+.orbit-readings dt i {
+  display:inline-block;
+  width:.55em;
+  height:.55em;
+  margin-right:.4em;
+  border-radius:50%;
+  background:#ffcd8c;
+  vertical-align:.06em;
+}
+.orbit-readings > div + div i { background:none; border:1.5px solid #d9cef1; }
+.orbit-readings dd {
+  margin:auto 0 0;
+  padding-top:3px;
+  font-weight:710;
+  font-size:19px;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.orbit-clock {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:0 10px;
+  padding:0 14px 6px;
+  font-size:14px;
+}
+.orbit-clock output { color:#ffddab; font-weight:700; }
+.orbit-clock .lesson-reflection-slider > span:first-child { background:#6e6088; }
+.orbit-clock .lesson-reflection-slider > span:first-child > span { background:#dbad87; }
+.orbit-clock .lesson-reflection-slider [role="slider"] { background:#ffdfb2; border-color:#a57494; }
+.orbit-clock .lesson-reflection-slider [role="slider"]:focus-visible { outline-color:#ffdfb2; }
+.lesson-figure[data-figure="orbit-comparison"] > figcaption { padding-inline:8px; }
+
+.lesson-figure[data-figure="power-lifts"] { background:#f8ede5; }
+.lift-range {
+  --lift-span: clamp(63px,14vw,99px);
+  --lift-floor: 5px;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  position:relative;
+  padding-left:40%;
+}
+.lift-goal, .lift-start {
+  position:absolute;
+  right:calc(60% + 9px);
+  color:#755462;
+  font-size:14px;
+  line-height:1.1;
+  transform:translateY(-50%);
+}
+.lift-goal { top:calc(28px + 65px - var(--lift-floor) - 2px); }
+.lift-start { top:calc(28px + 65px + var(--lift-span) - 2px); }
+.lift-lane h3 { height:28px; margin:0; color:#51405d; text-align:center; font-size:16px; font-weight:720; }
+.lift-rail {
+  position:relative;
+  height:calc(65px + var(--lift-span));
+  border-bottom:2px solid #b48a75;
+  border-radius:14px 14px 4px 4px;
+  background:linear-gradient(180deg,#ece2ed,#f2ddcc);
+}
+.lift-rail::before {
+  content:"";
+  position:absolute;
+  inset:auto 4px calc(var(--lift-span) + var(--lift-floor));
+  border-bottom:1px dashed #ad7b70;
+}
+.lift-drum {
+  position:absolute;
+  z-index:1;
+  width:20px;
+  height:14px;
+  top:8px;
+  left:50%;
+  translate:-50% 0;
+  border-radius:6px;
+  background:linear-gradient(90deg,#996255,#b98b72 45%,#93605c);
+}
+.lift-rope {
+  position:absolute;
+  top:19px;
+  bottom:calc(38px + var(--lift-span) * var(--lift-height));
+  width:2px;
+  left:50%;
+  translate:-50% 0;
+  background:#795369;
+}
+.lift-weight {
+  position:absolute;
+  left:50%;
+  bottom:calc(var(--lift-floor) + var(--lift-span) * var(--lift-height));
+  translate:-50% 0;
+  height:42px;
+  width:auto;
+}
+.lift-lane[data-finished="true"] .lift-rail::before {
+  border-color:#496f68;
+  border-style:solid;
+}
+.lift-reading { width:100%; margin:8px 0 0; border-collapse:collapse; font-size:14px; font-variant-numeric:tabular-nums; }
+.lift-reading tr { border-bottom:1px solid #e6d3cd; }
+.lift-reading th, .lift-reading td { padding:6px 4px; }
+.lift-reading th { width:40%; color:#624b63; text-align:left; line-height:1.25; font-weight:500; }
+.lift-reading td { width:30%; text-align:center; font-weight:700; white-space:nowrap; }
+.power-lifts .lift-clock { padding:0; margin-top:12px; }
+.lift-launch {
+  min-height:44px;
+  height:auto;
+  margin-top:3px;
+  border-radius:12px;
+  background:#f1d4b5;
+  color:#553950;
+  white-space:normal;
+}
+.lift-launch:hover { background:#f5ddc3; }
+.lift-launch[aria-disabled="true"] { cursor:wait; color:#6e5066; }
+
+.lesson-figure[data-figure="vapor-balance"] { background:#e9f0f2; }
+.vapor-exchange > svg { display:block; width:100%; max-width:410px; margin-inline:auto; }
+.vapor-exchange .vapor-options {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  width:100%;
+  gap:4px;
+  margin:0 0 10px;
+  padding:3px;
+  border-radius:12px;
+  background:#dbe5eb;
+}
+.vapor-options button, .refraction-angles button {
+  height:auto;
+  min-height:44px;
+  min-width:0;
+  padding:4px 3px;
+  border-radius:9px;
+  font-size:14px;
+  line-height:1.18;
+  white-space:normal;
+}
+.vapor-options button:is(:hover,[data-state="on"]) { background:#fff9ef; color:#3f526a; }
+.vapor-readings dl { margin:0; font-size:14px; }
+.vapor-readings dl > div {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:5px;
+  padding:5px 0;
+  border-top:1px solid #ccdae2;
+}
+.vapor-readings dt { display:flex; align-items:center; gap:4px; }
+.vapor-readings dt svg { width:17px; height:17px; color:#995f37; }
+.vapor-readings dl > div + div svg { color:#34697a; }
+.vapor-readings dd { margin:0; font-size:17px; font-weight:700; font-variant-numeric:tabular-nums; }
+.vapor-readings p { margin:7px 0 0; color:#3d5167; font-size:15px; font-weight:650; }
+.vapor-settle, .potential-route-go {
+  min-height:44px;
+  height:auto;
+  max-width:100%;
+  margin-top:10px;
+  border-radius:12px;
+  white-space:normal;
+}
+.vapor-settle { background:#d4e6e5; color:#315967; }
+.vapor-settle:hover { background:#e1efed; }
+.potential-route-go { background:#efd5c9; color:#553a51; }
+.potential-route-go:hover { background:#f4ded3; }
+
+.lesson-figure[data-figure="refraction-fronts"] { background:#edf0f7; }
+.refraction-fronts > svg { display:block; width:100%; max-width:430px; margin-inline:auto; border-radius:12px; }
+.refraction-angles {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:4px;
+  margin-top:10px;
+  padding:3px;
+  border-radius:12px;
+  background:#e3def0;
+}
+.refraction-angles button:is(:hover,[data-state="on"]) { background:#fdf7ed; color:#55366b; }
+.refraction-readings { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px; margin:8px 0 0; font-size:14px; }
+.refraction-readings > div { padding:7px 3px; border-top:1px solid #d4cbdf; }
+.refraction-readings dd { margin:2px 0 0; font-weight:700; font-variant-numeric:tabular-nums; }
+.refraction-frequency { margin:7px 0 0; color:#554663; font-size:14px; }
+
+.lesson-figure[data-figure="potential-routes"] { background:#f6ebe8; }
+.potential-route-experiment .lesson-figure-svg { font-size:17px; }
+.potential-road-readings { display:grid; gap:4px; margin:1px 0 11px; font-size:14px; }
+.potential-road-readings > div {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:7px;
+  padding:5px 0;
+  border-bottom:1px solid #e7d2d5;
+}
+.potential-road-readings dd { margin:0; font-weight:700; white-space:nowrap; }
+
+.lesson-figure:is([data-figure="ohm-slope"], [data-figure="branch-break"], [data-figure="spiral-in-field"]) {
+  grid-template-columns:minmax(0,1fr);
+  max-width:560px;
+}
+.lesson-figure[data-figure="ohm-slope"] { background:#f0e8f3; }
+.ohm-slope .lesson-figure-svg { font-size:18px; max-width:425px; margin-inline:auto; }
+.ohm-select { margin-top:2px; }
+.ohm-readings { display:flex; gap:6px 16px; flex-wrap:wrap; align-items:baseline; margin-top:10px; font-size:14px; }
+.ohm-readings strong { color:#5d3e74; font-size:17px; font-variant-numeric:tabular-nums; }
+.branch-lights {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  margin:0;
+  gap:2px;
+  overflow:hidden;
+  border-radius:18px;
+  background:#2d2441;
+  color:#fff3e8;
+}
+.branch-lights > div {
+  min-width:0;
+  display:grid;
+  justify-items:center;
+  text-align:center;
+  padding:14px 5px 10px;
+  position:relative;
+  isolation:isolate;
+}
+.branch-lights > div::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:radial-gradient(ellipse at 50% 35%,#8d5870,#3b2b56 62%,#31243f);
+  transition:opacity .28s ease;
+}
+.branch-lights > div[data-lit="false"]::before { opacity:0; }
+.branch-lights img { object-fit:contain; transition:filter .28s ease; }
+.branch-lights [data-lit="false"] img { filter:grayscale(.92) brightness(.65); }
+.branch-lights dt { margin-top:7px; font-size:14px; }
+.branch-lights dd { margin:1px 0 0; color:#ffdaa8; font-size:19px; font-weight:700; }
+.branch-lights [data-lit="false"] dd { color:#d8cde8; }
+.branch-controls { margin-top:9px; }
+.branch-controls button {
+  min-height:44px; height:auto; max-width:100%;
+  padding:8px 11px; border-radius:12px; white-space:normal;
+  background:#f1d9bf; color:#5c3d49;
+}
+.branch-controls button:hover { background:#f8e2ca; }
+.branch-result { margin:8px 0 0; color:#634a62; font-size:14px; }
+
+.helix-views {
+  display:grid;
+  grid-template-columns:minmax(0,2.25fr) minmax(0,1fr);
+  gap:8px;
+  align-items:stretch;
+}
+.helix-views > div { min-width:0; border-radius:12px; background:#f9f6f1; }
+.helix-views h3 { margin:7px 5px 0; color:#514468; text-align:center; font-size:14px; font-weight:680; line-height:1.14; }
+.helix-views .lesson-figure-svg { height:clamp(58px,18vw,106px); font-size:24px; }
+.helix-data { margin:8px 0 11px; color:#4e3f63; font-size:14px; }
+.helix-setting { margin:0 0 5px; font-size:14px; }
+.helix-viewer .helix-options { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:4px; margin-top:0; }
+.helix-options button { min-width:0; padding-inline:2px; white-space:nowrap; }
+.helix-viewer .helix-clock { padding:0; margin-top:12px; }
+
+.mirror-readout, .battery-readout, .load-readout, .photo-emission { color:#514165; font-size:14px; }
+.mirror-readout { margin-top:10px; }
+.mirror-readout p { margin:0 0 5px; font-weight:650; }
+.mirror-readout dl, .battery-readout, .load-readout {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:5px 9px;
+  margin:6px 0 9px;
+}
+.mirror-readout dl > div, .battery-readout > div, .load-readout > div {
+  padding:6px 3px;
+  border-top:2px solid #9eb6ba;
+}
+:is(.mirror-readout dl,.battery-readout,.load-readout) dt { line-height:1.24; }
+:is(.mirror-readout dl,.battery-readout,.load-readout) dd {
+  margin:3px 0 0;
+  font-size:18px;
+  font-weight:700;
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+.battery-readout > div + div { border-color:#cfaa83; }
+.battery-figure { display:grid; grid-template-columns:minmax(50px,25%) minmax(0,1fr); align-items:center; gap:14px; padding:5px 0; }
+.battery-figure img { width:100%; height:auto; }
+.battery-figure p { margin:0 0 7px; color:#4e3c64; font-size:14px; }
+.battery-band { height:12px; overflow:hidden; border-radius:7px; background:#e3ac79; }
+.battery-band > span { display:block; height:100%; background:#6c9ca9; transition:width .25s ease; }
+@media (prefers-reduced-motion:reduce) {
+  .branch-lights img, .branch-lights > div::before, .battery-band > span { transition:none; }
+}
+.load-readout > div:first-child { border-color:#c58b55; }
+.load-readout > div + div { border-color:#639390; }
+.photo-brightness-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+.photo-emission {
+  margin:9px 0 3px;
+  padding:9px;
+  border-radius:10px;
+  color:#5b435c;
+  background:#eee1e8;
+}
+.photo-emission[data-emits="true"] { color:#315969; background:#dbece9; }
+.photon-impact { margin:8px 0 0; color:#594560; font-size:14px; }
+.photon-impact > div {
+  display:grid; grid-template-columns:minmax(0,1fr) auto; gap:4px;
+  padding:5px 1px; border-bottom:1px solid #e0cdc9;
+}
+.photon-impact dd { margin:0; color:#674374; font-size:16px; font-weight:720; }
+.equal-heating .lesson-figure-svg { font-size:18px; max-width:420px; margin:auto; }
+.heat-readout { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; margin:2px 0 12px; font-size:14px; }
+.heat-readout > div { padding:5px 2px; border-top:2px solid #ae86c3; }
+.heat-readout > div + div { border-color:#719d9a; }
+.heat-readout dd { margin:4px 0 0; font-weight:700; font-size:17px; font-variant-numeric:tabular-nums; }
+.equal-heating .heat-window { padding:0; }
+[data-figure="grating-orders"] .lesson-figure-svg { font-size:18px; }
+
+.lesson-figure:is([data-figure="incline-choice"],[data-figure="process-boundary"],[data-figure="moving-loop"],[data-figure="mass-difference"]) {
+  grid-template-columns:minmax(0,1fr);
+  max-width:540px;
+}
+.lesson-figure[data-figure="incline-choice"] { background:#f8efe4; }
+.incline-choice .lesson-figure-svg, .moving-loop .lesson-figure-svg { font-size:19px; max-width:410px; margin:auto; }
+.incline-options button { flex:1; min-width:0; white-space:normal; }
+.incline-work { margin:8px 0 0; font-size:16px; color:#674b62; font-variant-numeric:tabular-nums; }
+.lesson-figure[data-figure="process-boundary"] { padding:0; background:none; }
+.gas-boundary-compare { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }
+.gas-boundary-compare > div {
+  display:flex; flex-direction:column; align-items:start; min-width:0;
+  padding:8px 7px; border-radius:13px; background:#f8ece2;
+}
+.gas-boundary-compare > div + div { background:#e8eef6; }
+.gas-boundary-compare h3 { min-height:2.5em; margin:0; color:#514265; font-size:15px; font-weight:720; line-height:1.22; }
+.gas-boundary-compare .lesson-figure-svg { font-size:20px; max-width:165px; margin:auto; }
+.gas-boundary-compare p { margin:7px 0; color:#57516a; font-size:14px; line-height:1.36; }
+.gas-boundary-compare .process-equations { display:flex; flex-wrap:wrap; gap:2px 9px; margin:auto 0 0; padding-top:6px; color:#5b3e71; }
+.lesson-figure[data-figure="moving-loop"] { background:#e8f0ee; }
+.moving-loop .loop-position { padding:0; margin-top:9px; }
+.flux-readout { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; margin:0 0 8px; font-size:14px; }
+.flux-readout dd { margin:4px 0; font-size:18px; font-weight:700; font-variant-numeric:tabular-nums; }
+.lesson-figure[data-figure="mass-difference"] { background:#eeebf5; }
+.mass-comparison { width:100%; border-collapse:collapse; color:#4f4164; font-size:14px; font-variant-numeric:tabular-nums; }
+.mass-comparison caption { padding-bottom:5px; color:#6a5277; caption-side:top; text-align:left; }
+.mass-comparison th,.mass-comparison td { padding:6px 3px; border-bottom:1px solid #d8ccdf; }
+.mass-comparison th { text-align:left; font-weight:500; }
+.mass-comparison td { text-align:right; font-weight:680; white-space:nowrap; }
+.mass-comparison .free-mass { background:#e0d6ed; }
+.mass-difference-button { margin-top:9px; min-height:44px; border-radius:12px; color:#553965; background:#e1d3e9; }
+.mass-difference-button:hover { background:#eee3f3; }
+.mass-gap p { margin:7px 0 0; color:#4e3b66; font-size:14px; line-height:1.39; font-variant-numeric:tabular-nums; }
+.clock-events { display:flex; flex-wrap:wrap; gap:4px 12px; margin:2px 0 0; color:#5c4b6b; font-size:14px; }
+.clock-events b { color:#895737; }
+.isochoric-reading p { margin:0 0 4px; color:#514367; font-size:14px; font-weight:650; }
+.isochoric-reading .lesson-figure-svg { font-size:19px; }
+.wire-projection .lesson-figure-svg { font-size:18px; }
+.wire-angles button { min-width:44px; }
+.wire-readout { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; margin:6px 0 0; font-size:14px; }
+.wire-readout dd { margin:3px 0 0; font-size:17px; font-weight:680; font-variant-numeric:tabular-nums; }
+
+@media(max-width:420px) {
+  .lesson-figure:is([data-figure="orbit-comparison"], [data-figure="power-lifts"], [data-figure="vapor-balance"], [data-figure="refraction-fronts"], [data-figure="potential-routes"], [data-figure="ohm-slope"], [data-figure="branch-break"], [data-figure="spiral-in-field"]) {
+    margin-inline:-8px;
+  }
+  .lesson-figure:is([data-figure="wave-fields"],[data-figure="spherical-mirror"],[data-figure="photo-current"],[data-figure="battery-under-load"],[data-figure="load-power"],[data-figure="equal-heating"],[data-figure="photon-momentum"]) {
+    margin-inline:-8px;
+  }
+  .lesson-figure:is([data-figure="incline-choice"],[data-figure="process-boundary"],[data-figure="moving-loop"],[data-figure="mass-difference"],[data-figure="light-clock"]) {
+    margin-inline:-8px;
+  }
+  .lesson-steps [data-figure="grating-orders"] {
+    margin-inline:-12px -6px;
+    padding:9px 6px;
+  }
+  .lesson-steps [data-figure="wire-projection"] { margin-inline:-9px -6px; padding-inline:9px; }
+  [data-figure="grating-orders"] .lesson-figure-svg { font-size:20px; }
+}
