@@ -15,16 +15,17 @@ export const MotionStudyView = memo(function MotionStudyView({ kinematics: k, du
   const [width, setWidth] = useState(300);
   useLayoutEffect(() => {
     const node = frame.current;
-    const measure = () => {
-      const next = Math.round(node.getBoundingClientRect().width);
+    const fit = measured => {
+      const next = Math.round(measured);
       if (next > 0) setWidth(next);
     };
+    const measure = () => fit(node.getBoundingClientRect().width);
     measure();
     if (typeof ResizeObserver === "undefined") {
       window.addEventListener("resize", measure);
       return () => window.removeEventListener("resize", measure);
     }
-    const observer = new ResizeObserver(measure);
+    const observer = new ResizeObserver(([entry]) => fit(entry.contentRect.width));
     observer.observe(node);
     return () => observer.disconnect();
   }, []);

@@ -3,27 +3,28 @@ import { ArrowRight, BookOpen, Target, Timer, RotateCcw, Check, Sparkles } from 
 import { ShellA } from "./ShellA";
 import { useCatalog } from "@/lib/hooks";
 import { solvedTaskCount, useGame, streakView } from "@/lib/game";
-import { recentDrafts } from "@/lib/courseProgress";
+import { useRecentDrafts } from "@/lib/courseProgress";
 import { LINKS } from "@/lib/nav";
 import { plural } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { artImg } from "@/lib/artifacts";
+import { artThumbnail } from "@/lib/artifacts";
 import { ProfilePortrait } from "./ProfileA";
 
-export default function DashboardA({ openProfile = false }) {
+export default function DashboardA() {
   const { data, error, refetch } = useCatalog();
   const g = useGame(), rows = data?.lessons ?? [];
   const next = rows.find(row => !g.completedLessons.includes(row.slug));
   const completed = rows.filter(row => g.completedLessons.includes(row.slug)).length;
-  const [lastStudy, ...otherDrafts] = data ? recentDrafts(rows) : [];
+  const [lastStudy, ...otherDrafts] = useRecentDrafts(data?.lessons);
   const solved = solvedTaskCount(g);
   const streak = streakView(g);
-  return <ShellA profileOpen={openProfile}><div className="home-studio">
+  return <ShellA><div className="home-studio">
     <section className="home-prism" aria-labelledby="home-title">
-      <picture><source media="(max-width:700px)" srcSet="/art/full-site-20261107/home-mobile-v1.webp" /><img src="/art/full-site-20261107/home-wide-v1.webp" width="1672" height="941" fetchPriority="high" alt="Девушка поворачивает призму, а кот ловит лапой цветной свет на столе." /></picture>
+      <picture><source media="(max-width:700px)" width="1122" height="1402" sizes="calc(100vw - 36px)"
+        srcSet="/art/full-site-20261107/home-mobile-v1-420.webp 420w, /art/full-site-20261107/home-mobile-v1-768.webp 768w, /art/full-site-20261107/home-mobile-v1-1122.webp 1122w" /><img src="/art/full-site-20261107/home-wide-v1.webp" width="1672" height="941" fetchPriority="high" alt="Девушка поворачивает призму, а кот ловит лапой цветной свет на столе." /></picture>
       <div className="home-prism-copy">
         <h1 id="home-title">Есть над чем{" "}<br />помурчать.</h1>
         <p>{rows.length ? `${rows.length} ${plural(rows.length, "урок", "урока", "уроков")} по физике, задачи по темам и пробное ЦТ.` : "Уроки физики, задачи по темам и пробное ЦТ."}</p>
@@ -32,6 +33,10 @@ export default function DashboardA({ openProfile = false }) {
             {lastStudy ? "Продолжить" : next ? completed ? "Следующая тема" : "Начать с основ" : "К учебнику"}<ArrowRight aria-hidden="true" />
           </Link>
         </Button>
+        <div className="home-intentions">
+          <Button asChild variant="ghost"><Link to={LINKS.textbook}>Найти тему</Link></Button>
+          <Button asChild variant="ghost"><Link to={LINKS.ct}>Подготовиться к ЦТ</Link></Button>
+        </div>
         {lastStudy && <span id="home-current-topic" className="home-current-topic">{lastStudy.kind === "lesson" ? "Урок" : "Тренажёр"} · {lastStudy.title}</span>}
       </div>
     </section>
@@ -40,7 +45,7 @@ export default function DashboardA({ openProfile = false }) {
     <section className="home-desk-grid">
       <Card className="home-course-card"><CardContent>
         <span className="home-card-kicker"><BookOpen aria-hidden="true" />Учебник</span>
-        <h2>{next?.title ?? (rows.length ? "Вся программа позади" : "Оглавление")}</h2>
+        <h2>{next?.title ?? (rows.length ? "Все занятия завершены" : "Оглавление")}</h2>
         {rows.length > 0 && <><p>{completed} из {rows.length} уроков пройдено</p><Progress value={completed / rows.length * 100} aria-label="Прогресс по учебнику" /></>}
         <div className="home-course-actions">
           {next && <Button asChild variant="secondary" className="home-course-open"><Link to={`/lesson/${next.slug}`}>Открыть урок<ArrowRight aria-hidden="true" /></Link></Button>}
@@ -52,7 +57,7 @@ export default function DashboardA({ openProfile = false }) {
     </section>
     <section className="home-bottom-grid">
       <Link className="home-review-note" to={LINKS.review}><RotateCcw aria-hidden="true" /><div><h2>Повторение</h2><p>{g.mistakes.length ? g.mistakes.length + " " + plural(g.mistakes.length,"ошибка","ошибки","ошибок") + " в задачах и проверках." : "Пока нечего повторять."}</p></div><ArrowRight aria-hidden="true" /></Link>
-      <Link className="home-shelf-note" to={LINKS.collection}><img src={artImg(g.shelf[0] ?? "cradle")} alt="" loading="lazy" /><div><h2>Твоя полка</h2><p>{g.owned.length} {plural(g.owned.length,"предмет","предмета","предметов")}{g.capsules ? " · капсул: " + g.capsules : ""}</p></div><ArrowRight aria-hidden="true" /></Link>
+      <Link className="home-shelf-note" to={LINKS.collection}><img src={artThumbnail(g.shelf[0] ?? "cradle", 180)} width="62" height="62" alt="" loading="lazy" decoding="async" /><div><h2>Твоя полка</h2><p>{g.owned.length} {plural(g.owned.length,"предмет","предмета","предметов")}{g.capsules ? " · капсул: " + g.capsules : ""}</p></div><ArrowRight aria-hidden="true" /></Link>
     </section>
     {streak.streak > 0 && <p className="home-streak-note"><Sparkles aria-hidden="true" />{streak.streak} {plural(streak.streak,"день","дня","дней")} занятий подряд{streak.today ? <><Check aria-hidden="true" />Сегодня засчитан</> : ""}</p>}
   </div></ShellA>;

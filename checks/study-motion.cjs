@@ -41,6 +41,7 @@ function loadSource(input) {
     requestAnimationFrame: callback => { frames.set(++nextFrameId, callback); return nextFrameId; },
     cancelAnimationFrame: id => frames.delete(id),
     require: name => {
+      if (name.endsWith(".css")) return {};
       if (name === '@/lib/game') return { trackUnique() {} };
       if (name === '@/components/shared/Tex') return { Rich: ({ text }) => text };
       if (name === 'framer-motion') return { useReducedMotion: () => reduce };

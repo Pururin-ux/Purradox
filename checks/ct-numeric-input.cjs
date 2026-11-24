@@ -22,6 +22,7 @@ const { transformSync } = req('@babel/core');
 const modules = new Map();
 const target = path.resolve(process.argv[2] || path.join(frontend, 'src/variants/a/CtA.jsx'));
 let queryState = {};
+let reports = {}, openedAttempts = 0;
 let examState = { stage: 'intro' };
 function withTimer({ left, ...exam }) {
   return { ...exam, expired: left <= 0, timer: { subscribe: () => () => {}, getRemaining: () => left } };
@@ -33,7 +34,7 @@ function sourceModule(input) {
   let code = transformSync(fs.readFileSync(filename, 'utf8'), {
     filename, babelrc: false, configFile: false,
     presets: [[req.resolve('@babel/preset-react'), { runtime: 'automatic' }]],
-    plugins: [req.resolve('@babel/plugin-transform-modules-commonjs')],
+    plugins: [req.resolve('@babel/plugin-transform-dynamic-import'), req.resolve('@babel/plugin-transform-modules-commonjs')],
   }).code;
   if (filename === target) code += '\nmodule.exports.TaskView = TaskView; module.exports.Exam = Exam;';
   const stub = name => {
@@ -51,16 +52,17 @@ function sourceModule(input) {
     if (name === './AnswerA') return sourceModule(path.join(frontend, 'src/variants/a/AnswerA.jsx'));
     if (name === './CtReview') return sourceModule(path.join(frontend, 'src/variants/a/CtReview.jsx'));
     if (name === '@/components/shared/Calculator') return sourceModule(path.join(frontend, 'src/components/shared/Calculator.jsx'));
-    if (name === '@/components/shared/useCtExam') return { useCtExam: () => withTimer(examState),
+    if (name === '@/components/shared/useCtExam') return { useCtExam: () => { openedAttempts++; return withTimer(examState); },
       hasAnswer: value => typeof value === 'string' ? /^[−-]?\d+$/.test(value) : value != null && !(Array.isArray(value) && !value.length) };
-    if (name === '@/lib/hooks') return { useCtVariant: () => queryState, submitVariant: () => async () => {}, submitCt: async () => {} };
-    if (name === '@/lib/game') return { useGame: () => ({ examResults:{} }), useProfileGeneration: () => null, readCtResult: () => undefined, trackUnique: () => {}, recordCt: () => true };
+    if (name === '@/lib/hooks') return { useCtVariant: () => queryState, submitVariant: () => async () => {},
+      submitCt: async () => {}, useUpdatedFeedback: (_, result) => ({ item: result }) };
+    if (name === '@/lib/game') return { useGame: () => ({ examResults:reports }), useProfileGeneration: () => null, readCtResult: () => undefined, dayKey: () => "today", trackUnique: () => true, recordCt: () => true };
     if (name === './ShellA') return { ShellA: ({ children }) => React.createElement(React.Fragment, null, children), LoadingA: () => React.createElement('div', { 'data-testid': 'loading-stub' }, 'Загрузка') };
     if (filename === target && (name.startsWith('.') || (name.startsWith('@/') && !name.startsWith('@/components/ui/')))) return {};
     return name.startsWith('@/') ? sourceModule(path.join(frontend, 'src', name.slice(2)))
       : name.startsWith('.') ? sourceModule(path.resolve(path.dirname(filename), name)) : req(name);
   };
-  vm.runInNewContext(code, { module, exports: module.exports, require: stub, console, window: dom.window }, { filename });
+  vm.runInNewContext(code, { module, exports: module.exports, require: stub, console, URLSearchParams, window: dom.window }, { filename });
   return module.exports;
 }
 const TaskView = sourceModule(target).TaskView;
@@ -189,6 +191,7 @@ test('the compact sheet mounts on demand, keeps its filter across a resize and r
   const media = new window.EventTarget();
   media.matches = true;
   window.matchMedia = query => {
+    if (query === '(max-width: 760px), (max-height: 580px)') return previousMatchMedia?.(query);
     assert.equal(query, '(max-width: 1100px)');
     return media;
   };
@@ -474,4 +477,35 @@ test('save refusal is visible and retry is tied to saving rather than restarting
     await h.click('ct-retry-save');assert.equal(h.retries,1);assert.equal(h.starts,0);
     await h.render({saveError:null});assert.equal(h.host.querySelector('[data-testid="ct-save-error"]'),null);
   });
+});
+
+test('a previous diagnostic result opens without starting the exam and offers lesson and practice links', async () => {
+  const host = document.getElementById('root');
+  const root = createRoot(host);
+  queryState = { data: { variantId: '03', independent: true, title: 'Диагностический вариант',
+    sections: [{ id: 'mechanics' }], _assessment: { revision: 'current', legacy: {} },
+    tasks: [{ id: 'A1', code: 'А1', part: 'A', kind: 'multi', section: 'mechanics', options: ['a', 'b'], text: 'Задание' }],
+  } };
+  reports = { '03': { draftKey: 'kvant_draft_v1:ct:03:rcurrent', correct: 0, total: 1, elapsed_sec: 30,
+    by_section: [{ id: 'mechanics', title: 'Механика', correct: 0, total: 1 }],
+    review: [{ id: 'A1', code: 'А1', answer: [1, 2], correct: false, section: 'mechanics',
+      lessonSlug: 'izmereniya-i-vektory', lessonTitle: 'Измерения и векторы', solution: [{text:'Решение'}] }],
+  } };
+  const before = openedAttempts;
+  try {
+    await act(() => root.render(React.createElement(MemoryRouter, {
+      initialEntries: ['/ct/variant/03?report=previous'],
+    }, React.createElement(CtA))));
+    assert.equal(host.querySelector('h1').textContent, 'Предыдущий результат');
+    assert.equal(openedAttempts, before);
+    assert.equal(host.querySelector('[data-testid="ct-restart-btn"]'), null);
+    assert.match(host.querySelector('a[href="/ct/variant/03"]').textContent, /К текущей попытке/);
+    const detail = [...host.querySelectorAll('button')].find(button => /^Разобрать /.test(button.textContent));
+    await act(() => detail.click());
+    assert.ok(host.querySelector('a[href="/lesson/izmereniya-i-vektory"]'));
+    assert.match(host.querySelector('a[href="/trainer/izmereniya-i-vektory"]').textContent, /К задачам по теме/);
+  } finally {
+    await act(() => root.unmount());
+    reports = {}; queryState = {};
+  }
 });

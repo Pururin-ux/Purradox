@@ -1,0 +1,60 @@
+/* The opening observation and the ray construction are figures on the same reading page. */
+.va .lesson-card:has(> .mirror-reading-head) { background:transparent; border:0; box-shadow:none; }
+.va .lesson-card:has(> .mirror-reading-head)::before,.va .lesson-card:has(> .mirror-reading-head)::after { content:none; }
+.va .lesson-explanation .lesson-card:has(> .mirror-reading-head) { padding:0 0 32px; border-radius:0; }
+.mirror-reading-head { display:grid; grid-template-columns:minmax(0,1.12fr) minmax(0,1fr); gap:clamp(14px,3.6vw,54px); align-items:center;
+  padding:clamp(19px,3vw,45px) 0 clamp(23px,3vw,39px); border-block:1px solid #cfbec8; }
+.va .mirror-reading-head .lesson-step-title { max-width:19ch; margin:0; color:var(--optics-ink);
+  font:500 clamp(30px,3.65vw,56px)/1.11 var(--optics-serif); letter-spacing:-.045em; text-wrap:balance; }
+.va .mirror-reading-head .lesson-paragraph { margin:17px 0 0; max-width:54ch; color:var(--optics-ink);
+  font-size:clamp(16px,1.45vw,19px); font-weight:400; line-height:1.55; }
+.mirror-reading-head img { display:block; justify-self:center; width:100%; max-width:490px; height:auto; }
+.mirror-reading-study { margin:25px 0 21px; border-bottom:1px solid #dbd0cf; padding-bottom:20px; }
+.lesson-figure[data-figure="mirror-concave"],.lesson-figure[data-figure="spherical-mirror"] {
+  display:block; width:100%; max-width:760px; margin:0; padding:0; border:0; border-radius:0; overflow:visible; background:transparent; }
+.mirror-reading-study > .lesson-figure { display:grid; width:100%; max-width:none; min-width:0;
+  grid-template-columns:minmax(0,1.65fr) minmax(0,.85fr); align-items:center; gap:clamp(18px,4vw,60px); }
+.va .mirror-reading-study figcaption h3 { margin:0 0 9px; color:var(--optics-ink); font:500 clamp(24px,2.5vw,34px)/1.2 var(--optics-serif); letter-spacing:-.033em; }
+.va .mirror-reading-study .lesson-figure > figcaption { margin:0; padding:0; font-size:clamp(15px,1.32vw,18px); line-height:1.6; }
+.lesson-figure:is([data-figure="mirror-concave"],[data-figure="spherical-mirror"]) > figcaption {
+  display:block; max-width:67ch; margin:13px auto 0; padding:0 5px; background:transparent; color:#615460; font-size:14px; line-height:1.5; }
+.mirror-plate { container-type:inline-size; width:100%; min-width:0; background:transparent; }
+.mirror-optics { padding:3px 0 0; }
+.mirror-optics > svg { display:block; width:100%; height:auto; max-height:348px; overflow:visible; }
+.mirror-optics svg text { font-family:var(--resume-type,Onest,sans-serif); }
+.mirror-dimension { fill:none; stroke:#a9979c; stroke-width:.75; }
+.mirror-axis { fill:none; stroke:#968996; stroke-dasharray:3 4; stroke-width:1; }
+.mirror-incident,.mirror-reflected { stroke-linecap:round; stroke-linejoin:round; stroke-width:1.65; }
+.mirror-incident { stroke:var(--optics-copper); } .mirror-reflected { stroke:var(--optics-green); }
+.mirror-chevron { stroke-width:1.9; }
+.mirror-source-point { fill:#ffe5a0; stroke:#a1521d; stroke-width:.8; }
+.mirror-image-point circle:first-child { fill:none; stroke:var(--optics-green); stroke-width:1.2; }
+.mirror-image-point circle:last-child { fill:#296e61; }
+.mirror-focus-point circle { fill:var(--optics-ink); stroke:var(--optics-paper); stroke-width:.8; }
+.mirror-optics .mirror-focus-point text,.mirror-optics .mirror-names text { font-family:var(--optics-note); font-weight:500; font-size:17px; fill:var(--optics-ink);
+  stroke:var(--optics-paper); paint-order:stroke; stroke-width:2.5px; }
+.mirror-names text:first-child { fill:#914225; }.mirror-names text:nth-child(2) { fill:#25695e; }
+.mirror-optics .mirror-scale text { font:10px var(--optics-mono); fill:#675965; }
+.mirror-optics .mirror-focus-point text { font:600 12px var(--optics-mono); }
+.mirror-legend { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:4px 18px; margin:4px 2px 0;
+  color:#514353; font:500 clamp(12px,2.3cqw,14px)/1.45 var(--resume-type,Onest,sans-serif); }
+.mirror-legend span { display:inline-flex; align-items:center; gap:5px; }
+.mirror-legend i { width:19px; border-top:2px solid var(--optics-copper); }
+.mirror-legend span:nth-child(n+2) i { border-color:var(--optics-green); }.mirror-legend span:nth-child(3) i { border-top-style:dashed; }
+.lesson-figure[data-figure="spherical-mirror"] { margin-block:18px; }
+.lesson-figure[data-figure="spherical-mirror"] .lesson-mirror-experiment { padding:0; }
+@media (max-width:760px) {
+  .mirror-reading-head { grid-template-columns:1fr; gap:12px; padding:22px 0 18px; }
+  .mirror-reading-head img { width:min(90%,360px); }
+  .va .mirror-reading-head .lesson-step-title { font-size:clamp(29px,7.4vw,43px); }
+  .va .mirror-reading-head .lesson-paragraph { margin-top:12px; }
+  .mirror-reading-study { margin:18px 0 14px; }
+  .mirror-reading-study > .lesson-figure { grid-template-columns:1fr; gap:17px; }
+  .va .mirror-reading-study figcaption h3 { font-size:23px; margin-bottom:5px; }
+}
+@container (max-width:370px) {
+  .mirror-optics .mirror-names text { font-size:19px; }
+  .mirror-optics .mirror-focus-point text { font-size:14px; }
+  .mirror-optics .mirror-scale text { font-size:12px; }
+  .mirror-legend { gap:4px 12px; }
+}

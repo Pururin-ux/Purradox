@@ -187,6 +187,7 @@
   "tasks": [
     {
       "id": "tyagotenie-ves-i-nevesomost:t1",
+      "lessonBlock": "gravity",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -223,6 +224,7 @@
     },
     {
       "id": "tyagotenie-ves-i-nevesomost:t2",
+      "lessonBlock": "field",
       "code": "А2",
       "part": "A",
       "kind": "single",
@@ -259,6 +261,7 @@
     },
     {
       "id": "tyagotenie-ves-i-nevesomost:t3",
+      "lessonBlock": "weight",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -299,6 +302,7 @@
     },
     {
       "id": "tyagotenie-ves-i-nevesomost:t4",
+      "lessonBlock": "weight",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -322,6 +326,7 @@
     },
     {
       "id": "tyagotenie-ves-i-nevesomost:t5",
+      "lessonBlock": "weight",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -348,6 +353,7 @@
     },
     {
       "id": "tyagotenie-ves-i-nevesomost:t6",
+      "lessonBlock": "satellite",
       "code": "В3",
       "part": "B",
       "kind": "number",

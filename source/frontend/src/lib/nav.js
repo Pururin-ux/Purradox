@@ -24,7 +24,7 @@ export const NAV = [
   { to: LINKS.practice, label: "Тренажёр", mobileLabel: "Задачи", icon: Target, id: "trainer", mobile: true },
   { to: LINKS.review, label: "Повторение", mobileLabel: "Повтор", icon: RotateCcw, id: "review", mobile: true },
   { to: LINKS.shop, label: "Магазин", icon: Store, id: "shop", mobile: true },
-  { to: LINKS.collection, label: "Коллекция", mobileLabel: "Полка", icon: Gem, id: "collection", mobile: true },
+  { to: LINKS.collection, label: "Коллекция", mobileLabel: "Полка", icon: Gem, id: "collection", mobile: false },
   { to: LINKS.ct, label: "ЦТ", icon: Timer, id: "ct-demo", mobile: true },
 ];
 

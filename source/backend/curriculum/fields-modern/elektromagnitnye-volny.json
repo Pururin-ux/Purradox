@@ -158,6 +158,7 @@
   "tasks": [
     {
       "id": "elektromagnitnye-volny:t1",
+      "lessonBlock": "wave",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -193,6 +194,7 @@
     },
     {
       "id": "elektromagnitnye-volny:t2",
+      "lessonBlock": "spectrum",
       "code": "А2",
       "part": "A",
       "kind": "multi",
@@ -222,6 +224,7 @@
     },
     {
       "id": "elektromagnitnye-volny:t3",
+      "lessonBlock": "wave",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -257,6 +260,7 @@
     },
     {
       "id": "elektromagnitnye-volny:t4",
+      "lessonBlock": "wave",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -279,6 +283,7 @@
     },
     {
       "id": "elektromagnitnye-volny:t5",
+      "lessonBlock": "wave",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -302,6 +307,7 @@
     },
     {
       "id": "elektromagnitnye-volny:t6",
+      "lessonBlock": "wave",
       "code": "В3",
       "part": "B",
       "kind": "number",

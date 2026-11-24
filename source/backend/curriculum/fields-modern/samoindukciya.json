@@ -153,6 +153,7 @@
   "tasks": [
     {
       "id": "samoindukciya:t1",
+      "lessonBlock": "energy",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -188,6 +189,7 @@
     },
     {
       "id": "samoindukciya:t2",
+      "lessonBlock": "linkage",
       "code": "А2",
       "part": "A",
       "kind": "multi",
@@ -217,6 +219,7 @@
     },
     {
       "id": "samoindukciya:t3",
+      "lessonBlock": "energy",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -252,6 +255,7 @@
     },
     {
       "id": "samoindukciya:t4",
+      "lessonBlock": "linkage",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -274,6 +278,7 @@
     },
     {
       "id": "samoindukciya:t5",
+      "lessonBlock": "linkage",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -296,6 +301,7 @@
     },
     {
       "id": "samoindukciya:t6",
+      "lessonBlock": "energy",
       "code": "В3",
       "part": "B",
       "kind": "number",
@@ -317,6 +323,30 @@
         "expression": "2*(5**2-3**2)/2",
         "expected": 16,
         "unit": "Дж"
+      }
+    },
+    {
+      "id": "samoindukciya:t7",
+      "code": "В4",
+      "section": "electricity",
+      "lessonBlock": "linkage",
+      "practiceExtension": "2027",
+      "part": "B",
+      "kind": "number",
+      "level": 2,
+      "text": "Ток в линейной катушке индуктивностью 0,30 Гн равномерно уменьшается с 5 до 1 А за 0,10 с. Найди модуль ЭДС самоиндукции.",
+      "unit": "В",
+      "answer": 12,
+      "hint": "Сначала найди модуль скорости изменения тока.",
+      "solution": [
+        {
+          "text": "Ток уменьшается со скоростью 40 А/с. Модуль ЭДС равен L|ΔI/Δt| = 12 В. Индукция поддерживает убывающий ток."
+        }
+      ],
+      "audit": {
+        "expression": "0.30*(5-1)/0.1",
+        "expected": 12,
+        "unit": "В"
       }
     }
   ]

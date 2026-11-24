@@ -13,6 +13,7 @@
       "импульс тела",
       "импульс силы",
       "сохранение импульса",
+      "закон сохранения импульса",
       "замкнутая система",
       "неупругий удар",
       "упругий удар",
@@ -181,6 +182,7 @@
   "tasks": [
     {
       "id": "impuls-i-stolknoveniya:t1",
+      "lessonBlock": "momentum",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -217,6 +219,7 @@
     },
     {
       "id": "impuls-i-stolknoveniya:t2",
+      "lessonBlock": "momentum",
       "code": "А2",
       "part": "A",
       "kind": "single",
@@ -253,6 +256,7 @@
     },
     {
       "id": "impuls-i-stolknoveniya:t3",
+      "lessonBlock": "collision",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -293,6 +297,7 @@
     },
     {
       "id": "impuls-i-stolknoveniya:t4",
+      "lessonBlock": "momentum",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -316,6 +321,7 @@
     },
     {
       "id": "impuls-i-stolknoveniya:t5",
+      "lessonBlock": "collision",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -343,6 +349,7 @@
     },
     {
       "id": "impuls-i-stolknoveniya:t6",
+      "lessonBlock": "reactive",
       "code": "В3",
       "part": "B",
       "kind": "number",

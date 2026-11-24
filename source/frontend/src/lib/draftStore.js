@@ -73,15 +73,18 @@ export function openDraftStore({ kind, slug, key, assessment, storage, valid, mi
         const plan = assessment.legacy?.[oldKey.slice(prefix.length)];
         try {
           const parsed = readEnvelope(raw);
-          if (parsed.value === null) continue;
+          if (parsed.value === null) {
+            if (plan) candidates.push({ value: null, at: updated(parsed) });
+            continue;
+          }
           if (!plan) throw new Error("Unknown version");
           const value = migrate(parsed.value, plan);
           if (!valid(value)) throw new Error("Invalid migrated draft");
           candidates.push({ key: oldKey, value, original: parsed.value, plan, at: updated(parsed) });
         } catch { warning = legacyWarning; }
       }
-      const selected = candidates.sort((a, b) => (b.at ?? 0) - (a.at ?? 0))[0];
-      if (selected) {
+      const selected = candidates.sort(newestDraft)[0];
+      if (selected?.value) {
         saved = selected.value;
         savedAt = selected.at;
         source = { key: selected.key, value: selected.original, plan: selected.plan };
@@ -94,13 +97,25 @@ export function openDraftStore({ kind, slug, key, assessment, storage, valid, mi
       || (oldEntries && !sameEntries(oldEntries, routeEntries(store, prefix)));
   }
 
+  let recovered;
   function checkConflict() {
+    if (recovered) return recovered.checkConflict();
     if (generation === undefined) return null;
     try { return changed(progressStorage(storage())) ? messages.conflict : null; }
     catch { return null; } // Storage errors are reported by the write path.
   }
 
   function write(value) {
+    if (recovered) return recovered.write(value);
+    if (error && expectedRaw === undefined) {
+      // The first read can fail while browser storage is temporarily locked.
+      // Adopt an empty baseline only. Never overwrite answers we could not read.
+      const fresh = openDraftStore({ kind, slug, key, assessment, storage, valid, migrate, messages });
+      if (fresh.error) return fresh.error;
+      if (fresh.saved || fresh.warning || fresh.generation !== (generation ?? null)) return messages.conflict;
+      recovered = fresh;
+      return recovered.write(value);
+    }
     if (error) return error;
     if (value !== null && !valid(value)) return messages.invalid;
     try {
@@ -117,18 +132,36 @@ export function openDraftStore({ kind, slug, key, assessment, storage, valid, mi
     } catch { return messages.write; }
   }
   const isCurrentProfile = () => {
+    if (recovered) return recovered.isCurrentProfile();
     if (generation === undefined) return true; // Storage was unavailable at entry.
     try { return progressStorage(storage()).generation === generation; }
     catch { return true; } // The write path reports read/permission errors.
   };
-  return { key, saved, savedAt, source, error, warning, write, checkConflict, isCurrentProfile };
+  return { key, generation, saved, savedAt, source, error, warning, write, checkConflict, isCurrentProfile };
 }
 
-function summaryCandidate(key, raw, accept) {
+function newestDraft(a, b) {
+  return (b.at ?? 0) - (a.at ?? 0) || Number(b.value === null) - Number(a.value === null);
+}
+
+function matchesLegacyPlan(value, plan) {
+  if (!plan?.blocked?.length) return true;
+  const ids = [
+    value.taskId, value.currentTaskId, plan.quizOrder?.[value.quiz?.idx],
+    ...Object.keys(value.answers ?? {}), ...Object.keys(value.results ?? {}),
+    ...Object.keys(value.helpUsed ?? {}), ...Object.keys(value.quiz?.results ?? {}),
+    ...(Array.isArray(value.flags) ? value.flags : []),
+  ];
+  return !plan.blocked.some(id => ids.includes(id));
+}
+
+function summaryCandidate(key, raw, accept, plan) {
   if (raw === null) return null;
   try {
     const entry = readEnvelope(raw);
-    if (entry.value && accept(entry.value, key)) return { key, value:entry.value, updatedAt:updated(entry) };
+    if (entry.value === null || (matchesLegacyPlan(entry.value, plan) && accept(entry.value, key))) {
+      return { key, value: entry.value, at: updated(entry) };
+    }
   } catch { /* A broken record must not hide another topic's valid draft. */ }
   return null;
 }
@@ -146,15 +179,16 @@ export function createDraftSummaryReader(base) {
     try {
       const key = currentDraftKey(kind, slug, assessment);
       const current = storage.getItem(key);
-      if (current !== null) return summaryCandidate(key, current, accept);
+      const publicSummary = item => item?.value ? { key: item.key, value: item.value, updatedAt: item.at } : null;
+      if (current !== null) return publicSummary(summaryCandidate(key, current, accept));
 
       const prefix = draftPrefix(kind, slug);
-      const candidates = Object.getOwnPropertyNames(assessment.legacy ?? {}).map(revision => {
+      const candidates = Object.entries(assessment.legacy ?? {}).map(([revision, plan]) => {
         const id = prefix + revision;
-        return summaryCandidate(id, storage.getItem(id), accept);
+        return summaryCandidate(id, storage.getItem(id), accept, plan);
       }).filter(Boolean);
-      // Preserve the existing storage order when two legacy dates tie.
-      return candidates.sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0) || orderOf(a.key) - orderOf(b.key))[0] ?? null;
+      // Preserve storage order for equally recent answers.
+      return publicSummary(candidates.sort((a, b) => newestDraft(a, b) || orderOf(a.key) - orderOf(b.key))[0]);
     } catch { return null; }
   };
 }

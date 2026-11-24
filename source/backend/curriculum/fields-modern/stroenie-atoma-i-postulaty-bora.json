@@ -158,6 +158,7 @@
   "tasks": [
     {
       "id": "stroenie-atoma-i-postulaty-bora:t1",
+      "lessonBlock": "levels",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -193,6 +194,7 @@
     },
     {
       "id": "stroenie-atoma-i-postulaty-bora:t2",
+      "lessonBlock": "nucleus",
       "code": "А2",
       "part": "A",
       "kind": "multi",
@@ -222,6 +224,7 @@
     },
     {
       "id": "stroenie-atoma-i-postulaty-bora:t3",
+      "lessonBlock": "levels",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -263,6 +266,7 @@
     },
     {
       "id": "stroenie-atoma-i-postulaty-bora:t4",
+      "lessonBlock": "levels",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -286,6 +290,7 @@
     },
     {
       "id": "stroenie-atoma-i-postulaty-bora:t5",
+      "lessonBlock": "levels",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -308,6 +313,7 @@
     },
     {
       "id": "stroenie-atoma-i-postulaty-bora:t6",
+      "lessonBlock": "levels",
       "code": "В3",
       "part": "B",
       "kind": "number",
@@ -326,6 +332,30 @@
         "expression": "14.6-13.6",
         "expected": 1,
         "unit": "эВ"
+      }
+    },
+    {
+      "id": "stroenie-atoma-i-postulaty-bora:t7",
+      "code": "В4",
+      "section": "quantum",
+      "lessonBlock": "levels",
+      "practiceExtension": "2027",
+      "part": "B",
+      "kind": "number",
+      "level": 3,
+      "text": "При переходе между двумя уровнями энергия атома уменьшается с −2,0 до −5,3 в единицах 10⁻¹⁹ Дж. Вся разность уходит одному фотону. Найди длину его волны в вакууме. Прими h = 6,6·10⁻³⁴ Дж·с и c = 3·10⁸ м/с.",
+      "unit": "нм",
+      "answer": 600,
+      "hint": "Сначала найди положительную энергию испущенного фотона.",
+      "solution": [
+        {
+          "text": "Разность энергий уровней равна 3,3·10⁻¹⁹ Дж. По λ = hc/ΔE получаем 6,0·10⁻⁷ м, или 600 нм."
+        }
+      ],
+      "audit": {
+        "expression": "6.6e-34*3e8/3.3e-19*1e9",
+        "expected": 600,
+        "unit": "нм"
       }
     }
   ]

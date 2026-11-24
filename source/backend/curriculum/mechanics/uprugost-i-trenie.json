@@ -73,7 +73,7 @@
           {
             "tex": "0\\leq F_{\\text{тр.п}}\\leq\\mu_{\\text{п}}N,\\qquad F_{\\text{тр.ск}}=\\mu N",
             "label": "Покой и скольжение",
-            "when": "Сухое трение в школьной модели; равенство слева только на пределе покоя."
+            "when": "Сила трения покоя может быть нулевой. На грани скольжения её модуль достигает $\\mu_{\\text{п}}N$."
           },
           {
             "tex": "ma_x=mg\\sin\\alpha-\\mu mg\\cos\\alpha",
@@ -175,6 +175,7 @@
   "tasks": [
     {
       "id": "uprugost-i-trenie:t1",
+      "lessonBlock": "elastic",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -211,6 +212,7 @@
     },
     {
       "id": "uprugost-i-trenie:t2",
+      "lessonBlock": "sliding",
       "code": "А2",
       "part": "A",
       "kind": "single",
@@ -247,6 +249,7 @@
     },
     {
       "id": "uprugost-i-trenie:t3",
+      "lessonBlock": "sliding",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -287,6 +290,7 @@
     },
     {
       "id": "uprugost-i-trenie:t4",
+      "lessonBlock": "elastic",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -310,6 +314,7 @@
     },
     {
       "id": "uprugost-i-trenie:t5",
+      "lessonBlock": "static",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -337,6 +342,7 @@
     },
     {
       "id": "uprugost-i-trenie:t6",
+      "lessonBlock": "sliding",
       "code": "В3",
       "part": "B",
       "kind": "number",

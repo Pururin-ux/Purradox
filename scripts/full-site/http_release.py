@@ -20,8 +20,8 @@ sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[2]
 BACKEND = ROOT / "source/backend"
 BASELINE_REPORT = ROOT / "evidence/full-site-20261107/http-release.json"
-HIDDEN = {"answer", "solution", "explanation", "audit"}
-SECTION_COUNTS = dict(mechanics=15, thermal=7, electricity=14, optics=7, quantum=3, nucleus=3)
+HIDDEN = {"answer", "solution", "explanation", "audit", "review"}
+BASELINE_BY_SECTION = Counter(mechanics=15, thermal=7, electricity=14, optics=7, quantum=3, nucleus=3)
 EXAM_COUNTS = dict(mechanics=10, thermal=7, electricity=9, optics=2, quantum=1, nucleus=1)
 
 
@@ -179,10 +179,10 @@ def run_release(check, curriculum, exams):
         rows = data["lessons"]
         public_rows = [{key: value for key, value in row.items() if key != "draftVersions"} for row in rows]
         same({**data, "lessons": public_rows}, curriculum.catalog(), "Catalog / loader")
-        expect(len(rows) == 49 and len(data["sections"]) == 6, "Expected 49 lessons and 6 sections")
-        expect(Counter(row["section"] for row in rows) == SECTION_COUNTS, "Section allocation")
-        expect([row["order"] for row in rows] == list(range(1, 50)), "Catalog order must be 1..49")
-        expect(len({row["slug"] for row in rows}) == 49, "Duplicate lesson slugs")
+        expect(len(rows) == len(course) and len(data["sections"]) == len(curriculum.SECTIONS), "Course inventory mismatch")
+        expect(Counter(row["section"] for row in rows) >= BASELINE_BY_SECTION, "Missing lessons from the section baseline")
+        expect([row["order"] for row in rows] == list(range(1, len(rows) + 1)), "Catalog order must be contiguous")
+        expect(len({row["slug"] for row in rows}) == len(rows), "Duplicate lesson slugs")
         for row in rows:
             expect(row["grade"] in (9, 10, 11) and row["minutes"] > 0, "Invalid grade/minutes: " + row["slug"])
             expect(row["title"] and row["description"] and row["coverage"], "Missing metadata: " + row["slug"])
@@ -195,7 +195,7 @@ def run_release(check, curriculum, exams):
             catalog_versions[row["slug"]] = versions
         no_hidden(data)
         check.observed["catalog"] = {"lessons": len(rows), "sections": len(data["sections"]), "section_counts": dict(Counter(row["section"] for row in rows))}
-    check.case("catalog", "49 lessons / metadata / source loader", catalog_check)
+    check.case("catalog", "Lesson inventory / metadata / source loader", catalog_check)
 
     for slug, row in course.items():
         def lesson_check(slug=slug, row=row):
@@ -226,15 +226,15 @@ def run_release(check, curriculum, exams):
                      "lessonTitle": course[curriculum.TASK_LESSON[task["id"]]]["lesson"]["title"],
                      "chapter": course[curriculum.TASK_LESSON[task["id"]]]["lesson"]["chapter"]}
                     for task in source_tasks.values()]
-        expect(len(tasks) == 298 and len({task["id"] for task in tasks}) == 298, "Expected 298 unique public tasks")
+        expect(len(tasks) >= 300 and len({task["id"] for task in tasks}) == len(tasks), "Expected unique public tasks covering the baseline bank")
         same(tasks, expected, "All-tasks payload / loader")
         quiz_ids = [q["id"] for lesson in observed_lessons.values() for q in lesson["quiz"]]
         task_ids = [task["id"] for trainer in observed_trainers.values() for task in trainer["tasks"]]
-        expect(len(quiz_ids) == 149 and len(task_ids) == 298, "Incomplete lesson/trainer traversal")
-        expect(len(set(quiz_ids + task_ids)) == 447, "Duplicate quiz/task IDs across lessons")
+        expect(set(quiz_ids) == set(curriculum.QUIZ_BY_ID) and len(task_ids) == len(tasks), "Incomplete lesson/trainer traversal")
+        expect(len(set(quiz_ids + task_ids)) == len(quiz_ids) + len(task_ids), "Duplicate quiz/task IDs across lessons")
         expect(set(task_ids) == {task["id"] for task in tasks}, "Trainer / all-tasks ID mismatch")
-        check.observed["questions"] = {"quiz": len(quiz_ids), "tasks": len(tasks), "unique_combined_ids": 447}
-    check.case("all_tasks", "298 tasks / metadata / global ID uniqueness", all_tasks_check)
+        check.observed["questions"] = {"quiz": len(quiz_ids), "tasks": len(tasks), "unique_combined_ids": len(set(quiz_ids + task_ids))}
+    check.case("all_tasks", "Task bank / metadata / global ID uniqueness", all_tasks_check)
 
     def short_demo_check():
         demo = check.request("/ct/demo")
@@ -256,7 +256,10 @@ def run_release(check, curriculum, exams):
             def grade_task(slug=slug, item=task):
                 revision = observed_trainers[slug]["_assessment"]["revision"]
                 data = check.request("/trainer/check", {"id": item["id"], "answer": item["answer"], "revision": revision})
-                same(data, {"correct": True, "answer": item["answer"], "solution": item["solution"]}, "Task grading " + item["id"])
+                expected = {"correct": True, "answer": item["answer"], "solution": item["solution"]}
+                if "feedbackVersion" in item:
+                    expected["feedbackVersion"] = item["feedbackVersion"]
+                same(data, expected, "Task grading " + item["id"])
             check.case("authored_task_grading", task["id"], grade_task)
 
     trainer_revisions = {slug: data["_assessment"]["revision"] for slug, data in observed_trainers.items()}
@@ -284,7 +287,7 @@ def check_variants(check, curriculum, exams, trainer_revisions):
     def roster_check():
         data = check.request("/ct/variants")
         no_hidden(data)
-        expect([row["variantId"] for row in data["variants"]] == ["01", "02", "03"], "Expected two practice forms and the independent form")
+        expect([row["variantId"] for row in data["variants"]] == ["01", "02", "03", "04"], "Expected two practice forms and two independent forms")
         expected = []
         for variant, exam in zip(data["variants"], exams.EXAMS.values()):
             version = variant["_assessment"]
@@ -342,7 +345,7 @@ def check_variants(check, curriculum, exams, trainer_revisions):
                 expect(data["elapsed_sec"] == min(exam["minutes"] * 60, max(0, elapsed)), "CT elapsed clamp " + label)
                 expected_review = []
                 for task in exam["tasks"]:
-                    item = {key: task.get(key) for key in ("id", "code", "section", "answer", "unit", "solution", "trainerTaskId", "lessonSlug", "lessonTitle")}
+                    item = {key: task.get(key) for key in ("id", "code", "section", "answer", "unit", "solution", "trainerTaskId", "lessonSlug", "lessonTitle", "lessonBlock")}
                     if task.get("trainerTaskId"):
                         item["trainerRevision"] = trainer_revisions[task["lessonSlug"]]
                     correct = task["id"] in correct_ids
@@ -351,6 +354,8 @@ def check_variants(check, curriculum, exams, trainer_revisions):
                     expect(bool(guide.get("title")) and ("note" not in guide if correct else bool(guide.get("note"))),
                            "CT reading cue " + variant_id + " / " + task["id"])
                     item.update(correct=correct, given=given, guide=guide)
+                    if "feedbackVersion" in task:
+                        item["feedbackVersion"] = task["feedbackVersion"]
                     expected_review.append(item)
                 same(data["review"], expected_review, "CT review " + variant_id + " / " + label)
                 expected_sections = [{"id": section["id"], "title": section["title"],
@@ -490,7 +495,7 @@ def main():
     try:
         import curriculum
         import exams
-        expect(len(curriculum.COURSE) == 49 and len(curriculum.TASK_BY_ID) == 298, "Source loader counts differ from release contract")
+        expect(len(curriculum.COURSE) >= 49 and len(curriculum.TASK_BY_ID) >= 300, "Source loader counts differ from release contract")
         def health():
             result = check.request("/health")
             same(result, {"ok": True}, "Health payload")

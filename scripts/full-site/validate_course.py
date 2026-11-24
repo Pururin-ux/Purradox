@@ -4,15 +4,12 @@ import asyncio
 from collections import Counter
 import json
 import math
-import os
 from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "source/backend"))
-os.environ.setdefault("MONGO_URL", "mongodb://127.0.0.1:27017")
-os.environ.setdefault("DB_NAME", "physicslab_local")
-from curriculum import COURSE, TASK_BY_ID, catalog
+from curriculum import COURSE, QUIZ_BY_ID, TASK_BY_ID, catalog
 from exams import EXAMS
 from http_release import verify_short_demo
 from server import (CheckIn, CtSubmitIn, check_lesson, check_task, get_all_tasks,
@@ -20,7 +17,7 @@ from server import (CheckIn, CtSubmitIn, check_lesson, check_task, get_all_tasks
 
 ALLOWED_BIN = {ast.Add:lambda a,b:a+b, ast.Sub:lambda a,b:a-b, ast.Mult:lambda a,b:a*b,
                ast.Div:lambda a,b:a/b, ast.Pow:lambda a,b:a**b}
-CALLS = {"sqrt":math.sqrt, "sin":math.sin, "cos":math.cos}
+CALLS = {"round":round, "sqrt":math.sqrt, "sin":math.sin, "cos":math.cos}
 def number(expression):
     def visit(node):
         if isinstance(node, ast.Constant) and type(node.value) in (int,float):
@@ -111,18 +108,21 @@ async def check_legacy(first_topic):
     return verify_short_demo(await get_ct_demo())
 
 async def main():
-    assert len(COURSE)==49 and len(TASK_BY_ID)==298
+    assert len(COURSE) >= 49 and len(TASK_BY_ID) == sum(len(row["tasks"]) for row in COURSE.values())
     counts=Counter(item["section"] for item in catalog()["lessons"])
-    assert counts==dict(mechanics=15,thermal=7,electricity=14,optics=7,quantum=3,nucleus=3),counts
-    assert sorted(row["order"] for row in catalog()["lessons"])==list(range(1,50))
+    assert counts >= Counter(mechanics=15, thermal=7, electricity=14, optics=7, quantum=3, nucleus=3), counts
+    assert sorted(row["order"] for row in catalog()["lessons"])==list(range(1, len(COURSE) + 1))
     first_topic = "ravnouskorennoe-dvizhenie"
-    assert len(COURSE[first_topic]["quiz"]) == 5 and len(COURSE[first_topic]["tasks"]) == 10
+    assert len(COURSE[first_topic]["quiz"]) >= 5 and len(COURSE[first_topic]["tasks"]) >= 10
     demo_sha = await check_legacy(first_topic)
     for slug,row in COURSE.items():
-        if slug != first_topic:
-            assert len(row["quiz"])==3 and len(row["tasks"])==6
-            assert Counter(t["part"] for t in row["tasks"])=={"A":3,"B":3}
-            assert Counter(t["level"] for t in row["tasks"])=={1:2,2:2,3:2}
+        tasks = row["tasks"]
+        assert len(row["quiz"]) >= 3 and len(tasks) >= 6, slug
+        assert len({t["code"] for t in tasks}) == len(tasks), slug
+        assert {t["part"] for t in tasks} == {"A", "B"}, slug
+        assert {t["level"] for t in tasks} == {1, 2, 3}, slug
+        for task in tasks:
+            assert any(b["id"] == task["lessonBlock"] and b["kind"] != "check" for b in row["lesson"]["blocks"]), task["id"]
         walk(row)
         public_lesson=await get_lesson(slug)
         public_trainer = await get_trainer(slug)
@@ -154,6 +154,9 @@ async def main():
         assert Counter(t["section"] for t in exam["tasks"])==dict(mechanics=10,thermal=7,electricity=9,optics=2,quantum=1,nucleus=1)
         if exam.get("independent"):
             trainer_prompts = {task["text"] for task in TASK_BY_ID.values()}
+            other_prompts = {t["text"] for other in EXAMS.values() if other is not exam for t in other["tasks"]}
+            assert not any(t["text"] in other_prompts for t in exam["tasks"]), key
+            assert all(t["lessonBlock"] in {b["id"] for b in COURSE[t["lessonSlug"]]["lesson"]["blocks"]} for t in exam["tasks"])
             assert not any(t["text"] in trainer_prompts or "trainerTaskId" in t for t in exam["tasks"])
             assert Counter(t["level"] for t in exam["tasks"]) == {1:5,2:10,3:10,4:4,5:1}
             for task in exam["tasks"]:
@@ -167,8 +170,8 @@ async def main():
         assert result["correct"]==30 and result["elapsed_sec"]==12600
         empty=await submit_variant(key,CtSubmitIn())
         assert empty["correct"]==0 and empty["total"]==30
-    assert sum(len(row["quiz"]) for row in COURSE.values())==149
-    print(json.dumps({"lessons":49,"quiz":149,"tasks":298,"numeric_audits":audits,"variants":len(EXAMS),
+    assert sum(len(row["quiz"]) for row in COURSE.values()) == len(QUIZ_BY_ID) >= 149
+    print(json.dumps({"lessons":len(COURSE),"quiz":len(QUIZ_BY_ID),"tasks":len(TASK_BY_ID),"numeric_audits":audits,"variants":len(EXAMS),
                       "variant_tasks":sum(len(exam["tasks"]) for exam in EXAMS.values()),"legacy_lesson_trainer_ids":"verified",
                       "short_ct_demo_sha256":demo_sha,"api_checks":"passed"},ensure_ascii=True))
 

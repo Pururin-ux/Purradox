@@ -50,7 +50,7 @@ function setupHealthEndpoints(devServer, healthPlugin) {
         lastSuccessTime: webpackStatus.lastSuccessTime
           ? new Date(webpackStatus.lastSuccessTime).toISOString()
           : null,
-        compileDuration: webpackStatus.compileDuration
+        compileDuration: webpackStatus.compileDuration !== null
           ? `${webpackStatus.compileDuration}ms`
           : null,
         totalCompiles: webpackStatus.totalCompiles,
@@ -153,9 +153,9 @@ function setupHealthEndpoints(devServer, healthPlugin) {
     res.json({
       totalCompiles: webpackStatus.totalCompiles,
       averageCompileTime: webpackStatus.totalCompiles > 0
-        ? `${Math.round(uptime / webpackStatus.totalCompiles)}ms`
+        ? `${Math.round(webpackStatus.totalCompileDuration / webpackStatus.totalCompiles)}ms`
         : null,
-      lastCompileDuration: webpackStatus.compileDuration
+      lastCompileDuration: webpackStatus.compileDuration !== null
         ? `${webpackStatus.compileDuration}ms`
         : null,
       firstCompileTime: webpackStatus.firstCompileTime

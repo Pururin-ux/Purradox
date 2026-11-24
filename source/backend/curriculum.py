@@ -59,4 +59,4 @@ def catalog():
         })
     return {"sections": SECTIONS, "lessons": sorted(lessons, key=lambda item: item["order"]),
             "basis": {"year": 2026, "total": 30, "partA": 10, "partB": 20, "durationMinutes": 210,
-                      "source": "https://phys_ct.sdamgia.ru/doc/spec/spec_ct26_phys.pdf"}}
+                      "source": "https://phys-ct.sdamgia.ru/doc/spec/spec_ct26_phys.pdf"}}

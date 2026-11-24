@@ -152,6 +152,7 @@
   "tasks": [
     {
       "id": "prelomlenie-i-polnoe-otrazhenie:t1",
+      "lessonBlock": "snell",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -187,6 +188,7 @@
     },
     {
       "id": "prelomlenie-i-polnoe-otrazhenie:t2",
+      "lessonBlock": "total",
       "code": "А2",
       "part": "A",
       "kind": "multi",
@@ -216,6 +218,7 @@
     },
     {
       "id": "prelomlenie-i-polnoe-otrazhenie:t3",
+      "lessonBlock": "snell",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -251,6 +254,7 @@
     },
     {
       "id": "prelomlenie-i-polnoe-otrazhenie:t4",
+      "lessonBlock": "snell",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -273,6 +277,7 @@
     },
     {
       "id": "prelomlenie-i-polnoe-otrazhenie:t5",
+      "lessonBlock": "total",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -295,6 +300,7 @@
     },
     {
       "id": "prelomlenie-i-polnoe-otrazhenie:t6",
+      "lessonBlock": "snell",
       "code": "В3",
       "part": "B",
       "kind": "number",

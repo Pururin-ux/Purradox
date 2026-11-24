@@ -1,5 +1,7 @@
 const path = require('node:path');
 const net = require('node:net');
+const { createHash } = require('node:crypto');
+const { existsSync, realpathSync } = require('node:fs');
 const { spawn, spawnSync } = require('node:child_process');
 
 const root = path.resolve(__dirname, '..');
@@ -8,28 +10,29 @@ const backend = path.join(root, 'source/backend');
 const children = [];
 let closing = false;
 
-const services = [
-  {
-    name: 'API', port: 4183, url: 'http://127.0.0.1:4183/api/health', cwd: backend,
-    command: process.platform === 'win32' ? 'python.exe' : 'python3',
-    args: ['-m', 'uvicorn', 'server:app', '--app-dir', backend, '--host', '127.0.0.1', '--port', '4183',
-      '--reload', '--reload-dir', backend],
-    env: { MONGO_URL: 'mongodb://127.0.0.1:27017', DB_NAME: 'physicslab_local', CORS_ORIGINS: 'http://127.0.0.1:4184,http://localhost:4184' },
-    validate: text => JSON.parse(text).ok === true,
-  },
-  {
-    name: 'Frontend', port: 4184, url: 'http://127.0.0.1:4184/', cwd: frontend,
-    command: process.execPath,
-    args: [path.join(frontend, 'node_modules/@craco/craco/dist/bin/craco.js'), 'start'],
-    env: { HOST: '127.0.0.1', PORT: '4184', BROWSER: 'none', REACT_APP_BACKEND_URL: 'http://127.0.0.1:4183' },
-    validate: text => /<div id="root"><\/div>/.test(text),
-  },
-];
+function readPort(variable, defaultPort) {
+  const port = Number(process.env[variable] ?? defaultPort);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    throw Error(`${variable} must be a port number from 1 to 65535.`);
+  }
+  return port;
+}
 
-async function healthy(service) {
+function pythonCommand() {
+  const onWindows = process.platform === 'win32';
+  const executable = onWindows ? 'python.exe' : 'python3';
+  const localPython = path.join(root, '.venv', onWindows ? 'Scripts' : 'bin', executable);
+  return !process.env.VIRTUAL_ENV && existsSync(localPython) ? localPython : executable;
+}
+
+async function healthy(service, checkout) {
   try {
-    const response = await fetch(service.url, { signal: AbortSignal.timeout(2000) });
-    return response.ok && service.validate(await response.text());
+    const response = await fetch(service.url, { redirect: 'error', signal: AbortSignal.timeout(2000) });
+    if (!response.ok || response.headers.get('X-Purradox-Checkout') !== checkout) {
+      await response.body?.cancel();
+      return false;
+    }
+    return service.validate(await response.text());
   } catch { return false; }
 }
 
@@ -58,7 +61,7 @@ function stopChildren() {
   if (closing) return;
   closing = true;
   for (const child of children) {
-    if (child.exitCode !== null) continue;
+    if (!child.pid || child.exitCode !== null || child.signalCode !== null) continue;
     if (process.platform === 'win32') {
       spawnSync('taskkill.exe', ['/PID', String(child.pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' });
     } else child.kill('SIGTERM');
@@ -68,29 +71,67 @@ process.on('SIGINT', () => { stopChildren(); process.exit(0); });
 process.on('SIGTERM', () => { stopChildren(); process.exit(0); });
 
 async function main() {
+  const apiPort = readPort('PURRADOX_API_PORT', 4183);
+  const frontendPort = readPort('PURRADOX_FRONTEND_PORT', 4184);
+  if (apiPort === frontendPort) throw Error('The API and frontend require different ports.');
+
+  const apiUrl = `http://127.0.0.1:${apiPort}`;
+  const frontendUrl = `http://127.0.0.1:${frontendPort}`;
+  const revision = spawnSync('git', ['rev-parse', '--verify', 'HEAD'], {
+    cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], windowsHide: true,
+  }).stdout?.trim() ?? '';
+  const checkout = createHash('sha256')
+    .update(JSON.stringify([realpathSync(root), revision, apiPort, frontendPort])).digest('hex');
+  const services = [
+    {
+      name: 'API', port: apiPort, url: `${apiUrl}/api/health`, cwd: backend,
+      command: pythonCommand(),
+      args: ['-m', 'uvicorn', 'server:app', '--app-dir', backend, '--host', '127.0.0.1', '--port', String(apiPort),
+        '--reload', '--reload-dir', backend],
+      env: { CORS_ORIGINS: `${frontendUrl},http://localhost:${frontendPort}` },
+      validate: text => JSON.parse(text).ok === true,
+    },
+    {
+      name: 'Frontend', port: frontendPort, url: `${frontendUrl}/`, cwd: frontend,
+      command: process.execPath,
+      args: [path.join(frontend, 'node_modules/@craco/craco/dist/bin/craco.js'), 'start'],
+      env: { HOST: '127.0.0.1', PORT: String(frontendPort), BROWSER: 'none', REACT_APP_BACKEND_URL: apiUrl },
+      validate: text => /<div id="root"><\/div>/.test(text),
+    },
+  ];
+
+  const toStart = [];
   for (const service of services) {
-    if (await healthy(service)) {
+    if (await healthy(service, checkout)) {
       console.log(`${service.name}: already running locally on ${service.port}`);
-      if (service.port === 4183) await checkCatalogCompression(service.url);
+      if (service.port === apiPort) await checkCatalogCompression(service.url);
       continue;
     }
-    if (await occupied(service.port)) throw Error(`${service.port} is occupied by another service; nothing was stopped.`);
+    if (await occupied(service.port)) {
+      throw Error(`Port ${service.port} is occupied by a service outside this Purradox launch. Set PURRADOX_API_PORT or PURRADOX_FRONTEND_PORT to use a different port.`);
+    }
+    toStart.push(service);
+  }
+  for (const service of toStart) {
     console.log(`Starting local ${service.name}...`);
     const child = spawn(service.command, service.args, {
-      cwd: service.cwd, env: { ...process.env, ...service.env }, stdio: 'inherit', windowsHide: true,
+      cwd: service.cwd, env: { ...process.env, ...service.env, PURRADOX_LOCAL_CHECKOUT: checkout },
+      stdio: 'inherit', windowsHide: true,
     });
     children.push(child);
     let spawnError;
     child.once('error', error => { spawnError = error; });
     const deadline = Date.now() + 120000;
-    while (!(await healthy(service))) {
+    while (!(await healthy(service, checkout))) {
       if (spawnError) throw spawnError;
-      if (child.exitCode !== null) throw Error(`${service.name} exited with ${child.exitCode}.`);
+      if (child.exitCode !== null || child.signalCode !== null) {
+        throw Error(`${service.name} exited with ${child.exitCode ?? child.signalCode}.`);
+      }
       if (Date.now() > deadline) throw Error(`${service.name} did not become ready in 120 seconds.`);
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
   }
-  console.log('\nPurradox: http://127.0.0.1:4184/');
+  console.log(`\nPurradox: ${frontendUrl}/`);
   if (children.length) console.log('Ctrl+C stops only the services started by this launcher.');
 }
 

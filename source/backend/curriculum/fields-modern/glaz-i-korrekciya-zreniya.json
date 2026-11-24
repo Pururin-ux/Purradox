@@ -152,6 +152,7 @@
   "tasks": [
     {
       "id": "glaz-i-korrekciya-zreniya:t1",
+      "lessonBlock": "correction",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -178,6 +179,7 @@
     },
     {
       "id": "glaz-i-korrekciya-zreniya:t2",
+      "lessonBlock": "eye",
       "code": "А2",
       "part": "A",
       "kind": "multi",
@@ -207,6 +209,7 @@
     },
     {
       "id": "glaz-i-korrekciya-zreniya:t3",
+      "lessonBlock": "eye",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -242,6 +245,7 @@
     },
     {
       "id": "glaz-i-korrekciya-zreniya:t4",
+      "lessonBlock": "correction",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -265,6 +269,7 @@
     },
     {
       "id": "glaz-i-korrekciya-zreniya:t5",
+      "lessonBlock": "correction",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -291,6 +296,7 @@
     },
     {
       "id": "glaz-i-korrekciya-zreniya:t6",
+      "lessonBlock": "correction",
       "code": "В3",
       "part": "B",
       "kind": "number",

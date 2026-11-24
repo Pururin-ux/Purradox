@@ -1,10 +1,18 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Cat } from "lucide-react";
-import { useInView, useReducedMotion } from "framer-motion";
+import { useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { CAT_NAME } from "@/lib/returnVoice";
 import { COMPANION_RIGS } from "@/lib/companionRig";
 import { createCompanionRenderer } from "@/lib/companionRenderer";
+
+const motionPreference = () => window.matchMedia?.("(prefers-reduced-motion: reduce)");
+const prefersReducedMotion = () => motionPreference()?.matches ?? false;
+function subscribeToReducedMotion(update) {
+  const preference = motionPreference();
+  preference?.addEventListener?.("change", update);
+  return () => preference?.removeEventListener?.("change", update);
+}
 
 export function CatName() {
   return <span className="companion-name" title="Мефистофель, кот">{CAT_NAME}<Cat aria-hidden="true" /></span>;
@@ -16,7 +24,7 @@ export function CompanionText({ text }) {
 }
 
 export function CompanionPortrait({ className }) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useSyncExternalStore(subscribeToReducedMotion, prefersReducedMotion);
   const figure = useRef(null);
   const image = useRef(null);
   const lids = useRef(null);
@@ -41,7 +49,12 @@ export function CompanionPortrait({ className }) {
     setLoaded({ src: img.currentSrc || img.src, kind: (img.currentSrc || img.src).includes("return-mobile") ? "mobile" : "desktop" });
   };
   useEffect(() => {
-    if (reduceMotion || !loaded || loadedLids !== rig.lids || !canvas.current || !image.current?.complete || !lids.current?.complete) return;
+    if (reduceMotion) {
+      setLoadedLids(null);
+      setStatus("loading");
+      return;
+    }
+    if (!loaded || loadedLids !== rig.lids || !canvas.current || !image.current?.complete || !lids.current?.complete) return;
     let activeRenderer;
     try {
       activeRenderer = createCompanionRenderer(canvas.current, image.current, rig, lids.current);

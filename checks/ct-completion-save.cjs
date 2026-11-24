@@ -10,7 +10,7 @@ test('failed completion save keeps the answer sheet; retry persists without anot
   if(modules.has(relative))return modules.get(relative).exports;
   const filename=path.join(frontend,'src',relative),module={exports:{}};modules.set(relative,module);
   const code=transformSync(fs.readFileSync(filename,'utf8'),{filename,babelrc:false,configFile:false,plugins:[req.resolve('@babel/plugin-transform-modules-commonjs')]}).code;
-  const requires=name=>name==='react'?React:name==='@/lib/hooks'?{}:name==='@/lib/ctDraft'?source('lib/ctDraft.js'):name.startsWith('./')?source(path.posix.join(path.posix.dirname(relative),name)+'.js'):req(name);
+  const requires=name=>name==='react'?React:name==='@/lib/hooks'?{}:name.startsWith('@/')?source(name.slice(2)+'.js'):name.startsWith('./')?source(path.posix.join(path.posix.dirname(relative),name)+'.js'):req(name);
   vm.runInNewContext(code,{module,exports:module.exports,require:requires,window,document,setInterval,clearInterval,Date},{filename});return module.exports;
  }
  const {useCtExam}=source('components/shared/useCtExam.js');

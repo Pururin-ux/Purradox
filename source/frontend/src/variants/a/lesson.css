@@ -82,6 +82,7 @@
 .va .lesson-estimate .a-input { width:190px; height:54px; border:1px solid #ddc6d0; border-radius:15px; background:#fffcf9; color:var(--resume-ink); padding:12px 15px; font-family:inherit; font-size:18px; box-shadow:none; }
 .lesson-estimate .a-input::placeholder { color:var(--resume-muted); }
 .lesson-controls { display:flex; justify-content:space-between; align-items:center; gap:18px; margin-top:20px; padding:16px 0 max(16px,env(safe-area-inset-bottom)); }
+.lesson-visual-loading { height:clamp(142px,38vw,265px); margin-block:16px; }
 .lesson-back { min-height:48px; height:auto; gap:9px; padding:12px 16px; border-radius:16px; color:var(--resume-muted); font-size:15px; font-weight:500; box-shadow:none; }
 .lesson-back:hover { background:var(--resume-soft); color:var(--resume-wine); }
 .lesson-next { min-width:185px; }
@@ -470,7 +471,7 @@
 .va-study .mm-time-controls .mm-study-reset { background:#e8dcf1; color:var(--model-line); }
 .va-study .mm-time-controls svg { width:19px; height:19px; stroke-width:1.8; }
 .va-study .mm-time-controls .mm-btn:focus-visible { outline:2px solid var(--model-line); outline-offset:4px; }
-.va-study .mm-study-view { min-width:0; margin:9px 0 0; overflow:hidden; border-radius:16px; background:#fffbf8; }
+.va-study .mm-study-view { min-width:0; margin:9px 0 0; overflow:hidden; contain:layout paint; border-radius:16px; background:#fffbf8; }
 .va-study .mm-study-plot { display:block; width:100%; height:168px; }
 .va-study .mm-study-view text { font-family:inherit; font-size:14px; fill:var(--model-label); font-variant-numeric:tabular-nums; }
 .va-study .mm-track-line { stroke:var(--model-axis); stroke-width:1.5; }
@@ -646,3 +647,10 @@
 .lesson-retry { max-width:860px; }
 .lesson-retry .lesson-card { display:grid; gap:18px; }
 .lesson-retry .lesson-card > a { justify-self:start; }
+
+.lesson-finish .lesson-missed-question { display: flex; width: 100%; height: auto; white-space: normal; text-align: start; justify-content: flex-start; padding-block: .65rem; }
+@media (max-width: 660px) {
+  .lesson-page:has(.lesson-card:is([data-kind="model"], [data-kind="lab"])) .lesson-heading p,
+  .lesson-page:has(.lesson-card:is([data-kind="model"], [data-kind="lab"])) .lesson-contents-trigger-label span { display: none; }
+  .lesson-page:has(.lesson-card:is([data-kind="model"], [data-kind="lab"])) .lesson-heading { margin-block: .25rem; }
+}

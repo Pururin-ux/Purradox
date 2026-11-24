@@ -155,6 +155,7 @@
   "tasks": [
     {
       "id": "magnitnoe-pole-i-sila-ampera:t1",
+      "lessonBlock": "force",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -191,6 +192,7 @@
     },
     {
       "id": "magnitnoe-pole-i-sila-ampera:t2",
+      "lessonBlock": "field",
       "code": "А2",
       "part": "A",
       "kind": "multi",
@@ -220,6 +222,7 @@
     },
     {
       "id": "magnitnoe-pole-i-sila-ampera:t3",
+      "lessonBlock": "force",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -259,6 +262,7 @@
     },
     {
       "id": "magnitnoe-pole-i-sila-ampera:t4",
+      "lessonBlock": "force",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -282,6 +286,7 @@
     },
     {
       "id": "magnitnoe-pole-i-sila-ampera:t5",
+      "lessonBlock": "field",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -305,6 +310,7 @@
     },
     {
       "id": "magnitnoe-pole-i-sila-ampera:t6",
+      "lessonBlock": "force",
       "code": "В3",
       "part": "B",
       "kind": "number",
@@ -327,6 +333,34 @@
         "expression": "0.020*10/(0.5*0.40)",
         "expected": 1,
         "unit": "А"
+      }
+    },
+    {
+      "id": "magnitnoe-pole-i-sila-ampera:t7",
+      "code": "А4",
+      "section": "electricity",
+      "lessonBlock": "field",
+      "practiceExtension": "2027",
+      "part": "A",
+      "kind": "single",
+      "level": 1,
+      "text": "Два стержневых магнита обращены друг к другу северными полюсами. Правый магнит разворачивают на пол-оборота, так что к левому теперь обращён южный полюс. Что почувствует рука, удерживающая левый магнит?",
+      "options": [
+        "В обоих случаях притяжение",
+        "Сначала отталкивание, затем притяжение",
+        "Сначала притяжение, затем отталкивание",
+        "В обоих случаях отталкивание",
+        "После поворота сила исчезнет"
+      ],
+      "answer": 2,
+      "hint": "После поворота посмотри на обе метки у зазора.",
+      "solution": [
+        {
+          "text": "Одноимённые полюса отталкиваются. После поворота друг напротив друга оказываются разноимённые полюса и магниты притягиваются."
+        }
+      ],
+      "audit": {
+        "rationale": "Одноимённые полюса отталкиваются. После поворота друг напротив друга оказываются разноимённые полюса и магниты притягиваются."
       }
     }
   ]

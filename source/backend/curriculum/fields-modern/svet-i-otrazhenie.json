@@ -159,6 +159,7 @@
   "tasks": [
     {
       "id": "svet-i-otrazhenie:t1",
+      "lessonBlock": "rays",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -194,6 +195,7 @@
     },
     {
       "id": "svet-i-otrazhenie:t2",
+      "lessonBlock": "mirror",
       "code": "А2",
       "part": "A",
       "kind": "multi",
@@ -223,6 +225,7 @@
     },
     {
       "id": "svet-i-otrazhenie:t3",
+      "lessonBlock": "rays",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -262,6 +265,7 @@
     },
     {
       "id": "svet-i-otrazhenie:t4",
+      "lessonBlock": "mirror",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -285,6 +289,7 @@
     },
     {
       "id": "svet-i-otrazhenie:t5",
+      "lessonBlock": "rays",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -307,6 +312,7 @@
     },
     {
       "id": "svet-i-otrazhenie:t6",
+      "lessonBlock": "mirror",
       "code": "В3",
       "part": "B",
       "kind": "number",

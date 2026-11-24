@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { withProgressWrite } from "@/lib/progressLock";
+import { createContext, useEffect, useRef, useState } from "react";
 import { Check, Sparkles, Target, BookOpen, Gem, Volume2, Download, Upload } from "lucide-react";
 import { useGame, useProfileGeneration, levelInfo, saveProfile, solvedTaskCount, exportProfile, importProfile } from "@/lib/game";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -9,7 +10,11 @@ import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { useMuted, toggleMute } from "@/lib/sound";
 import { artImg, artThumbnail } from "@/lib/artifacts";
+import { afterPaint } from "@/lib/afterPaint";
 import { BrandMark } from "./BrandMark";
+import { MAX_PROFILE_BYTES } from "@/lib/profileTransfer";
+
+export const ProfileLauncher = createContext(null);
 
 function portraitArt(name) {
   const base = "/art/full-site-20261107/" + name;
@@ -31,24 +36,40 @@ export function ProfilePortrait({ id, className = "profile-portrait", sizes = "3
     : <span className={className}><BrandMark /></span>;
 }
 export function ProfileA({ open, onOpenChange, onCloseAutoFocus }) {
+  const titleRef = useRef(null);
+  const cancelInitialFocus = useRef(null);
   const g = useGame(), L = levelInfo(g.xp);
   const generation = useProfileGeneration();
   const muted = useMuted();
-  const [avatar,setAvatar] = useState(g.avatar), [name,setName] = useState(g.nickname);
+  const [avatarEdit,setAvatarEdit] = useState(null), [nameEdit,setNameEdit] = useState(null);
+  const [editConflict,setEditConflict] = useState(false);
+  const avatar = avatarEdit?.value ?? g.avatar;
+  const name = nameEdit?.value ?? g.nickname;
   const [code,setCode] = useState(""), [note,setNote] = useState(null), [pending,setPending] = useState(null);
   const fileRef = useRef(null);
   const fileRead = useRef(0);
   const wasOpen = useRef(false);
   const lastGeneration = useRef(generation);
-  useEffect(() => () => { fileRead.current++; }, []);
+  useEffect(() => () => {
+    cancelInitialFocus.current?.();
+    fileRead.current++;
+  }, []);
   useEffect(() => {
     if (open && (!wasOpen.current || lastGeneration.current !== generation)) {
-      setAvatar(g.avatar); setName(g.nickname); setPending(null);
+      setAvatarEdit(null); setNameEdit(null); setEditConflict(false); setPending(null);
       if (!wasOpen.current) { setCode(""); setNote(null); }
     }
     wasOpen.current = open;
     lastGeneration.current = generation;
-  }, [open,g.avatar,g.nickname,generation]);
+  }, [open,generation]);
+  const saveEdits = (override = false) => withProgressWrite(() => {
+    const result = saveProfile({
+      avatar: avatarEdit?.value, nickname: nameEdit?.value, profileGeneration: generation,
+      expected: override ? undefined : { avatar: avatarEdit?.before, nickname: nameEdit?.before },
+    });
+    if (result === true) close(false);
+    else setEditConflict(result === "conflict");
+  });
   const doExport = () => {
     const res = exportProfile();
     if (!res.ok) { setNote({ kind: "error", text: res.error }); return; }
@@ -60,16 +81,17 @@ export function ProfileA({ open, onOpenChange, onCloseAutoFocus }) {
     setCode(res.code);
     setNote(res.skippedDrafts ? { kind: "warn", text: `Файл готов. Повреждённые черновики остались в этом браузере (${res.skippedDrafts}).` } : null);
   };
-  const applyImport = (text, replace) => {
+  const applyImport = (text, replace) => withProgressWrite(() => {
     const res = importProfile(text, { replace });
     if (res.needsConfirm) { setPending({ text, summary: res.summary, confirmation: res.confirmation, damaged: res.damaged }); setNote(null); return; }
     setPending(null);
     if (!res.ok) { setNote({ kind: "error", text: res.error }); return; }
-    setAvatar(res.profile.avatar);
-    setName(res.profile.nickname);
+    setAvatarEdit(null);
+    setNameEdit(null);
+    setEditConflict(false);
     setCode(res.code);
     setNote({ kind: "ok", text: "Профиль и черновики перенесены." });
-  };
+  });
   const onFile = (event) => {
     const file = event.target.files?.[0];
     event.target.value = "";
@@ -78,21 +100,53 @@ export function ProfileA({ open, onOpenChange, onCloseAutoFocus }) {
     setCode("");
     setNote(null);
     setPending(null);
-    if (file.size > 5_000_000) { setNote({ kind: "error", text: "Файл слишком большой для профиля Purradox." }); return; }
+    if (file.size > MAX_PROFILE_BYTES) { setNote({ kind: "error", text: "Файл профиля больше 16 МБ." }); return; }
     const reader = new FileReader();
     reader.onload = () => { if (request === fileRead.current) applyImport(String(reader.result ?? "")); };
     reader.onerror = () => { if (request === fileRead.current) setNote({ kind: "error", text: "Не удалось прочитать файл. Попробуй ещё раз." }); };
     reader.readAsText(file);
   };
-  const close = next => { if (!next) fileRead.current++; onOpenChange(next); };
-  return <Dialog open={open} onOpenChange={close}><DialogContent className="profile-dialog" onCloseAutoFocus={onCloseAutoFocus}>
-    <DialogHeader><DialogTitle>Твоя мастерская</DialogTitle><DialogDescription className="sr-only">Профиль и настройки</DialogDescription></DialogHeader>
+  const close = next => {
+    if (!next) {
+      cancelInitialFocus.current?.();
+      fileRead.current++;
+    }
+    onOpenChange(next);
+  };
+  return <Dialog open={open} onOpenChange={close}><DialogContent className="profile-dialog" portalContainer={globalThis.document?.body}
+    onOpenAutoFocus={event => {
+      event.preventDefault();
+      const title = titleRef.current;
+      if (!title) return;
+      const owner = title.ownerDocument;
+      const surface = event.currentTarget;
+      // Move focus off the page before Radix hides that page from assistive tech.
+      if (owner.activeElement !== owner.body) owner.activeElement?.blur?.();
+      cancelInitialFocus.current?.();
+      cancelInitialFocus.current = afterPaint(() => {
+        if (surface?.dataset.state === "open" && title.isConnected && !surface.contains(owner.activeElement)) {
+          title.focus({ preventScroll: true });
+        }
+      });
+    }}
+    onCloseAutoFocus={onCloseAutoFocus}>
+    <DialogHeader><DialogTitle ref={titleRef} tabIndex={-1}>Твоя мастерская</DialogTitle><DialogDescription className="sr-only">Профиль и настройки</DialogDescription></DialogHeader>
     <div className="profile-preview"><ProfilePortrait id={avatar} sizes="(max-width: 480px) 64px, 95px" /><div><h2>{name.trim() || L.title}</h2><p>Уровень {L.level} · {L.cur}/{L.need} XP</p><Progress value={L.pct*100} aria-label="Опыт до следующего уровня" /></div></div>
-    <fieldset className="profile-avatars"><legend>Выбери аватар</legend><div>{AVATARS.map(a => <Button key={a.id} type="button" variant="ghost" aria-pressed={a.id === avatar} aria-label={a.label} onClick={() => setAvatar(a.id)}><ProfilePortrait id={a.id} sizes="58px" />{a.id === avatar && <Check aria-hidden="true" />}</Button>)}</div></fieldset>
-    <div className="profile-name"><Label htmlFor="profile-name">Как к тебе обращаться</Label><Input id="profile-name" value={name} maxLength={28} placeholder="Твоё имя" onChange={e => setName(e.target.value)} /></div>
+    <fieldset className="profile-avatars"><legend>Выбери аватар</legend><div>{AVATARS.map(a => <Button key={a.id} type="button" variant="ghost" aria-pressed={a.id === avatar} aria-label={a.label} onClick={() => setAvatarEdit(edit => ({ before: edit?.before ?? g.avatar, value: a.id }))}><ProfilePortrait id={a.id} sizes="58px" />{a.id === avatar && <Check aria-hidden="true" />}</Button>)}</div></fieldset>
+    <div className="profile-name"><Label htmlFor="profile-name">Как к тебе обращаться</Label><Input id="profile-name" value={name} maxLength={28} placeholder="Твоё имя" onChange={e => {
+      const value = e.target.value;
+      setNameEdit(edit => ({ before: edit?.before ?? g.nickname, value }));
+    }} /></div>
     <dl className="profile-numbers"><div><BookOpen aria-hidden="true" /><dt>Уроков</dt><dd>{g.completedLessons.length}</dd></div><div><Target aria-hidden="true" /><dt>Задач</dt><dd>{solvedTaskCount(g)}</dd></div><div><Gem aria-hidden="true" /><dt>Предметов</dt><dd>{g.owned.length}</dd></div></dl>
     <div className="profile-sound"><Label htmlFor="profile-sound"><Volume2 aria-hidden="true" />Звуки действий</Label><Switch id="profile-sound" checked={!muted} onCheckedChange={toggleMute} /></div>
-    <Button className="study-next" onClick={() => { if (saveProfile({avatar,nickname:name})) close(false); }}><Sparkles aria-hidden="true" />Сохранить</Button>
+    <Button className="study-next" onClick={() => saveEdits()}><Sparkles aria-hidden="true" />Сохранить</Button>
+    {editConflict && <div className="profile-transfer-confirm" role="status">
+      <p>Имя или аватар изменились в другой вкладке. Какой вариант оставить?</p>
+      <div><Button type="button" variant="secondary" onClick={() => saveEdits(true)}>Мой вариант</Button>
+        <Button type="button" variant="ghost" onClick={() => {
+          setAvatarEdit(null); setNameEdit(null); setEditConflict(false);
+        }}>Из другой вкладки</Button></div>
+    </div>}
     <section className="profile-transfer" aria-label="Перенос профиля">
       <h3>Перенос на другое устройство</h3>
       <p>Скачай файл и выбери его в профиле на другом устройстве. Сверь код на обоих экранах.</p>

@@ -1,23 +1,42 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { withProgressWrite } from "@/lib/progressLock";
+import { Fragment, lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check, ChevronDown, CircleAlert, Lightbulb, Target, Zap } from "lucide-react";
 import { Equation, Rich } from "@/components/shared/Tex";
-import { MotionModel } from "@/components/shared/MotionModel";
 import { VtGraph } from "@/components/shared/VtGraph";
 import { Vectors } from "@/components/shared/Vectors";
 import { checkLesson } from "@/lib/hooks";
 import { TypoFlag } from "@/components/shared/TypoFlag";
-import { completeLesson, recordQuizAnswer, trackUnique } from "@/lib/game";
+import { completeLesson, learningResultStatus, trackUnique, useGame } from "@/lib/game";
 import { useSfx, haptic } from "@/lib/sound";
-import { StudyLab } from "./StudyLab";
 import { AnswerA } from "./AnswerA";
 import { LessonArtwork } from "./LessonArt";
-import { LessonFigure } from "./LessonFigures";
 import { lessonEditorial } from "@/lib/lessonEditorial";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const MotionModel = lazy(() => import("@/components/shared/MotionModel").then(module => ({ default: module.MotionModel })));
+const Figures = lazy(() => import("./LessonFigures").then(module => ({ default: module.LessonFigure })));
+const StudyLab = lazy(() => import("./StudyLab").then(module => ({ default: module.StudyLab })));
+
+function VisualLoading() {
+  return <div role="status" className="lesson-visual-loading">
+    <Skeleton className="h-full w-full rounded-2xl" />
+    <span className="sr-only">Загружаем рисунок…</span>
+  </div>;
+}
+
+function LessonFigure({ figure }) {
+  return <Suspense fallback={<VisualLoading />}><Figures figure={figure} /></Suspense>;
+}
+
+function LabCard({ block, lesson }) {
+  const fallback = <><Title>{block.title}</Title><VisualLoading /></>;
+  return <Suspense fallback={fallback}><StudyLab block={block} lesson={lesson} /></Suspense>;
+}
 
 const Title = ({children}) => <h2 id="lesson-step-title" className="lesson-step-title">{children}</h2>;
 const Para = ({text, glossary, lead}) => <p className={lead ? "lesson-paragraph lesson-lead" : "lesson-paragraph"}><Rich text={text} glossary={glossary} /></p>;
@@ -79,24 +98,42 @@ function ScaleDiagram() {
   </figure>;
 }
 
+const RayConstruction = lazy(() => import("./RayConstruction"));
+
+export function OpticalPractice({ slug, focused = false }) {
+  return <Suspense fallback={<div role="status" className="lesson-visual-loading">Открываем оптический стол…</div>}>
+    <RayConstruction slug={slug} focused={focused} />
+  </Suspense>;
+}
+
 function TextCard({block,lesson}) {
   const editorial = lessonEditorial[lesson.slug];
   const art = editorial?.cardArt?.[block.id];
   const selected = editorial?.cardFigures?.[block.id] ?? block.figure;
   const figures = selected ? [selected].flat() : [];
   const lead = editorial?.cardLeads?.[block.id];
+  const mirrorReading = lesson.slug === "sfericheskie-zerkala" && block.id === "rays" && figures.some(f => f.kind === "mirror-concave");
   return <>
-    <Title>{block.title}</Title>
+    {mirrorReading ? <header className="mirror-reading-head">
+      <div><Title>{block.title}</Title><Para text={lead || block.paragraphs[0]} glossary={block.glossary} lead /></div>
+      <img src="/art/optics/study/observation-480.webp" srcSet="/art/optics/study/observation-480.webp 480w, /art/optics/study/observation-960.webp 960w"
+        sizes="(max-width:740px) 87vw, 475px" width="960" height="492" alt="Кот заглядывает в ложку. В её вогнутой чашечке видна его мордочка ушами вниз." draggable="false"/>
+    </header> : <Title>{block.title}</Title>}
     {figures.filter(figure => figure.beforeText).map(figure => <LessonFigure key={figure.kind} figure={figure} />)}
     {block.paragraphs.map((p,index) => <Fragment key={p}>
-      <Para text={index === 0 && lead ? lead : p} glossary={block.glossary} lead={index === 0} />
+      {!(mirrorReading && index < 2) && <Para text={index === 0 && lead ? lead : p} glossary={block.glossary} lead={index === 0} />}
       {index === 0 && block.scale && <ScaleDiagram />}
       {figures.filter(figure => !figure.beforeText && index === (figure.afterParagraph ?? 0))
-        .map(figure => <LessonFigure key={figure.kind} figure={figure} />)}
+        .map(figure => mirrorReading && figure.kind === "mirror-concave" ? <Fragment key={figure.kind}>
+          <div className="mirror-reading-study"><LessonFigure figure={figure} /></div>
+          <Para text={block.paragraphs[1]} glossary={block.glossary} />
+        </Fragment> : <LessonFigure key={figure.kind} figure={figure} />)}
       {art && index === art.afterParagraph && <figure className="lesson-scene">
         <LessonArtwork art={art} sizes="(max-width: 740px) calc(100vw - 76px), 660px" />
       </figure>}
     </Fragment>)}
+    {block.id === "rays" && ["tonkie-linzy","svet-i-otrazhenie","sfericheskie-zerkala"].includes(lesson.slug)
+      && <OpticalPractice slug={lesson.slug} />}
     {block.comparison && <dl className="lesson-comparison">{block.comparison.map(item => <div key={item.label}>
       <dt>{item.label}</dt><dd><Rich text={item.detail} glossary={block.glossary} /></dd>
     </div>)}</dl>}
@@ -118,7 +155,10 @@ function ModelCard({block,lesson}) {
   return <>
     <Title>{block.title}</Title>
     {(lead ? [lead] : block.paragraphs).map(p => <Para key={p} text={p} />)}
-    <MotionModel theme="study" onTap={() => play("tap")} onExperiment={() => trackUnique("model",lesson.slug)} />
+    <Suspense fallback={<VisualLoading />}>
+      <MotionModel theme="study" onTap={() => play("tap")} onExperiment={() => trackUnique("model",lesson.slug)} />
+    </Suspense>
+    {lessonEditorial[lesson.slug]?.modelReading && <Para text={lessonEditorial[lesson.slug].modelReading} />}
   </>;
 }
 
@@ -205,12 +245,33 @@ function CheckCard({lesson,ctx}) {
   const res = quiz.results[q.id];
   const revision = lesson._assessment?.revision;
   const check = useMemo(() => checkLesson(lesson.slug, revision),[lesson.slug, revision]);
-  const onResult = r => {
-    if (!ctx.isCurrentProfile()) return;
-    setQuiz(s => ({...s,results:{...s.results,[q.id]:r}}));
-    recordQuizAnswer(q.id, r, revision);
+  const progress = useGame();
+  const status = learningResultStatus(progress, "quiz:" + q.id, res);
+  const needsSave = !ctx.draftConflict && status === "retry";
+  const answerArea = useRef(null);
+  const verdict = useRef(null);
+  const moveFocus = useRef(false);
+  const question = useRef(null);
+  const revealQuestion = useRef(false);
+  useEffect(() => {
+    if (!revealQuestion.current) return;
+    revealQuestion.current = false;
+    question.current?.focus();
+  }, [q.id]);
+  useEffect(() => {
+    if (!res || !moveFocus.current) return;
+    moveFocus.current = false;
+    verdict.current?.focus();
+  }, [res]);
+  const onResult = result => {
+    moveFocus.current = document.activeElement === document.body || answerArea.current?.contains(document.activeElement);
+    ctx.saveQuiz(q.id, result, true);
   };
-  const next = () => quiz.idx < total-1 ? setQuiz(s => ({...s,idx:s.idx+1})) : ctx.go(1);
+  const next = () => {
+    if (quiz.idx === total - 1) return ctx.go(1);
+    revealQuestion.current = true;
+    setQuiz(s => ({ ...s, idx: s.idx + 1 }));
+  };
   return <>
     <div className="lesson-check-heading"><Title>Проверь себя</Title>
       <span className="lesson-check-counter">{quiz.idx+1}/{total}</span><TypoFlag id={`quiz:${q.id}`} text={q.text} />
@@ -226,15 +287,17 @@ function CheckCard({lesson,ctx}) {
         </Button>
       </li>;})}
     </ol>
-    <p className="lesson-question" data-testid="lesson-quiz-question">{quiz.idx+1}. <Rich text={q.text} /></p>
-    {!res && <div className="study-trainer lesson-answer">
+    <p ref={question} tabIndex={-1} className="lesson-question" data-testid="lesson-quiz-question">{quiz.idx+1}. <Rich text={q.text} /></p>
+    {!res && <div className="study-trainer lesson-answer" ref={answerArea}>
       <AnswerA key={q.id} item={q} check={check} onResult={onResult} tid={`lesson-${q.id}`}
         draft={ctx.answerDrafts[q.id]} onDraftChange={value => ctx.setAnswerDraft(q.id,value)} />
     </div>}
-    {res && <Alert className="lesson-check-result" data-outcome={res.correct ? "right" : "wrong"} data-testid="lesson-quiz-verdict" role="status">
+    {res && <Alert ref={verdict} tabIndex={-1} className="lesson-check-result" data-outcome={res.correct ? "right" : "wrong"} data-testid="lesson-quiz-verdict" role="status">
       {res.correct ? <Check aria-hidden="true" /> : <CircleAlert aria-hidden="true" />}
       <AlertTitle>{res.correct ? "Верно" : "Есть ошибка"}</AlertTitle>
       <AlertDescription><Rich text={res.explanation} /></AlertDescription>
+      {needsSave && <Button type="button" variant="secondary" onClick={() => ctx.saveQuiz(q.id, res)}>Сохранить результат</Button>}
+      {status === "stale" && <AlertDescription>В прогрессе уже есть более свежий ответ.</AlertDescription>}
       <Button className="study-next" onClick={next} data-testid="lesson-quiz-next-btn">
         {quiz.idx < total-1 ? "Следующий вопрос" : "Завершить урок"}<ArrowRight aria-hidden="true" />
       </Button>
@@ -246,12 +309,12 @@ function FinishCard({lesson,ctx}) {
   const [fresh,setFresh] = useState(undefined);
   const ran = useRef(false);
   const play = useSfx();
-  const save = () => {
-    if (!ctx.isCurrentProfile()) return;
+  const save = () => withProgressWrite(() => {
+    if (ctx.draftConflict || !ctx.canComplete()) { setFresh(null); return; }
     const result = completeLesson(lesson.joules, lesson.slug);
     setFresh(result);
     if (result === true) { play("win"); haptic([20,40,60]); }
-  };
+  });
   useEffect(() => {
     if (ran.current) return;
     ran.current = true;
@@ -260,25 +323,39 @@ function FinishCard({lesson,ctx}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
   const correct = Object.values(ctx.quiz.results).filter(r => r.correct).length;
+  const firstMistake = lesson.quiz.findIndex(q => ctx.quiz.results[q.id]?.correct === false);
   const total = lesson.quiz.length;
   const editorial = lessonEditorial[lesson.slug];
   return <div className="lesson-finish" data-section={lesson.section}>
     <div className="lesson-finish-head">
-      <Title>Урок пройден</Title>
+      <Title>Занятие завершено</Title>
       <p className="lesson-finish-score">Верных ответов {correct} из {total}</p>
       <div className="lesson-earned" data-testid="lesson-joules-reward" role="status"><Zap aria-hidden="true" />
         {fresh === undefined ? "Сохраняем результат…" : fresh === null ? "Не удалось сохранить результат" : fresh === false ? "Джоули уже начислены" : `+${lesson.joules} Дж`}
       </div>
       {editorial?.art && <LessonArtwork art={editorial.art} className="lesson-finish-art" sizes="(max-width: 740px) 98px, 230px" decorative />}
     </div>
+    {firstMistake >= 0 && <section className="lesson-finish-recap" aria-label="Вопросы для разбора">
+      <h3>Вернись к вопросам, где возникла ошибка</h3>
+      {lesson.quiz.map((q,index) => ctx.quiz.results[q.id]?.correct === false && <Button key={q.id} type="button" variant="ghost"
+        className="lesson-missed-question" onClick={() => { ctx.setQuiz(quiz => ({ ...quiz, idx:index })); ctx.go(-1); }}>
+        <span>{index + 1}.</span><Rich text={q.text} /><ArrowRight aria-hidden="true" />
+      </Button>)}
+    </section>}
     {lesson.summary?.length > 0 && <section className="lesson-finish-recap" aria-labelledby="lesson-recap-title">
       <h3 id="lesson-recap-title">Что пригодится в задачах</h3>
       <ul className="lesson-summary">{lesson.summary.map((text,index)=><li key={index}><span><Rich text={text} /></span></li>)}</ul>
     </section>}
     <div className="lesson-finish-actions">
       {fresh === null && <Button type="button" variant="secondary" onClick={save}>Сохранить ещё раз</Button>}
-      <Button asChild className="study-next"><Link to={'/trainer/' + lesson.slug} data-testid="lesson-to-trainer-btn"><Target aria-hidden="true" />К задачам <ArrowRight aria-hidden="true" /></Link></Button>
-      <Button variant="ghost" className="lesson-back" onClick={() => ctx.go(-1)} data-testid="lesson-back-to-questions">К вопросам</Button>
+      {firstMistake >= 0 && <Button type="button" className="study-next" onClick={() => {
+        ctx.setQuiz(quiz => ({ ...quiz, idx: firstMistake }));
+        ctx.go(-1);
+      }} data-testid="lesson-back-to-questions">К разбору ошибки<ArrowRight aria-hidden="true" /></Button>}
+      <Button asChild variant={firstMistake >= 0 ? "secondary" : "default"} className={firstMistake < 0 ? "study-next" : undefined}>
+        <Link to={'/trainer/' + lesson.slug} data-testid="lesson-to-trainer-btn"><Target aria-hidden="true" />К задачам <ArrowRight aria-hidden="true" /></Link>
+      </Button>
+      {firstMistake < 0 && <Button variant="ghost" className="lesson-back" onClick={() => ctx.go(-1)} data-testid="lesson-back-to-questions">К вопросам</Button>}
     </div>
   </div>;
 }
@@ -303,4 +380,4 @@ function IntroCard({lesson}) {
   </div>;
 }
 
-export const CARDS = {intro:IntroCard,hook:HookCard,text:TextCard,model:ModelCard,lab:StudyLab,formulas:FormulasCard,example:ExampleCard,check:CheckCard,finish:FinishCard};
+export const CARDS = {intro:IntroCard,hook:HookCard,text:TextCard,model:ModelCard,lab:LabCard,formulas:FormulasCard,example:ExampleCard,check:CheckCard,finish:FinishCard};

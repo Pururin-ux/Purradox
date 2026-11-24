@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { prismAngles } from "@/lib/studyModels";
 
@@ -30,8 +30,18 @@ function trace(incidence, sample) {
   return { ...sample, x, y, screenY, deviation };
 }
 
-export function PrismExperiment() {
+export function PrismExperiment({ angleThumb }) {
   const [incidence, setIncidence] = useState(48);
+  const [announcement, setAnnouncement] = useState("");
+  const changedAngle = useRef(false);
+  useEffect(() => {
+    if (!changedAngle.current) return;
+    const timer = setTimeout(() => {
+      const readings = samples.map(sample => `${sample.name} ${display(prismAngles(incidence, sample.index).deviation)}`);
+      setAnnouncement(`Отклонение. ${readings.join(", ")}`);
+    }, 280);
+    return () => clearTimeout(timer);
+  }, [incidence]);
   const title = useId();
   const glass = useId();
   const stage = useId();
@@ -73,12 +83,13 @@ export function PrismExperiment() {
       <h3 id={title}>Отклонение лучей</h3>
       <div className="shop-prism-angle">
         <span>Угол падения</span><output aria-hidden="true">{incidence}°</output>
-        <Slider value={[incidence]} min={42} max={70} step={1} onValueChange={([value]) => setIncidence(value)}
-          thumbProps={{ "aria-label": "Угол падения", "aria-valuetext": `${incidence}° от нормали` }} />
+        <Slider value={[incidence]} min={42} max={70} step={1} onValueChange={([value]) => { changedAngle.current = true; setIncidence(value); }}
+          thumbProps={{ ref: angleThumb, "aria-label": "Угол падения", "aria-valuetext": `${incidence}° от нормали` }} />
       </div>
       <dl className="shop-prism-readings" aria-label="Отклонение от исходного направления">
         {rays.map(ray => <div key={ray.id} data-ray={ray.id}><dt>{ray.name}<span>{ray.wavelength}</span></dt><dd>{display(ray.deviation)}</dd></div>)}
       </dl>
+      <p className="sr-only" role="status">{announcement}</p>
       <p>Сравни отклонения от исходного направления. Показатели преломления взяты для <a href="https://media.schott.com/api/public/content/41e799d0bf874807a0bb8e702fbb75b5?v=54856406" target="_blank" rel="noreferrer">стекла N-BK7</a>.</p>
     </div>
   </section>;

@@ -5,11 +5,16 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Rich } from "@/components/shared/Tex";
 import { lensState } from "@/lib/studyModels";
 import { LessonArtwork, LessonProp } from "./LessonArt";
+import MirrorPlate from "./MirrorPlate";
 import { AccommodationScene, CollisionBench, InductorTrace } from "./LessonWorkbenches";
 import { DecayProducts, ExpansionPlate, HarmonicTrack, NuclearBalance, ReactionLedger, WallPressureTrial } from "./LessonExperiments";
 import { DropComparison } from "./DropComparison";
 import { BicycleGapScene, TrainFrameScene } from "./RelativeMotionScenes";
 import { OrbitComparison, PowerLifts, RefractionFronts, VaporBalance } from "./LessonDemonstrations";
+import "./lesson-workbenches.css";
+import "./lesson-experiments.css";
+import "./lesson-motion-scenes.css";
+import "./lesson-demonstrations.css";
 
 const ink = "var(--resume-ink)";
 const plum = "#77519a";
@@ -1282,15 +1287,19 @@ function HeatingStages() {
   </Diagram>;
 }
 
-function GasWorkRamp() {
-  return <Diagram title="Давление линейно растёт со ста до трёхсот килопаскалей, пока объём растёт с двух до шести литров." viewBox="0 0 360 207">
-    <Axes x={63} y={164} right={331} xlabel="V, л" ylabel="p, кПа" />
-    <path d="M135 126L279 50V164H135Z" fill="#d7c1e8" />
-    <path d="M63 126H135V164 M63 50H279V164" fill="none" stroke={muted} strokeDasharray="4 5" />
-    <Arrow from={[135,126]} to={[279,50]} color={plum} />
-    <text x="53" y="131" textAnchor="end">100</text>
-    <text x="53" y="55" textAnchor="end">300</text>
-    <text x="135" y="187" textAnchor="middle">2</text><text x="279" y="187" textAnchor="middle">6</text>
+function GasWorkRamp({ figure }) {
+  const [[v1, p1], [v2, p2]] = figure.points ?? [[2, 100], [6, 300]];
+  const x0 = 63, y0 = 164, x2 = 279, y2 = 50;
+  const x1 = x0 + (x2 - x0) * v1 / v2;
+  const y1 = y0 - (y0 - y2) * p1 / p2;
+  return <Diagram title={`Давление линейно растёт от ${p1} до ${p2} кПа, объём — от ${v1} до ${v2} л.`} viewBox="0 0 360 207">
+    <Axes x={x0} y={y0} right={331} xlabel="V, л" ylabel="p, кПа" />
+    <path d={`M${x1} ${y1}L${x2} ${y2}V${y0}H${x1}Z`} fill="#d7c1e8" />
+    <path d={`M${x0} ${y1}H${x1}V${y0} M${x0} ${y2}H${x2}V${y0}`} fill="none" stroke={muted} strokeDasharray="4 5" />
+    <Arrow from={[x1,y1]} to={[x2,y2]} color={plum} />
+    <text x="53" y={y1 + 5} textAnchor="end">{p1}</text>
+    <text x="53" y={y2 + 5} textAnchor="end">{p2}</text>
+    <text x={x1} y="187" textAnchor="middle">{v1}</text><text x={x2} y="187" textAnchor="middle">{v2}</text>
   </Diagram>;
 }
 
@@ -2349,45 +2358,6 @@ function Refraction() {
   </div>;
 }
 
-function MirrorRays({focal, distance, imageState}) {
-  const pole = 199, axis = 111, scale = 4, h = 17;
-  const radius = 2*Math.abs(focal)*scale;
-  const mirrorX = offset => pole - Math.sign(focal)*(radius - Math.sqrt(radius**2 - offset**2));
-  const object = pole - distance*scale;
-  const {atFocus,b,magnification} = imageState;
-  const image = pole - b*scale;
-  const imageTip = axis - h*magnification;
-  const point = [object,axis-h];
-  const hits = [[mirrorX(h),axis-h],[pole,axis]];
-  const endX = b > 0 ? image-20 : b < 0 ? 83 : 32;
-  const reflectedEnd = ([x,y]) => {
-    const slope = atFocus ? -h/(distance*scale) : (imageTip-y)/(image-x);
-    return [endX,y+slope*(endX-x)];
-  };
-  return <Diagram title={atFocus ? "Предмет в фокусе, отражённые лучи параллельны." :
-    b > 0 ? "Лучи сходятся перед зеркалом, изображение перевёрнуто." :
-      "Продолжения отражённых лучей сходятся за зеркалом, изображение прямое."} viewBox="16 28 327 194">
-    <path d="M24 111H339" stroke={muted} strokeDasharray="4 5" />
-    <path d={`M${mirrorX(52)} 59 A${radius} ${radius} 0 0 ${focal>0 ? 1 : 0} ${mirrorX(52)} 163`}
-      fill="none" stroke={ink} strokeWidth="3.8" strokeLinecap="round" />
-    {hits.map(hit => <g key={hit[1]}>
-      <Arrow from={point} to={hit} color={ochre} />
-      <Arrow from={hit} to={reflectedEnd(hit)} color={teal} />
-      {b < 0 && <path d={`M${hit.join(" ")} L${image} ${imageTip}`} stroke={teal} strokeDasharray="5 4" strokeWidth="1.8" fill="none" />}
-    </g>)}
-    <Arrow from={[object,axis]} to={point} color={plum} outline="#eaf2f1" />
-    {!atFocus && <Arrow from={[image,axis]} to={[image,imageTip]} color={teal} dashed={b<0} outline="#eaf2f1" />}
-    <circle cx={pole-focal*scale} cy={axis} r="3.2" fill={ink} />
-    <text x={pole-focal*scale} y="134" textAnchor="middle">F</text>
-    <path d={`M${object} 171V186`} stroke={plum} strokeWidth="1.2" />
-    <text x={object < 65 ? 23 : object} y="201" textAnchor={object < 65 ? "start" : "middle"} fill={plum}>Предмет</text>
-    {!atFocus && <>
-      <path d={`M${image} 170V198`} stroke={teal} strokeWidth="1.2" />
-      <text x={image < 287 ? image : 335} y="219" textAnchor={image < 287 ? "middle" : "end"} fill={teal}>Изображение</text>
-    </>}
-  </Diagram>;
-}
-
 function SphericalMirror() {
   const [type,setType] = useState("concave");
   const [distance,setDistance] = useState(40);
@@ -2402,7 +2372,7 @@ function SphericalMirror() {
       <ToggleGroupItem value="concave">Вогнутое</ToggleGroupItem>
       <ToggleGroupItem value="convex">Выпуклое</ToggleGroupItem>
     </ToggleGroup>
-    <MirrorRays focal={focal} distance={distance} imageState={imageState} />
+    <MirrorPlate focal={focal} distance={distance} imageState={imageState} />
     <ToggleGroup type="single" value={String(distance)} onValueChange={value => { if(value) setDistance(Number(value)); }}
       aria-label="От предмета до зеркала" className="lesson-experiment-options">
       {[40,15,10].map(value => <ToggleGroupItem key={value} value={String(value)}>{value} см</ToggleGroupItem>)}
@@ -3336,7 +3306,7 @@ const figures = {
   spectrum: Spectrum,
   refraction: Refraction,
   "spherical-mirror": SphericalMirror,
-  "mirror-concave": () => <MirrorRays focal={15} distance={40} imageState={lensState(15,40)} />,
+  "mirror-concave": () => <MirrorPlate focal={15} distance={40} imageState={lensState(15,40)} />,
   "mirror-step": MirrorStep,
   "shadow-edges": ShadowEdges,
   "lens-rays": LensRays,
@@ -3368,6 +3338,6 @@ export function LessonFigure({ figure }) {
   if (!Drawing) return null;
   return <figure className="lesson-figure" data-figure={figure.kind}>
     <Drawing figure={figure} />
-    {figure.caption && <figcaption><Rich text={figure.caption} /></figcaption>}
+    {figure.caption && <figcaption>{figure.kind === "mirror-concave" && <h3>Ход лучей</h3>}<Rich text={figure.caption} /></figcaption>}
   </figure>;
 }

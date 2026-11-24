@@ -165,7 +165,7 @@ function Lorentz() {
 }
 
 function Walk() {
-  return <Plate height={181} label="Путь 3 километра на юг и 4 на запад. Прямая от начала к концу имеет длину 5 километров и идёт на юго-запад.">
+  return <Plate height={181} label="Путь 3 километра на юг и 4 на запад. Перемещение длиной 5 километров направлено в юго-западную четверть.">
     <path d="M218 32V146H66Z" fill={gold} opacity=".62" />
     <path d="M218 132H204V146" stroke={rust} fill="none" />
     <Arrow from={[218,32]} to={[218,146]} /><Arrow from={[218,146]} to={[66,146]} />

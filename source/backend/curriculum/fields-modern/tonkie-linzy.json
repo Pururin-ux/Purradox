@@ -177,6 +177,7 @@
   "tasks": [
     {
       "id": "tonkie-linzy:t1",
+      "lessonBlock": "signs",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -213,6 +214,7 @@
     },
     {
       "id": "tonkie-linzy:t2",
+      "lessonBlock": "rays",
       "code": "А2",
       "part": "A",
       "kind": "multi",
@@ -245,6 +247,7 @@
     },
     {
       "id": "tonkie-linzy:t3",
+      "lessonBlock": "signs",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -280,6 +283,7 @@
     },
     {
       "id": "tonkie-linzy:t4",
+      "lessonBlock": "signs",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -302,6 +306,7 @@
     },
     {
       "id": "tonkie-linzy:t5",
+      "lessonBlock": "signs",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -324,6 +329,7 @@
     },
     {
       "id": "tonkie-linzy:t6",
+      "lessonBlock": "signs",
       "code": "В3",
       "part": "B",
       "kind": "number",

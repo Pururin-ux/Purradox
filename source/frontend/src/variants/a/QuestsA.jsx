@@ -1,3 +1,4 @@
+import { withProgressWrite } from "@/lib/progressLock";
 import { useEffect, useId, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Check, Clock3, ListChecks, X, Zap } from "lucide-react";
@@ -51,7 +52,7 @@ function QuestRow({ q, onNavigate }) {
   useEffect(() => {
     if (q.claimed && justClaimed) receiptRef.current?.focus();
   }, [q.claimed, justClaimed]);
-  const claim = () => {
+  const claim = () => withProgressWrite(() => {
     const result = claimQuest(q.id);
     if (!result.ok) {
       setError(result.reason === "storage"
@@ -63,7 +64,7 @@ function QuestRow({ q, onNavigate }) {
     setJustClaimed(true);
     play("coin");
     haptic([12, 30, 12]);
-  };
+  });
   return (
     <Card className="study-quest" data-testid={`quest-${q.id}`} data-quest-id={q.id} data-ready={q.done && !q.claimed || undefined} data-claimed={q.claimed || undefined} aria-labelledby={titleId}>
       <CardContent className="study-quest-body">

@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -13,14 +12,6 @@ import { CompanionPortrait, CompanionText } from "./Companion";
 
 const MotionButton = motion.create(Button);
 const pressTransition = { type: "spring", stiffness: 480, damping: 32, mass: 0.65 };
-
-export function DraftSaveNotice({ error }) {
-  return error ? (
-    <Alert className="a-note mb-4" role="alert" data-testid="draft-save-error">
-      <AlertDescription>{error}</AlertDescription>
-    </Alert>
-  ) : null;
-}
 
 export function DraftResume({ title, detail, position, kind = "lesson", savedAt, results, onResume, onRestart }) {
   const reduceMotion = useReducedMotion();

@@ -153,6 +153,7 @@
   "tasks": [
     {
       "id": "otnositelnost-i-energiya-pokoya:t1",
+      "lessonBlock": "energy",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -187,7 +188,7 @@
       }
     },
     {
-      "id": "otnositelnost-i-energiya-pokoya:t2",
+      "id": "otnositelnost-i-energiya-pokoya:t2", "lessonBlock": "postulates", "feedbackVersion": 1,
       "code": "А2",
       "part": "A",
       "kind": "multi",
@@ -208,7 +209,7 @@
       "hint": "Сопоставь утверждения с двумя постулатами.",
       "solution": [
         {
-          "text": "Первое и второе утверждения выражают постулаты. Энергия и импульс зависят от системы, инвариантная масса — нет."
+          "text": "Законы физики одинаковы во всех инерциальных системах отсчёта. Скорость света в вакууме одна и та же для всех инерциальных наблюдателей и не зависит от движения источника. При переходе в другую систему энергия и импульс могут измениться, масса остаётся прежней."
         }
       ],
       "audit": {
@@ -217,6 +218,7 @@
     },
     {
       "id": "otnositelnost-i-energiya-pokoya:t3",
+      "lessonBlock": "energy",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -255,6 +257,7 @@
     },
     {
       "id": "otnositelnost-i-energiya-pokoya:t4",
+      "lessonBlock": "energy",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -277,6 +280,7 @@
     },
     {
       "id": "otnositelnost-i-energiya-pokoya:t5",
+      "lessonBlock": "postulates",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -299,6 +303,7 @@
     },
     {
       "id": "otnositelnost-i-energiya-pokoya:t6",
+      "lessonBlock": "energy",
       "code": "В3",
       "part": "B",
       "kind": "number",

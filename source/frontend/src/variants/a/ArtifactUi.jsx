@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { withProgressWrite } from "@/lib/progressLock";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, BookOpen, Check, CheckCircle2, Diamond, ImageOff, Lock, X, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ARTIFACT_LESSONS, RARITY, artImg, artThumbnail } from "@/lib/artifacts";
@@ -58,17 +59,17 @@ function Actions({ art, onBought }) {
   const g = useGame(), saveError = useSaveError(), play = useSfx();
   const [outcome, setOutcome] = useState(null);
   const owned = g.owned.includes(art.id), onShelf = g.shelf.includes(art.id);
-  const buyItem = () => {
+  const buyItem = () => withProgressWrite(() => {
     const result = buy(art.id);
     if (result.ok) { play("buy"); haptic([15, 30, 15]); setOutcome("bought"); onBought?.(art); }
     else if (result.reason === "storage") { play("bad"); setOutcome("storage"); }
     else if (result.reason === "poor") { play("bad"); setOutcome("poor"); }
     else setOutcome(null);
-  };
-  const shelf = () => {
-    if (toggleShelf(art.id)) { play("pop"); setOutcome(onShelf ? "removed" : "placed"); }
+  });
+  const shelf = () => withProgressWrite(() => {
+    if (toggleShelf(art.id, !onShelf)) { play("pop"); setOutcome(onShelf ? "removed" : "placed"); }
     else { play("bad"); setOutcome("storage"); }
-  };
+  });
   const full = !onShelf && g.shelf.length >= SHELF_MAX;
   const lack = Math.max(0, (art.price || 0) - g.joules);
   return <div className="shop-object-actions">
@@ -96,6 +97,7 @@ export function ArtifactModal({ art, onBought, onCloseAutoFocus, initialTab = "o
   const g = useGame(), reveal = g.owned.includes(art.id) || Boolean(art.price);
   const name = reveal ? art.name : "Неизвестная находка";
   const prism = art.id === "prism";
+  const angleThumb = useRef(null);
   const lesson = ARTIFACT_LESSONS[art.id];
   const route = reveal && lesson ? { to: `/lesson/${lesson.slug}`, label: lesson.label }
     : !reveal && art.id === "train" ? { to: `/lesson/${lesson.slug}`, label: "Открыть урок" }
@@ -119,7 +121,12 @@ export function ArtifactModal({ art, onBought, onCloseAutoFocus, initialTab = "o
   </>;
   return <DialogPortal>
     <DialogOverlay className="shop-dialog-overlay" />
-    <DialogSurface className={"shop-dialog " + (prism ? "shop-prism-dialog" : "shop-object-dialog")} aria-modal="true" onCloseAutoFocus={onCloseAutoFocus} data-testid="artifact-modal">
+    <DialogSurface className={"shop-dialog " + (prism ? "shop-prism-dialog" : "shop-object-dialog")} aria-modal="true" onCloseAutoFocus={onCloseAutoFocus}
+      onOpenAutoFocus={event => {
+        if (initialTab !== "experiment" || !angleThumb.current) return;
+        event.preventDefault();
+        angleThumb.current.focus();
+      }} data-testid="artifact-modal">
       <DialogClose asChild><Button type="button" variant="ghost" className="shop-dialog-close" aria-label="Закрыть осмотр" data-testid="artifact-modal-close-btn"><X aria-hidden="true" /></Button></DialogClose>
       {prism ? <Tabs defaultValue={initialTab}>
         {title}
@@ -129,7 +136,7 @@ export function ArtifactModal({ art, onBought, onCloseAutoFocus, initialTab = "o
           <TabsTrigger value="experiment">Опыт с призмой</TabsTrigger>
         </TabsList>
         <TabsContent value="object" className="shop-object-dialog">{object}</TabsContent>
-        <TabsContent value="experiment"><PrismExperiment />{lessonLink}</TabsContent>
+        <TabsContent value="experiment"><PrismExperiment angleThumb={angleThumb} />{lessonLink}</TabsContent>
       </Tabs> : object}
     </DialogSurface>
   </DialogPortal>;

@@ -162,6 +162,7 @@
   "tasks": [
     {
       "id": "dvizhenie-po-okruzhnosti:t1",
+      "lessonBlock": "angle",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -198,6 +199,7 @@
     },
     {
       "id": "dvizhenie-po-okruzhnosti:t2",
+      "lessonBlock": "speed",
       "code": "А2",
       "part": "A",
       "kind": "single",
@@ -234,6 +236,7 @@
     },
     {
       "id": "dvizhenie-po-okruzhnosti:t3",
+      "lessonBlock": "acceleration",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -270,6 +273,7 @@
     },
     {
       "id": "dvizhenie-po-okruzhnosti:t4",
+      "lessonBlock": "angle",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -293,6 +297,7 @@
     },
     {
       "id": "dvizhenie-po-okruzhnosti:t5",
+      "lessonBlock": "speed",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -320,6 +325,7 @@
     },
     {
       "id": "dvizhenie-po-okruzhnosti:t6",
+      "lessonBlock": "acceleration",
       "code": "В3",
       "part": "B",
       "kind": "number",

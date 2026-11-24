@@ -44,6 +44,28 @@ test('full CT gives its own reward once; blanks do not become errors and zero do
   assert.equal(saved().joules, 240);
 });
 
+test('a blank trial does not consume the variant reward or unlock its artifact', () => {
+  storage.clear();
+  assert.equal(complete(outcome(old(), [row(1, 'some:t1', null)])), true);
+  assert.deepEqual(saved().completedExams, ['01']);
+  assert.equal(saved().joules, 200);
+  assert.ok(!saved().owned.includes('watch'));
+  const result = outcome(old() + 5, [row(1, 'some:t1', '4', true)]);
+  assert.equal(complete(result), true);
+  assert.equal(saved().joules, 215);
+  assert.ok(saved().owned.includes('watch'));
+  assert.equal(complete(outcome(old() + 10, [row(1, 'some:t1', '4', true)])), true);
+  assert.equal(saved().joules, 215);
+});
+
+test('a legacy completion preserves its previously paid reward on later attempts', () => {
+  storage.clear();
+  storage.setItem('kvant_game_v1', JSON.stringify({ completedExams: ['01'], xp: 20, joules: 215 }));
+  assert.equal(complete(outcome(old(), [row(1, 'some:t1', '4', true)])), true);
+  assert.equal(saved().joules, 215);
+  assert.equal(saved().xp, 20);
+});
+
 test('a delayed CT completion cannot re-add a trainer mistake fixed during the attempt', () => {
   storage.clear();
   const result = outcome(old(), [row(1, 'some:t1', '3')]);

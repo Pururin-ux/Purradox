@@ -5,7 +5,7 @@ import { ShellA, LoadingA } from "./ShellA";
 import { useCtDemo, useCtVariants } from "@/lib/hooks";
 import { useGame } from "@/lib/game";
 import { draftSummary } from "@/lib/draftStore";
-import { createCtDraftStore, ctDuration, ctElapsed, ctReportFor } from "@/lib/ctDraft";
+import { createCtDraftStore, ctDuration, ctElapsed, ctReportFor, ctResultMatchesAttempt } from "@/lib/ctDraft";
 import { plural } from "@/lib/format";
 import { DRAFT_PREFIX, PROFILE_KEY } from "@/lib/progressStorage";
 import { Button } from "@/components/ui/button";
@@ -19,10 +19,16 @@ function savedAttempt(variant, report) {
     const draft = draftSummary("ct", variant.variantId, variant._assessment, localStorage,
       value => Number.isSafeInteger(value.startedAt) && value.startedAt > 0 && typeof value.currentTaskId === "string"
         && Number.isInteger(value.skip) && value.skip >= 0 && value.skip <= total);
-    if (draft && (draft.key !== report?.draftKey || JSON.stringify(draft.value) !== report?.attempt)) return draft.value;
+    if (draft && !ctResultMatchesAttempt(report, draft.key, draft.value)) return draft.value;
   } catch { /* The exam page can explain an unreadable draft. */ }
   return null;
 }
+function PreviousReportLink({ path, demo }) {
+  return <Button asChild variant="link" size="sm" className="min-h-11 px-0 underline">
+    <Link to={path + "?report=previous"}>{demo ? "Предыдущий результат демо" : "Предыдущий результат"}</Link>
+  </Button>;
+}
+
 export default function CtLobby() {
   const { data, error, refetch } = useCtVariants();
   const { data: demo } = useCtDemo();
@@ -65,7 +71,9 @@ export default function CtLobby() {
   return <ShellA><div className="ct-lobby">
     <header className="ct-lobby-heading">
       <h1>Практика ЦТ</h1>
-      <p>Выбери вариант. Разбор откроется после сдачи.</p>
+      <p>Выбери вариант. Разбор откроется после сдачи.
+        {demoAttempt && game.examResults?.demo && <><br /><PreviousReportLink path="/ct/demo" demo /></>}
+      </p>
       <picture>
         <source media="(max-width:700px)" srcSet="/art/learning-graphic-20261106/ct-lobby-mobile.webp" width="540" height="405" />
         <img src="/art/learning-graphic-20261106/ct-lobby-desktop.webp" width="816" height="612" alt="" decoding="async" />
@@ -88,20 +96,23 @@ export default function CtLobby() {
         const state = expired ? "expired" : attempt ? "started" : completed ? "done" : undefined;
         const action = expired ? "Открыть бланк" : attempt ? "Продолжить" : showResult ? "Посмотреть результат" : completed ? "Пройти ещё раз" : variant.independent ? "Открыть диагностику" : "Открыть вариант";
         const tone = variant.independent ? "diagnostic" : variant.variantId === "02" ? "mint" : "violet";
+        const path = "/ct/variant/" + variant.variantId;
         return <Card className="ct-variant-card" key={variant.variantId} data-tone={tone}>
           <CardContent>
             <div className="ct-variant-title">
               <h2>{variant.title}</h2>
               {state && <Badge className="ct-variant-state" data-status={state}>{expired ? "Время вышло" : attempt ? "Начат" : "Пройден"}</Badge>}
             </div>
-            <p>{variant.independent ? variant.description : "Задачи из тренажёра. " + variant.description}</p>
+            <p>{variant.independent ? variant.description : "Задачи из тренажёра. " + variant.description}
+              {attempt && report && <><br /><PreviousReportLink path={path} /></>}
+            </p>
             <Button asChild variant={showResult ? "secondary" : "default"} className={showResult ? "ct-variant-action" : "ct-variant-action study-next"}>
-              <Link to={"/ct/variant/" + variant.variantId}>{action}<ArrowRight aria-hidden="true" /></Link>
+              <Link to={path}>{action}<ArrowRight aria-hidden="true" /></Link>
             </Button>
           </CardContent>
         </Card>;
       })}
     </div>
-    <p className="ct-lobby-source">Темы и форматы заданий по <a href="https://phys_ct.sdamgia.ru/doc/spec/spec_ct26_phys.pdf" target="_blank" rel="noreferrer">спецификации ЦТ 2026</a>. В отчёте указано число верных ответов.</p>
+    <p className="ct-lobby-source">Содержание курса сверено с <a href="https://adu.by/images/2026/10/26-30/VI-VO/Programma-VI-Fizika-VO-rus-2027.pdf" target="_blank" rel="noreferrer">программой вступительных испытаний 2027 года</a>. Бланк и время полной тренировки заданы по <a href="https://phys-ct.sdamgia.ru/doc/spec/spec_ct26_phys.pdf" target="_blank" rel="noreferrer">спецификации ЦТ 2026</a>. В отчёте указано число полностью верных ответов. Экзаменационные баллы не рассчитываются.</p>
   </div></ShellA>;
 }

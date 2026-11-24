@@ -12,14 +12,32 @@ OLD_IDS = {f"{prefix}{i}": f"{FIRST_TOPIC}:{prefix}{i}"
            for prefix, count in (("q", 5), ("t", 10)) for i in range(1, count + 1)}
 STALE_MESSAGE = "Задания обновились. Перезагрузи страницу, чтобы проверить ответы в актуальном порядке."
 
-# Both pairs were reviewed against the authored questions. The first is a
-# wording correction to a distractor; the second is the same fraction.
+# Reviewed against the authored questions: wording clarifications and the
+# same fraction written with different TeX.
 OPTION_ALIASES = {
+    "interferenciya-i-difrakciya:t2": {
+        "При увеличении λ максимум того же порядка отходит от центра, пока существует":
+            "При увеличении λ максимум фиксированного ненулевого порядка отходит от центра, пока существует",
+    },
     "yadernye-reakcii:q2": {
         "Правильный баланс A и Z гарантирует любую скорость реакции":
             "Правильный баланс A и Z гарантирует быстрое протекание реакции",
     },
     "polnaya-cep-i-eds:t1": {r"$\mathcal E/r$": r"$\frac{\mathcal{E}}{r}$"},
+}
+
+
+# At 1545c503 the positions and keys of the existing items already matched
+# those in the revised questions. The two thermal lessons add a trainer task.
+# Only these exact receiving revisions may restore the prior draft and review.
+# Entries: (new grading revision, previous grading revision, old draft if it moved).
+REVIEWED_TRANSITIONS = {
+    "lesson:ravnouskorennoe-dvizhenie": ("15fbd371326ef1491e75", "8c91c2431aa1024cdb75", None),
+    "trainer:ravnovesie-i-prostye-mehanizmy": ("ae4e9d9f937afc6fa853", "fe463706b0774d5ab6c7", None),
+    "trainer:interferenciya-i-difrakciya": ("e6ee6f314aa8a7a917fd", "4868c2b6511f3cd68334", "3109d56fea8d0c9f46e6"),
+    "trainer:idealnyj-gaz-i-mkt": ("66f45aa15048c1645206", "06e6fb97fc612ed03313", "4280c9f5e6c31911adca"),
+    "trainer:vnutrennyaya-energiya-i-rabota-gaza": ("b0004af91b00863698d2", "4c536255742b334e6ef7", "7f37fad02dca741a652b"),
+    "ct:03": ("a1eeecdb24098b2c513b", "3f40f0c85e2f377b36aa", "3f40f0c85e2f377b36aa"),
 }
 
 
@@ -67,6 +85,21 @@ class Assessment:
         self.revision = revision(items)
         self.draft_revision = revision(items, for_draft=not route.startswith("ct:"))
         self.legacy = {}
+        self.compatible_revisions = []
+        # An appended exercise cannot change a stored answer to an older item.
+        # Hash the retained questions with exactly the same fields as before.
+        base = [item for item in items if item.get("practiceExtension") != "2027"]
+        base_revision = self.revision
+        if route.startswith("trainer:") and len(base) != len(items):
+            base_revision = revision(base)
+            self.compatible_revisions.append(base_revision)
+            self.legacy["r" + revision(base, for_draft=True)] = {}
+        transition = REVIEWED_TRANSITIONS.get(route)
+        if transition and base_revision == transition[0]:
+            _, previous_review, previous_draft = transition
+            self.compatible_revisions.append(previous_review)
+            if previous_draft:
+                self.legacy["r" + previous_draft] = {}
         self.unversioned_unsafe = set()
         self.freebuff_positions = {}
         current = {item["id"]: item for item in items}

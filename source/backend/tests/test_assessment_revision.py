@@ -31,7 +31,7 @@ def test_ct_old_order_conflicts_but_new_revision_grades_and_demo_is_unchanged():
 
 def test_review_can_return_the_whole_course_in_one_request():
     ids = [*TASK_BY_ID, *("quiz:" + key for key in COURSE_QUIZ)]
-    assert len(ids) == 447
+    assert len(set(ids)) == len(ids) <= 500
     response = asyncio.run(get_review(ReviewIn(ids=ids)))
     assert [item["id"] for item in response["items"]] == ids
     assert all(item["revision"] for item in response["items"])

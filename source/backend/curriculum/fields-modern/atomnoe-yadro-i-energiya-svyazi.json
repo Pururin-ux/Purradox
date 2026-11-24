@@ -154,6 +154,7 @@
   "tasks": [
     {
       "id": "atomnoe-yadro-i-energiya-svyazi:t1",
+      "lessonBlock": "composition",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -190,6 +191,7 @@
     },
     {
       "id": "atomnoe-yadro-i-energiya-svyazi:t2",
+      "lessonBlock": "binding",
       "code": "А2",
       "part": "A",
       "kind": "multi",
@@ -219,6 +221,7 @@
     },
     {
       "id": "atomnoe-yadro-i-energiya-svyazi:t3",
+      "lessonBlock": "binding",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -254,6 +257,7 @@
     },
     {
       "id": "atomnoe-yadro-i-energiya-svyazi:t4",
+      "lessonBlock": "composition",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -277,6 +281,7 @@
     },
     {
       "id": "atomnoe-yadro-i-energiya-svyazi:t5",
+      "lessonBlock": "binding",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -299,6 +304,7 @@
     },
     {
       "id": "atomnoe-yadro-i-energiya-svyazi:t6",
+      "lessonBlock": "binding",
       "code": "В3",
       "part": "B",
       "kind": "number",
@@ -320,6 +326,30 @@
         "expression": "5e10*28*1.6e-13*1000",
         "expected": 224,
         "unit": "мДж"
+      }
+    },
+    {
+      "id": "atomnoe-yadro-i-energiya-svyazi:t7",
+      "code": "В4",
+      "section": "nucleus",
+      "lessonBlock": "binding",
+      "practiceExtension": "2027",
+      "part": "B",
+      "kind": "number",
+      "level": 2,
+      "text": "Массы протона, нейтрона и дейтрона составляют 938,272; 939,565 и 1875,613 МэВ/c² соответственно. Найди дефект массы дейтрона в кэВ/c².",
+      "unit": "кэВ/c²",
+      "answer": 2224,
+      "hint": "Сравни массу свободных частиц с массой связанного ядра.",
+      "solution": [
+        {
+          "text": "Свободные нуклоны вместе имеют массу 1877,837 МэВ/c². Разность равна 2,224 МэВ/c², или 2224 кэВ/c²."
+        }
+      ],
+      "audit": {
+        "expression": "(938.272+939.565-1875.613)*1000",
+        "expected": 2224,
+        "unit": "кэВ/c²"
       }
     }
   ]

@@ -31,7 +31,7 @@
         "figure": {
           "kind": "mirror-concave",
           "afterParagraph": 1,
-          "caption": "Охристые лучи падают, зелёные отражаются. Изображение возникает там, где лучи сходятся после отражения."
+          "caption": "Первый луч отражается через фокус F. Второй попадает в полюс зеркала и отражается под тем же углом к оси. Ниже оси лучи сходятся в перевёрнутом изображении нити."
         }
       },
       {
@@ -47,7 +47,7 @@
         "figure": {
           "kind": "spherical-mirror",
           "afterParagraph": 0,
-          "caption": "Охристые лучи падают, зелёные отражаются. Пунктир за зеркалом продолжает отражённые лучи. Фокусное расстояние по модулю 15 см."
+          "caption": "Меняй расстояние от лампы до зеркала и следи за отражёнными лучами. При мнимом изображении их продолжения показаны пунктиром."
         }
       },
       {
@@ -154,6 +154,7 @@
   "tasks": [
     {
       "id": "sfericheskie-zerkala:t1",
+      "lessonBlock": "signs",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -189,6 +190,7 @@
     },
     {
       "id": "sfericheskie-zerkala:t2",
+      "lessonBlock": "rays",
       "code": "А2",
       "part": "A",
       "kind": "multi",
@@ -218,6 +220,7 @@
     },
     {
       "id": "sfericheskie-zerkala:t3",
+      "lessonBlock": "signs",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -253,6 +256,7 @@
     },
     {
       "id": "sfericheskie-zerkala:t4",
+      "lessonBlock": "signs",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -276,6 +280,7 @@
     },
     {
       "id": "sfericheskie-zerkala:t5",
+      "lessonBlock": "signs",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -298,6 +303,7 @@
     },
     {
       "id": "sfericheskie-zerkala:t6",
+      "lessonBlock": "signs",
       "code": "В3",
       "part": "B",
       "kind": "number",

@@ -20,6 +20,8 @@ function validAttempt(data, value) {
   const tasks = Object.fromEntries(data.tasks.map(task => [task.id, task]));
   if (!own(tasks, value.currentTaskId) || new Set(value.flags).size !== value.flags.length
     || !value.flags.every(id => own(tasks, id))) return false;
+  if (value.questAnswers !== undefined && (!record(value.questAnswers)
+    || !Object.entries(value.questAnswers).every(([id, at]) => own(value.answers, id) && Number.isSafeInteger(at) && at > 0))) return false;
   return Object.entries(value.answers).every(([id, answer]) => {
     if (!own(tasks, id)) return false;
     const task = tasks[id];
@@ -39,18 +41,23 @@ export function createCtDraftStore(data, providedStorage) {
     assessment: data._assessment, storage: () => providedStorage ?? window.localStorage,
     valid: value => validAttempt(data, value),
     migrate: (value, plan) => ({ ...value, answers: remapEntries(value.answers, plan, remapChoice),
-      currentTaskId: mappedId(value.currentTaskId, plan), flags: value.flags.map(id => mappedId(id, plan)) }),
+      currentTaskId: mappedId(value.currentTaskId, plan), flags: value.flags.map(id => mappedId(id, plan)),
+      ...(value.questAnswers && { questAnswers: remapEntries(value.questAnswers, plan) }) }),
     messages: { read: READ_ERROR, invalid: READ_ERROR, write: WRITE_ERROR, conflict: CT_DRAFT_CONFLICT },
   });
 }
 
 export function ctResultMatchesAttempt(report, key, attempt) {
-  if (!attempt || typeof key !== "string" || report?.draftKey !== key || typeof report?.attempt !== "string") return false;
+  if (!attempt || typeof key !== "string" || typeof report?.draftKey !== "string" || typeof report.attempt !== "string") return false;
+  const route = key.slice(0, key.lastIndexOf(":") + 1);
+  if (!route || !report.draftKey.startsWith(route)) return false;
   try {
     const previous = JSON.parse(report.attempt);
-    if (previous?.runId !== undefined || attempt.runId !== undefined) return typeof attempt.runId === "string" && previous?.runId === attempt.runId;
-    // Legacy runs share their original start time across tabs.
-    return Number.isSafeInteger(previous?.startedAt) && previous.startedAt === attempt.startedAt;
+    if (previous?.runId !== undefined || attempt.runId !== undefined) {
+      return typeof attempt.runId === "string" && attempt.runId.length > 0 && previous?.runId === attempt.runId;
+    }
+    // Without a run ID, only the same revision and start can identify a run.
+    return report.draftKey === key && Number.isSafeInteger(previous?.startedAt) && previous.startedAt === attempt.startedAt;
   } catch { return false; }
 }
 

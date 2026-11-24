@@ -21,7 +21,9 @@ async function withExam(submitCt, run) {
   const dom = new JSDOM('<div id="root"></div>', { url: 'http://unit.test/' });
   const prior = { window: global.window, document: global.document, act: global.IS_REACT_ACT_ENVIRONMENT };
   global.window = dom.window; global.document = dom.window.document; global.IS_REACT_ACT_ENVIRONMENT = true;
-  let now = 100_000, latest, nextTimer = 0;
+  let now = 100_000, monotonic = 100_000, latest, nextTimer = 0;
+  Object.defineProperty(dom.window.performance, 'now', { value: () => monotonic });
+  class Clock extends Date { constructor(...args) { super(...(args.length ? args : [now])); } static now() { return now; } }
   const timers = new Map();
   const modules = new Map();
   function load(file) {
@@ -38,7 +40,7 @@ async function withExam(submitCt, run) {
       if (name === '@/lib/hooks') return { submitCt, assessmentChanged: error => error?.response?.status === 409 };
       return load(name.startsWith('@/') ? path.join(frontend, 'src', name.slice(2)) : path.resolve(path.dirname(resolved), name));
     },
-    Date: { now: () => now },
+    Date: Clock,
     setInterval: callback => { const id = ++nextTimer; timers.set(id, callback); return id; },
     clearInterval: id => timers.delete(id),
     }, { filename: resolved });
@@ -58,8 +60,24 @@ async function withExam(submitCt, run) {
     get exam() { return latest; },
     get readout() { return Number(dom.window.document.querySelector('output').textContent); },
     get timerCount() { return timers.size; },
+    captureDeadline() {
+      let fire;
+      dom.window.setTimeout = (callback, ms) => {
+        assert.equal(ms, examModule.CT_SUBMIT_TIMEOUT_MS);
+        fire = callback;
+        return 77;
+      };
+      return () => fire();
+    },
     async action(callback) { await act(async () => callback(latest)); },
-    advance(milliseconds, tick = false) { now += milliseconds; if (tick) [...timers.values()].forEach(callback => callback()); },
+    advance(milliseconds, tick = false) {
+      now += milliseconds; monotonic += milliseconds;
+      if (tick) [...timers.values()].forEach(callback => callback());
+    },
+    rollBackWall(milliseconds) {
+      now -= milliseconds;
+      [...timers.values()].forEach(callback => callback());
+    },
   };
   try { await run(fixture); }
   finally {
@@ -166,5 +184,84 @@ test('timeout submits once, rejects late edits, and allows a deliberate retry af
     assert.equal(count, 2);
     assert.deepEqual(sent, [{ answers: { A1: 2 }, elapsed: 60 }, { answers: { A1: 2 }, elapsed: 60 }]);
     assert.equal(f.exam.stage, 'result');
+  });
+});
+
+test('the open clock keeps running through a rollback of the system time', async () => {
+  const submitted = [];
+  await withExam(async (_, seconds) => { submitted.push(seconds); return { correct: 0 }; }, async f => {
+    await f.action(exam => exam.start());
+    await f.action(() => f.advance(12_000, true));
+    assert.equal(f.readout, 48);
+    await f.action(() => f.rollBackWall(30_000));
+    assert.equal(f.readout, 48);
+    await f.action(() => f.advance(5_000, true));
+    assert.equal(f.readout, 43);
+    await f.action(exam => exam.finish());
+    assert.deepEqual(submitted, [17]);
+  });
+});
+
+test('retrying an unchanged answer sheet reuses the first elapsed time, excluding the failed POST wait', async () => {
+  const submitted = [];
+  await withExam(async (answers, seconds) => {
+    submitted.push({ A1: answers.A1, seconds });
+    if (submitted.length === 1) throw new Error('timeout');
+    return { correct: 1 };
+  }, async f => {
+    await f.action(exam => exam.start());
+    await f.action(exam => exam.setAnswer('A1', 2));
+    f.advance(2_000);
+    await f.action(exam => exam.finish());
+    await f.action(() => f.advance(7_000, true));
+    await f.action(exam => { exam.toggleFlag('A1'); exam.setCurrent(1); });
+    assert.equal(f.readout, 51);
+    await f.action(exam => exam.finish());
+    assert.deepEqual(submitted, [{ A1: 2, seconds: 2 }, { A1: 2, seconds: 2 }]);
+  });
+});
+
+test('editing an answer after a failed POST makes a fresh submission with the current elapsed time', async () => {
+  const submitted = [];
+  await withExam(async (answers, seconds) => {
+    submitted.push({ A1: answers.A1, seconds });
+    if (submitted.length === 1) throw new Error('timeout');
+    return { correct: 1 };
+  }, async f => {
+    await f.action(exam => exam.start());
+    await f.action(exam => exam.setAnswer('A1', 2));
+    f.advance(2_000);
+    await f.action(exam => exam.finish());
+    f.advance(7_000);
+    await f.action(exam => exam.setAnswer('A1', 3));
+    await f.action(exam => exam.finish());
+    assert.deepEqual(submitted, [{ A1: 2, seconds: 2 }, { A1: 3, seconds: 9 }]);
+  });
+});
+
+test('a stalled transport times out and its late answer cannot replace the deliberate retry', async () => {
+  const sent = [];
+  let resolveLate;
+  await withExam((answers, seconds, signal) => {
+    sent.push({ answers: { ...answers }, seconds, signal });
+    return sent.length === 1 ? new Promise(resolve => { resolveLate = resolve; }) : Promise.resolve({ correct: 1 });
+  }, async f => {
+    const expire = f.captureDeadline();
+    await f.action(exam => exam.start());
+    await f.action(exam => exam.setAnswer('B1', '-6'));
+    let first;
+    await f.action(exam => { first = exam.finish(); });
+    await f.action(async () => { expire(); await first; });
+    assert.equal(f.exam.sending, false);
+    assert.equal(f.exam.error, 'network');
+    assert.equal(sent[0].signal.aborted, true);
+    assert.equal(f.exam.answers.B1, '-6');
+    await f.action(exam => exam.finish());
+    resolveLate({ correct: 0 });
+    await f.action(async () => {});
+    assert.equal(f.exam.result.correct, 1);
+    assert.equal(sent.length, 2);
+    assert.deepEqual(sent[0].answers, sent[1].answers);
+    assert.equal(sent[0].seconds, sent[1].seconds);
   });
 });

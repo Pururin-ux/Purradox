@@ -35,17 +35,19 @@ export function useAnswer(item, check, options = {}) {
     else setInputRaw(answer.current.input);
   };
 
-  const submit = async () => {
+  const submit = async onChecked => {
     if (!ready || submission.current !== "idle") return null;
     submission.current = "pending";
     setBusy(true);
     setError(false);
+    const given = isNum ? input.trim() : choice;
+    const clock = globalThis.performance;
+    const steadyTime = clock ? Math.floor(clock.timeOrigin + clock.now()) : 0;
+    const checkedAt = Math.max(Date.now(), steadyTime || 0);
+    const attemptId = globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2);
+    let checked;
     try {
-      const given = isNum ? input.trim() : choice;
-      const r = await check(item.id, isNum ? number : choice);
-      submission.current = "done";
-      setResult(r);
-      return { ...r, given };
+      checked = await check(item.id, isNum ? number : choice);
     } catch (e) {
       submission.current = "idle";
       setError(assessmentChanged(e) ? "version" : "network");
@@ -53,6 +55,12 @@ export function useAnswer(item, check, options = {}) {
     } finally {
       setBusy(false);
     }
+    submission.current = "done";
+    setResult(checked);
+    const outcome = { ...checked, given, checkedAt, attemptId };
+    // Update the verdict and its parent in the same turn after grading.
+    onChecked?.(outcome);
+    return outcome;
   };
 
   const optionState = (n) => {

@@ -3,8 +3,11 @@ const path = require("path");
 require("dotenv").config();
 
 const isDevServer = process.env.NODE_ENV === "development";
-// The production policy allows scripts served as separate files.
-if (process.env.NODE_ENV === "production") process.env.INLINE_RUNTIME_CHUNK = "false";
+if (process.env.NODE_ENV === "production") {
+  // The site serves external scripts and leaves debug sources out of the public build.
+  process.env.INLINE_RUNTIME_CHUNK = "false";
+  process.env.GENERATE_SOURCEMAP = "false";
+}
 
 // Environment variable overrides
 const config = {
@@ -31,6 +34,9 @@ function makeDevServerV5Compatible(devServerConfig) {
     ...compatibleConfig.headers,
     "Cross-Origin-Resource-Policy": "same-origin",
   };
+  if (process.env.PURRADOX_LOCAL_CHECKOUT) {
+    compatibleConfig.headers["X-Purradox-Checkout"] = process.env.PURRADOX_LOCAL_CHECKOUT;
+  }
 
   if (onBeforeSetupMiddleware || setupMiddlewares) {
     compatibleConfig.setupMiddlewares = (middlewares, devServer) => {

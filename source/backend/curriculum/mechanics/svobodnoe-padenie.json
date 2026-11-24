@@ -204,6 +204,7 @@
   "tasks": [
     {
       "id": "svobodnoe-padenie:t1",
+      "lessonBlock": "model",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -240,6 +241,7 @@
     },
     {
       "id": "svobodnoe-padenie:t2",
+      "lessonBlock": "vertical",
       "code": "А2",
       "part": "A",
       "kind": "single",
@@ -276,6 +278,7 @@
     },
     {
       "id": "svobodnoe-padenie:t3",
+      "lessonBlock": "projectile",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -316,6 +319,7 @@
     },
     {
       "id": "svobodnoe-padenie:t4",
+      "lessonBlock": "model",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -339,6 +343,7 @@
     },
     {
       "id": "svobodnoe-padenie:t5",
+      "lessonBlock": "vertical",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -362,6 +367,7 @@
     },
     {
       "id": "svobodnoe-padenie:t6",
+      "lessonBlock": "projectile",
       "code": "В3",
       "part": "B",
       "kind": "number",

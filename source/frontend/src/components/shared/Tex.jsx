@@ -1,30 +1,76 @@
-import { Fragment, useEffect, useId, useMemo, useRef, useState } from "react";
-import katex from "katex";
-import { MoveHorizontal } from "lucide-react";
-import { splitMathStatements } from "@/lib/mathLayout";
+import { Fragment, lazy, memo, Suspense, useState } from "react";
 import { Dialog, DialogClose, DialogOverlay, DialogPortal, DialogSurface, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import "katex/dist/katex.min.css";
 
-export function Tex({ tex, block = false, className = "" }) {
-  const html = useMemo(
-    () => katex.renderToString(tex, { displayMode: block, throwOnError: false, strict: "ignore" }),
-    [tex, block],
-  );
-  return <span className={className} dangerouslySetInnerHTML={{ __html: html }} />;
+let readyMarkup;
+let pendingMarkup;
+function loadFormulaMarkup() {
+  return pendingMarkup ??= import("./FormulaMarkup").then(module => {
+    readyMarkup = module;
+    return module;
+  }, error => {
+    pendingMarkup = undefined;
+    throw error;
+  });
+}
+const Formula = lazy(() => loadFormulaMarkup().then(module => ({ default: module.Formula })));
+const FormulaBlock = lazy(() => loadFormulaMarkup().then(module => ({ default: module.FormulaBlock })));
+// Short ASCII expressions in trainer feedback can use the browser's math layout.
+const inlineExpression = /^([a-zA-Z0-9 +\-/|=<>]{1,18})(?:\\text\{([,.;:!?)]+)\})?$/;
+const hasMathML = () => typeof globalThis.MathMLElement === "function";
+
+export function preloadFormulaMarkup() {
+  // The renderer will surface a load error if a formula actually needs this chunk.
+  void loadFormulaMarkup().catch(() => {});
+}
+function FormulaPending() {
+  return <span data-math-pending="" aria-busy="true" aria-label="Загружается формула">…</span>;
+}
+
+function InlineMath({ expression, punctuation, className }) {
+  const tokens = expression.match(/[a-zA-Z]|[0-9]+|[+\-/|=<>]/g);
+  return <math className={className}><mrow>
+    {tokens.map((token, index) => {
+      if (/^[a-z]/i.test(token)) return <mi key={index}>{token}</mi>;
+      if (/^\d/.test(token)) return <mn key={index}>{token}</mn>;
+      return <mo key={index}>{token === "-" ? "−" : token}</mo>;
+    })}
+    {punctuation && <mtext>{punctuation}</mtext>}
+  </mrow></math>;
+}
+
+export function preloadReviewFormulas(steps) {
+  if (!Array.isArray(steps)) return;
+  const native = hasMathML();
+  const needsRenderer = steps.some(({ tex, text }) => tex
+    || (text ?? "").split(/\$([^$]+)\$/g).some((part, index) => index % 2 && (!native || !inlineExpression.test(part))));
+  if (needsRenderer) preloadFormulaMarkup();
+}
+
+export function Tex(props) {
+  const { nativeInline, ...formula } = props;
+  const simple = nativeInline && !formula.block && hasMathML() && formula.tex.match(inlineExpression);
+  if (simple && simple[1].trim()) return <InlineMath expression={simple[1]} punctuation={simple[2]} className={formula.className} />;
+  if (readyMarkup) return <readyMarkup.Formula {...formula} />;
+  return <Suspense fallback={<FormulaPending />}><Formula {...formula} /></Suspense>;
+}
+
+export function Equation(props) {
+  if (readyMarkup) return <readyMarkup.FormulaBlock {...props} />;
+  return <Suspense fallback={<FormulaPending />}><FormulaBlock {...props} /></Suspense>;
 }
 
 // Разметка урока: $формула$ — TeX, [[термин]] — выделенный термин (жирным).
-export function Rich({ text, className = "", glossary }) {
+export const Rich = memo(function Rich({ text, className = "", glossary, nativeInline = false }) {
   // Keep adjoining punctuation with the formula's last KaTeX line segment.
   const source = (text ?? "").replace(/\$([^$]+)\$([,.;:!?)]+)/g, (_, tex, mark) => "$" + tex + "\\text{" + mark + "}$");
   const parts = source.split(/\$([^$]+)\$/g);
   return (
     <span className={className}>
-      {parts.map((p, i) => (i % 2 ? <Tex key={i} tex={p} /> : <RichTerms key={i} text={p} glossary={glossary} />))}
+      {parts.map((p, i) => (i % 2 ? <Tex key={i} tex={p} nativeInline={nativeInline} /> : <RichTerms key={i} text={p} glossary={glossary} />))}
     </span>
   );
-}
+});
 
 // [[форма]] или [[форма|ключ словаря]]: показываем форму из текста, определение ищем по ключу.
 function RichTerms({ text, glossary }) {
@@ -56,41 +102,4 @@ function TermButton({ term, title, definition }) {
       </DialogSurface>
     </DialogPortal>
   </Dialog>;
-}
-
-function EquationPart({ tex, label }) {
-  const scroll = useRef(null);
-  const helpId = useId();
-  const [overflow, setOverflow] = useState(false);
-
-  useEffect(() => {
-    const node = scroll.current;
-    if (!node) return;
-    const measure = () => setOverflow(node.scrollWidth - node.clientWidth > 2);
-    measure();
-    const observer = typeof window.ResizeObserver === "function" ? new window.ResizeObserver(measure) : null;
-    observer?.observe(node);
-    const display = node.querySelector(".katex-display");
-    if (display) observer?.observe(display);
-    window.addEventListener("resize", measure);
-    return () => { observer?.disconnect(); window.removeEventListener("resize", measure); };
-  }, [tex]);
-
-  return <span className="math-part" data-overflow={overflow || undefined}>
-    <span ref={scroll} className="math-scroll" data-nodrag tabIndex={overflow ? 0 : undefined}
-      onKeyDown={event => { if (overflow && (event.key === "ArrowLeft" || event.key === "ArrowRight")) event.stopPropagation(); }}
-      role={overflow ? "region" : undefined} aria-label={overflow ? label : undefined} aria-describedby={overflow ? helpId : undefined}>
-      <Tex tex={tex} block />
-    </span>
-    {overflow && <><span className="math-overflow-cue" aria-hidden="true"><MoveHorizontal /></span>
-      <span id={helpId} className="sr-only">Формулу можно прокрутить влево и вправо.</span></>}
-  </span>;
-}
-
-export function Equation({ tex, label = "Формула", className = "" }) {
-  const parts = useMemo(() => splitMathStatements(tex), [tex]);
-  return <span className={`math-equations ${className}`}>
-    {parts.map((part, index) => <EquationPart key={index} tex={part.tex + (part.separator[0] ?? "")}
-      label={parts.length > 1 ? `${label}, часть ${index + 1}` : label} />)}
-  </span>;
 }

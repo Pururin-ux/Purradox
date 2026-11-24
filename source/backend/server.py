@@ -1,8 +1,7 @@
-from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi import FastAPI, APIRouter, HTTPException, Response
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 import re
@@ -19,22 +18,18 @@ from assessment import Assessment, answered, canonical_id
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# Подключение держим ради будущего серверного хранения, но прогресс сейчас
-# живёт только в браузере (localStorage + файл переноса): API stateless,
-# ни одной операции чтения/записи в db нет. Убирать клиент пока рано —
-# пригодится для кабинетов и телеметрии, если они появятся.
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
-
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
-HIDDEN = ("answer", "solution", "explanation", "audit")
+HIDDEN = ("answer", "solution", "explanation", "audit", "review")
 CT_BY_ID = {t["id"]: t for t in CT_TASKS}
 LESSON_ASSESSMENTS = {slug: Assessment(f"lesson:{slug}", row["quiz"]) for slug, row in COURSE.items()}
 TRAINER_ASSESSMENTS = {slug: Assessment(f"trainer:{slug}", row["tasks"]) for slug, row in COURSE.items()}
 CT_ASSESSMENTS = {ident: Assessment(f"ct:{ident}", form["tasks"]) for ident, form in EXAMS.items()}
+
+def feedback_revision(item: dict) -> dict:
+    return {"feedbackVersion": item["feedbackVersion"]} if "feedbackVersion" in item else {}
+
 
 Answer = Union[StrictInt, List[StrictInt], str, None]
 
@@ -83,7 +78,10 @@ def require_slug(slug: str):
 
 
 @api_router.get("/health")
-async def health():
+async def health(response: Response):
+    checkout = os.environ.get('PURRADOX_LOCAL_CHECKOUT')
+    if checkout:
+        response.headers['X-Purradox-Checkout'] = checkout
     return {"ok": True}
 
 
@@ -126,7 +124,8 @@ async def check_task(body: CheckIn):
     if not item:
         raise HTTPException(status_code=404, detail="Задача не найдена")
     TRAINER_ASSESSMENTS[TASK_LESSON[ident]].check(body.revision, (body.id,))
-    return {"correct": is_correct(item, body.answer), "answer": item["answer"], "solution": item["solution"]}
+    return {"correct": is_correct(item, body.answer), "answer": item["answer"], "solution": item["solution"],
+            **feedback_revision(item)}
 
 
 @api_router.get("/catalog")
@@ -143,10 +142,14 @@ async def get_catalog():
 
 class ReviewIn(BaseModel):
     ids: List[str] = Field(default_factory=list, max_length=500)
+    variantId: Optional[str] = None
+    priorAnswers: Dict[str, Answer] = Field(default_factory=dict, max_length=500)
 
 
 def review_version(assessment, item):
     result = {"revision": assessment.revision}
+    if assessment.compatible_revisions:
+        result["compatibleRevisions"] = assessment.compatible_revisions
     order = assessment.freebuff_positions.get(item["id"])
     if order and item["kind"] != "number":
         result["legacyPositions"] = order
@@ -155,6 +158,18 @@ def review_version(assessment, item):
 
 @api_router.post("/review")
 async def get_review(body: ReviewIn):
+    if body.variantId is not None:
+        exam = EXAMS.get(body.variantId)
+        if exam is None:
+            raise HTTPException(status_code=404, detail="Вариант не найден")
+        requested = set(body.ids)
+        items = []
+        for task in exam["tasks"]:
+            revision = feedback_revision(task)
+            if task["id"] in requested and revision:
+                items.append({"id": task["id"], "solution": task["solution"],
+                              "guide": feedback_for(body.variantId, task, body.priorAnswers.get(task["id"]), False), **revision})
+        return {"items": items}
     items = []
     for ident in dict.fromkeys(body.ids):
         # Ошибки квизов хранятся с неймспейсом quiz:, сам вопрос — без него.
@@ -169,7 +184,7 @@ async def get_review(body: ReviewIn):
                           "code": task["code"], "graph": without_audit(task.get("graph")),
                           "text": task.get("text"), "options": task.get("options"), "unit": task.get("unit"),
                           "answer": task["answer"], "hint": task.get("hint"), "solution": task.get("solution"),
-                          **review_version(TRAINER_ASSESSMENTS[slug], task)})
+                          **review_version(TRAINER_ASSESSMENTS[slug], task), **feedback_revision(task)})
         elif quiz_entry and key in COURSE_QUIZ:
             slug, quiz = COURSE_QUIZ[key]
             items.append({"id": ident, "kind": quiz["kind"], "lessonSlug": slug,
@@ -201,7 +216,8 @@ async def get_variant(variant_id: str):
         raise HTTPException(status_code=404, detail="Вариант не найден")
     exam = EXAMS[variant_id]
     return {**{key: value for key, value in exam.items() if key != "tasks"},
-            "tasks": [public(task) for task in exam["tasks"]], "_assessment": CT_ASSESSMENTS[variant_id].public()}
+            "tasks": [public(task) for task in exam["tasks"]],
+            "_assessment": CT_ASSESSMENTS[variant_id].public()}
 
 
 @api_router.post("/ct/variants/{variant_id}/submit")
@@ -218,10 +234,11 @@ async def submit_variant(variant_id: str, body: CtSubmitIn):
         sections[task["section"]]["total"] += 1
         sections[task["section"]]["correct"] += int(ok)
         review.append({key: task.get(key) for key in
-                       ("id", "code", "section", "answer", "unit", "solution", "trainerTaskId", "lessonSlug", "lessonTitle")})
+                       ("id", "code", "section", "answer", "unit", "solution", "trainerTaskId", "lessonSlug", "lessonTitle", "lessonBlock")})
         if task.get("trainerTaskId"):
             review[-1]["trainerRevision"] = TRAINER_ASSESSMENTS[task["lessonSlug"]].revision
-        review[-1].update(correct=ok, given=given, guide=feedback_for(variant_id, task, given, ok))
+        review[-1].update(correct=ok, given=given, guide=feedback_for(variant_id, task, given, ok),
+                          **feedback_revision(task))
     total = len(exam["tasks"])
     return {"variantId": variant_id, "correct": sum(item["correct"] for item in review), "total": total,
             "full_total": total, "elapsed_sec": min(exam["minutes"] * 60, max(0, body.elapsed_sec)),
@@ -272,8 +289,3 @@ app.add_middleware(
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()

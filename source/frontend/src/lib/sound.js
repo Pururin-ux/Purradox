@@ -1,9 +1,17 @@
 import { useCallback, useSyncExternalStore } from "react";
 
 const KEY = "kvant_muted";
-let muted = localStorage.getItem(KEY) === "1";
+let muted = readMuted();
 const subs = new Set();
 let ctx = null;
+
+function readMuted() {
+  try {
+    return localStorage.getItem(KEY) === "1";
+  } catch {
+    return false;
+  }
+}
 
 function audio() {
   if (!ctx) {
@@ -79,7 +87,9 @@ export function haptic(pattern) {
 
 export function toggleMute() {
   muted = !muted;
-  localStorage.setItem(KEY, muted ? "1" : "0");
+  try {
+    localStorage.setItem(KEY, muted ? "1" : "0");
+  } catch { /* Keep the preference for this session. */ }
   subs.forEach((f) => f());
 }
 

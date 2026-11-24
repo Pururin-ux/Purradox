@@ -1,13 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { motion, useMotionValueEvent, useSpring } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Flame, ScrollText, Volume2, VolumeX, Zap } from "lucide-react";
 import { NAV, practiceReturn } from "@/lib/nav";
 import { toggleMute, useMuted, useSfx } from "@/lib/sound";
-import { levelInfo, questView, streakView, useGame, useSaveError } from "@/lib/game";
-import { ProfileA, ProfilePortrait } from "./ProfileA";
+import { levelInfo, msToReset, questView, refreshGame, streakView, useGame, useSaveError } from "@/lib/game";
+import { ProfileA, ProfileLauncher, ProfilePortrait } from "./ProfileA";
 import { formatJoules } from "@/lib/format";
 import { QuestsDrawer } from "./QuestsA";
 import { BrandWordmark } from "./BrandWordmark";
@@ -33,13 +32,28 @@ export function Logo() {
   );
 }
 
-export function AnimatedNumber({ value, format = (v) => v }) {
-  const mv = useSpring(value, { stiffness: 110, damping: 22 });
+function AnimatedNumber({ value, format }) {
   const [shown, setShown] = useState(value);
+  const displayed = useRef(value);
   useEffect(() => {
-    mv.set(value);
-  }, [mv, value]);
-  useMotionValueEvent(mv, "change", (v) => setShown(Math.round(v)));
+    const from = displayed.current;
+    if (from === value) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      displayed.current = value;
+      setShown(value);
+      return;
+    }
+    const started = performance.now();
+    let frame;
+    const tick = now => {
+      const fraction = Math.min(1, (now - started) / 320);
+      displayed.current = Math.round(from + (value - from) * (1 - (1 - fraction) ** 3));
+      setShown(displayed.current);
+      if (fraction < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [value]);
   return format(shown);
 }
 
@@ -52,7 +66,7 @@ function LevelBadge({ xp, avatar, onClick }) {
       <span className="relative grid h-[42px] w-[42px] flex-none place-items-center">
         <svg width="42" height="42" viewBox="0 0 42 42" className="lvl-ring" data-testid="hud-xp-progress" aria-label={`Опыт ${L.cur} из ${L.need}`}>
           <circle cx="21" cy="21" r={r} className="track" />
-          <motion.circle cx="21" cy="21" r={r} className="fill" strokeDasharray={c} initial={false} animate={{ strokeDashoffset: c * (1 - L.pct) }} transition={{ type: "spring", stiffness: 70, damping: 16 }} />
+          <circle cx="21" cy="21" r={r} className="fill" strokeDasharray={c} strokeDashoffset={c * (1 - L.pct)} />
         </svg>
         <ProfilePortrait id={avatar} /><span className="lvl-num fh">{L.level}</span>
       </span>
@@ -66,16 +80,31 @@ function LevelBadge({ xp, avatar, onClick }) {
 
 export function Stats({ onQuests, onProfile }) {
   const g = useGame();
-  const muted = useMuted();
+  useEffect(() => {
+    let timer;
+    const arm = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => { refreshGame(); arm(); }, Math.max(1, msToReset()));
+    };
+    arm();
+    window.addEventListener("focus", arm);
+    return () => { clearTimeout(timer); window.removeEventListener("focus", arm); };
+  }, []);
   const s = streakView(g);
   const qs = questView(g);
   const ready = qs.filter((q) => q.done && !q.claimed).length;
   const claimed = qs.filter((q) => q.claimed).length;
+  return <HudControls xp={g.xp} avatar={g.avatar} joules={g.joules} streak={s.streak} today={s.today}
+    ready={ready} claimed={claimed} onProfile={onProfile} onQuests={onQuests} />;
+}
+
+const HudControls = memo(function HudControls({ xp, avatar, joules, streak, today, ready, claimed, onProfile, onQuests }) {
+  const muted = useMuted();
   return (
     <div className="hud-stats flex flex-1 items-center justify-between gap-1.5 sm:flex-none sm:justify-end md:gap-2">
-      <LevelBadge xp={g.xp} avatar={g.avatar} onClick={onProfile} />
-      <span className="a-stat c-lamp" data-testid="hud-joules-balance"><Zap size={14} /><AnimatedNumber value={g.joules} format={formatJoules} /></span>
-      <span className={`a-stat streak ${s.today ? "is-hot" : ""}`} data-testid="hud-streak-count"><Flame size={14} />{s.streak}</span>
+      <LevelBadge xp={xp} avatar={avatar} onClick={onProfile} />
+      <span className="a-stat c-lamp" data-testid="hud-joules-balance"><Zap size={14} /><AnimatedNumber value={joules} format={formatJoules} /></span>
+      <span className={`a-stat streak ${today ? "is-hot" : ""}`} data-testid="hud-streak-count"><Flame size={14} />{streak}</span>
       <Button type="button" variant="ghost" className="a-iconbtn hud-quests" onClick={onQuests}
         aria-label="Квесты дня" data-ready={ready > 0 || undefined} data-testid="hud-quests-button">
         <ScrollText aria-hidden="true" />
@@ -86,7 +115,7 @@ export function Stats({ onQuests, onProfile }) {
       </Button>
     </div>
   );
-}
+});
 
 // Router path matching does not distinguish the two /shop query destinations.
 // Keep its pathname behavior and choose the current tab before styling/ARIA.
@@ -107,7 +136,7 @@ function navTo(item, location) {
   return item.id === "trainer" && location.pathname.startsWith("/trainer/") ? practiceReturn(location) : item.to;
 }
 
-function TopBar({ onQuests, onProfile }) {
+const TopBar = memo(function TopBar({ onQuests, onProfile }) {
   const play = useSfx();
   const location = useLocation();
   const { search, pathname } = location;
@@ -127,7 +156,7 @@ function TopBar({ onQuests, onProfile }) {
       </div>
     </header>
   );
-}
+});
 
 function BottomNav() {
   const play = useSfx();
@@ -137,9 +166,9 @@ function BottomNav() {
   return (
     <nav className="a-bottom mobile-nav" aria-label="Основная навигация">
       {NAV.filter((n) => n.mobile).map((n) => (
-        <Link key={n.id} to={navTo(n, location)} aria-label={n.label} aria-current={navSelected(n, pathname, search) ? "page" : undefined} onClick={() => play("tap")} className={"a-tab " + (navSelected(n, pathname, search) ? "active" : "")} data-testid={`tab-${n.id}-btn`}>
+        <Link key={n.id} to={navTo(n, location)} aria-current={(n.id === "shop" ? pathname === "/shop" : navSelected(n, pathname, search)) ? "page" : undefined} onClick={() => play("tap")} className={"a-tab " + ((n.id === "shop" ? pathname === "/shop" : navSelected(n, pathname, search)) ? "active" : "")} data-testid={`tab-${n.id}-btn`}>
           <span className="relative">
-            <n.icon size={21} />
+            <n.icon size={21} aria-hidden="true" />
             {n.id === "shop" && g.capsules > 0 && <span className="tab-dot" />}
           </span>
           {n.mobileLabel ?? n.label}
@@ -149,31 +178,38 @@ function BottomNav() {
   );
 }
 
-export function ShellA({ children, bare = false, profileOpen: initialProfileOpen = false }) {
+export function ShellA({ children, bare = false, profileOpen: initialProfileOpen = false, mainClassName = "" }) {
   const [quests, setQuests] = useState(false);
   const [profileOpen, setProfileOpen] = useState(Boolean(initialProfileOpen));
   // Шапка открывает профиль поверх текущей страницы и меняет адрес на /profile,
   // чтобы ссылку можно было скопировать; страница остаётся в фоновом маршруте.
-  // Прямой /profile открывает то же окно поверх главной, а закрытие возвращает на "/".
+  // Прямой адрес использует общую оболочку и возвращает на "/" при закрытии.
   const location = useLocation();
   const navigate = useNavigate();
-  const setProfile = open => {
+  const launchProfile = useContext(ProfileLauncher);
+  const setProfile = useCallback(open => {
     setProfileOpen(open);
     if (!open && location.pathname === "/profile") navigate("/", { replace: true });
-  };
-  const openProfile = () => {
+  }, [location.pathname, navigate]);
+  const openProfile = useCallback(event => {
     if (location.pathname === "/profile") return setProfileOpen(true);
-    navigate("/profile", { state: { backgroundLocation: { pathname: location.pathname, search: location.search, hash: location.hash, state: location.state } } });
-  };
+    if (launchProfile) launchProfile(event.currentTarget, location);
+    else navigate("/profile", { state: { backgroundLocation: location } });
+  }, [location, launchProfile, navigate]);
   const questsTriggerRef = useRef(null);
   const saveError = useSaveError();
   const play = useSfx();
+  const openQuests = useCallback(event => {
+    questsTriggerRef.current = event.currentTarget;
+    play("pop");
+    setQuests(true);
+  }, [play]);
   return (
     <div className="relative min-h-screen">
       <Sky />
-      {!bare && <TopBar onProfile={openProfile} onQuests={event => { questsTriggerRef.current = event.currentTarget; play("pop"); setQuests(true); }} />}
+      {!bare && <TopBar onProfile={openProfile} onQuests={openQuests} />}
       {saveError && <Alert className="study-save-alert" data-testid="progress-save-error"><AlertCircle aria-hidden="true" /><AlertTitle>Проблема с сохранением</AlertTitle><AlertDescription>{saveError}</AlertDescription></Alert>}
-      <main className={`relative z-10 ${bare ? "" : "pb-28 lg:pb-16"}`}>{children}</main>
+      <main id="main-content" tabIndex={-1} className={`relative z-10 ${bare ? "" : "pb-28 lg:pb-16"} ${mainClassName}`}>{children}</main>
       {!bare && <BottomNav />}
       <QuestsDrawer open={quests} onClose={() => setQuests(false)} returnFocusRef={questsTriggerRef} />
       {profileOpen && <ProfileA open onOpenChange={setProfile} />}
@@ -183,8 +219,9 @@ export function ShellA({ children, bare = false, profileOpen: initialProfileOpen
 
 export function LoadingA() {
   return (
-    <div className="grid min-h-[60vh] place-items-center" data-testid="loading">
-      <div className="h-14 w-14 rounded-full border-2 border-white/10 border-t-[var(--lamp)]" style={{ animation: "a-spin 0.9s linear infinite" }} />
+    <div className="grid min-h-[60vh] place-items-center" data-testid="loading" role="status">
+      <span className="sr-only">Загружаем…</span>
+      <div aria-hidden="true" className="h-14 w-14 rounded-full border-2 border-white/10 border-t-[var(--lamp)]" style={{ animation: "a-spin 0.9s linear infinite" }} />
     </div>
   );
 }

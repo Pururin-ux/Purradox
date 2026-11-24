@@ -1,0 +1,135 @@
+{
+  "created": "2026-11-18",
+  "tool": "Built-in ImageGen, reference-guided edits",
+  "referenceCollection": "art-direction/cute-style-probe-20261106/references",
+  "artwork": {
+    "story": {
+      "editTarget": "source/frontend/public/art/lesson-hooks/kot-v-lozhke-v1-768.webp",
+      "references": [
+        "50-cat-reflected-eyes.png",
+        "53-cat-amber-jar.png",
+        "55-boots-reflections.png"
+      ],
+      "prompt": "Repaint and substantially widen the first supplied illustration for a beautifully art-directed physics storybook for teenagers. Keep its topic of a concave silver spoon reflecting the Purradox cat upside down. Turn it into a new cinematic 2.4:1 landscape spread, full bleed, opaque. Compose an intimate cat-level close-up in a dark violet workshop. On the RIGHT TWO THIRDS, side view of a living upright velvety plum-black kitten, golden inquisitive eyes and cream muzzle, softly resting a single paw on the table as it peers into a large polished vertical dessert spoon. The spoon bowl, angled slightly toward the reader, contains ONE crisp SMALL UPSIDE-DOWN optical reflection of the same kitten's face with the tips of its ears pointing DOWN and the jaw pointing UP. The spoon has a single handle extending down. Place the spoon at about x=61%, the real cat's eye at x=84%. The suggestion of a little amber work light below is the single motivated light source: gold rim light picks out silver, whiskers, paw and real eye; surprising small accents of warm coral, turquoise and orchid in the lacquer of the tabletop. Selective richly painted saturated strokes, alternating soft lost contours with decisive bright edges, visible paper-tooth, confident playful silhouette. Use the other references for the reflected highlight in an expressive cat eye, the way warm light ties a paw and glass together, the character of multi-coloured reflections. Compose an original picture. Keep the LEFT THIRD in very deep blue-violet shadow with atmosphere and quiet marks, low detail and low values suitable for a separate heading. Preserve the important eyes and the whole reflected face within the middle 65 percent of the image height for a responsive crop. No lettering, numbers, labels, charts, arrows, panels, badges, or interface. The image should read clearly at telephone size, as charming as a printed illustrated story spread.",
+      "masterFile": "mirror-story.png",
+      "sourceSHA256": "4796ccbecd7b43806f20c2f08d4bfe08d03057e4c75e91229cceec557e58357e",
+      "referenceSHA256": {
+        "50-cat-reflected-eyes.png": "1718028948e868bc029cb336cbca8daa8c49e110f83ea81ba087609c1d108147",
+        "53-cat-amber-jar.png": "cb2c64bc77fe51e5f88abecbdcce2c7da6b8117ea0dafbd2e1b5a3fab81d2bb6",
+        "55-boots-reflections.png": "502dc9a68f139e078195a97cb9d79563c24446fd12ba83598f5f9c547e55c5fe"
+      },
+      "editTargetSHA256": "5c77bb557610fa82fe2cdc77ca3410c7953b98f40cfc9ac5960bd626def2bb9a",
+      "exports": [
+        {
+          "path": "source/frontend/public/art/optics/mirror-story-720.webp",
+          "dimensions": [
+            720,
+            300
+          ],
+          "bytes": 28826,
+          "sha256": "ea174ed0c2cb1fb9463c7ee3345f08327405800a0a2d8961cc5585988af4e0b0"
+        },
+        {
+          "path": "source/frontend/public/art/optics/mirror-story-1440.webp",
+          "dimensions": [
+            1440,
+            600
+          ],
+          "bytes": 86606,
+          "sha256": "03304072604853668e0441fc789bd3c0a347d38a12ec094dff2d9160f77eb837"
+        }
+      ]
+    },
+    "bench": {
+      "editTarget": "source/frontend/public/art/lesson-hooks/strelka-na-ekrane-v1-768.webp",
+      "references": [
+        "54-lantern-ghost.png",
+        "55-boots-reflections.png",
+        "53-cat-amber-jar.png"
+      ],
+      "prompt": "Transform the first optical workshop illustration into a top-down close macro view of the actual drawing surface on that same imaginary painterly laboratory desk. This is an opaque landscape 4:3 BACKGROUND PLATE for an interactive accurate ray drawing which will be drawn by code on top. The entire central 80% is a continuous, uniformly dark matte blue-indigo / ink-violet pane of optical glass or slate, ample wide-open negative space, low-contrast directional gouache strokes and a subtle cool cloudy bloom. Keep the inner surface dark and completely clear. The world is visible at its edges: a slim continuous rounded patinated plum and dark brass rim; on the extreme upper-right corner a partly cropped, finely painted brass knurled adjustment wheel, at the extreme lower-left edge a sliver of richly lacquered wood with a few controlled golden amber, coral and jade glints of an off-screen lamp reflected along the bezel. A small tinge of violet-blue rim light at the far left balances it. A beautiful handmade scientific instrument with material depth and tactile drybrush marks, gouache/game background art with nuanced sharp and soft edges as in reference 2 and the painterly colour reflections of 3. Frontoparallel camera, no perspective deformation of the central plane. Clean, generous dark center specifically for readable white coordinate labels. Objects use only the outermost 7% horizontally and 8% vertically. The central pane fills the illustration; no separate inset frame or secondary panel. No written content, no glyphs, no numerals or calibration ticks, no coordinate axes, no lines/rays/diagrams, no lens or pointer in the middle, no cat face, no sparkles floating inside the dark writing area, no UI screenshot.",
+      "masterFile": "optical-bench.png",
+      "sourceSHA256": "6c2e7df52d93ee95fc680769150975bcbed6945741e28f5d31024ff98ba1ef23",
+      "referenceSHA256": {
+        "54-lantern-ghost.png": "8ab5dd502274faee4bacc3c13f283296b3095eefe94007d1c32038907e7e8961",
+        "55-boots-reflections.png": "502dc9a68f139e078195a97cb9d79563c24446fd12ba83598f5f9c547e55c5fe",
+        "53-cat-amber-jar.png": "cb2c64bc77fe51e5f88abecbdcce2c7da6b8117ea0dafbd2e1b5a3fab81d2bb6"
+      },
+      "editTargetSHA256": "d95105ba2448db18d78e6e64a31b6b0db9cddf37dde0cff468372fba13a0faf7",
+      "exports": [
+        {
+          "path": "source/frontend/public/art/optics/bench-560.webp",
+          "dimensions": [
+            560,
+            420
+          ],
+          "bytes": 7996,
+          "sha256": "450436465be88919ee75e7b2243dae2b950c6fe7f33a14fb2acce9b3d886b336"
+        },
+        {
+          "path": "source/frontend/public/art/optics/bench-1000.webp",
+          "dimensions": [
+            1000,
+            750
+          ],
+          "bytes": 20122,
+          "sha256": "28051eb374ef7a356c180a84b1eeea6f156d339ce10ab7713e823b9020f1cf13"
+        }
+      ]
+    },
+    "guide": {
+      "editTarget": "source/frontend/public/art/full-site-20261107/avatar-cat-notebook-v1-192.webp",
+      "references": [
+        "46-cat-peeking.png",
+        "50-cat-reflected-eyes.png",
+        "53-cat-amber-jar.png"
+      ],
+      "prompt": "Create a high-quality transparent sprite by repainting the first image of the Purradox cat for an in-context optical workshop tutorial. Preserve the same mascot identity: deep plum-black soft round kitten, small triangular ears with warm reddish inner ears, creamy little muzzle, large round amber eyes. Change the pose: close upright three-quarter bust peeking out from the left, face turned gently down and to the RIGHT. ONE small rounded paw extends down-right toward the learner's next tap; the other paw lightly rests near the chest. No notebook, no clothing, no accessories or instruments; this is one healthy cat with a natural silhouette and two ears. Take the clear asymmetric peeking silhouette from the second reference, a glassy reflected amber worklight and tiny mint wedge reflected in the eye from the third, softly directional violet fur strokes and restrained gold edge light from the fourth. Original painted editorial character sprite, confident graphic silhouette, clear at a 50px size, warm rich flat shadow shapes interrupted by a handful of tactile gouache strokes; controlled highlights along the cheek and paw, illustrated rather than glossy 3D or generic vector emoji. Generous isolated transparent margin all around, clean real alpha. No outlined stickers, no lettering, no separate objects, no background, halo or drop shadow.",
+      "masterFile": "tutorial-cat.png",
+      "sourceSHA256": "d48431a44e4e5f2e68db61de26830c3986cdbdee16f9a3aa0ddbc950f6dcccab",
+      "referenceSHA256": {
+        "46-cat-peeking.png": "7dea4ed9f0f01962348ebcefcc08a987ea180d6fef79baa85587afa304ce0d6e",
+        "50-cat-reflected-eyes.png": "1718028948e868bc029cb336cbca8daa8c49e110f83ea81ba087609c1d108147",
+        "53-cat-amber-jar.png": "cb2c64bc77fe51e5f88abecbdcce2c7da6b8117ea0dafbd2e1b5a3fab81d2bb6"
+      },
+      "editTargetSHA256": "e15b6e9b39e6156e0889c9c63e5ce2c06dc300086242f1f8c8ca22d7779e14a0",
+      "exports": [
+        {
+          "path": "source/frontend/public/art/optics/tutorial-cat.webp",
+          "dimensions": [
+            230,
+            230
+          ],
+          "bytes": 16270,
+          "sha256": "d874cfd1c17ab77e077ef2d19e6bccdfee415a2d0ba5d51c1be75361746b8786"
+        }
+      ]
+    },
+    "mount": {
+      "editTarget": "source/frontend/public/art/lesson-hooks/strelka-na-ekrane-v1-768.webp",
+      "references": [
+        "55-boots-reflections.png",
+        "54-lantern-ghost.png"
+      ],
+      "prompt": "Create a small transparent scientific illustration sprite for a painted optical bench. Starting from the brass hardware and the lamp stand in the first workshop reference, isolate and repaint a SIDE-ON brass instrument holder for the FOOT of a very thin vertical mirror. Show ONLY the holder: a low heavy, beautifully worn dark aubergine enamel foot rests on a horizontal table, a short antique brass upright on its left half, one narrow open receiving slot in the TOP of the upright where a glass edge will be placed later by the diagram, a single large knurled brass adjustment knob on its RIGHT SIDE catching amber light. The top slot is slightly left of center at about 40% of the width. The mirror itself extends ABOVE the frame and must be completely absent: no glass, no lens, no lightbulb, no tall mast. A compact low triangular silhouette around a 3:2 landscape aspect for the actual object, fully within the frame, frontoparallel side elevation. Tactile gouache and ink, sharp golden and rose-wine cut edges against saturated plum and indigo cast shadows, tiny broken mint specular accents on the brass and dark enamel like the coloured reflections in ref 2. The edge polish is expressive like miniature illustrated instrument hardware; it must read as a real adjustment screw at a very small size. Painted original prop, no text, no screws floating loose, no desk, no backdrop, no cast shadow on a plane. Preserve genuine transparent alpha tight around the one assembled object.",
+      "masterFile": "mirror-mount.png",
+      "sourceSHA256": "3b207c274b745d7992a52dd9db67f470eb96adb87f400249ea2de1310f420d28",
+      "referenceSHA256": {
+        "55-boots-reflections.png": "502dc9a68f139e078195a97cb9d79563c24446fd12ba83598f5f9c547e55c5fe",
+        "54-lantern-ghost.png": "8ab5dd502274faee4bacc3c13f283296b3095eefe94007d1c32038907e7e8961"
+      },
+      "editTargetSHA256": "d95105ba2448db18d78e6e64a31b6b0db9cddf37dde0cff468372fba13a0faf7",
+      "exports": [
+        {
+          "path": "source/frontend/public/art/optics/mirror-mount.webp",
+          "dimensions": [
+            256,
+            171
+          ],
+          "bytes": 11428,
+          "sha256": "b0d5bba4324b6904c41210d8ed15796d5438718a6aa6fefdc682ec60e24ea33f"
+        }
+      ]
+    }
+  }
+}

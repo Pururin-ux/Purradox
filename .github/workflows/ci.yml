@@ -8,8 +8,6 @@ jobs:
   backend:
     runs-on: ubuntu-latest
     env:
-      MONGO_URL: mongodb://127.0.0.1:27017
-      DB_NAME: physicslab_ci
       CORS_ORIGINS: http://127.0.0.1:4184
       REACT_APP_BACKEND_URL: http://127.0.0.1:4183
       PYTHONPATH: source/backend
@@ -20,7 +18,7 @@ jobs:
           python-version: "3.12"
       - name: Install API and test dependencies
         # The API does not import the Emergent SDK, which needs a separate package index.
-        run: python -m pip install -c source/backend/requirements.txt fastapi uvicorn motor python-dotenv pytest pytest-xdist requests
+        run: python -m pip install -c source/backend/requirements.txt fastapi uvicorn python-dotenv pytest pytest-xdist requests
       - name: Content audit
         run: python scripts/full-site/validate_course.py
       - name: Start API
@@ -59,12 +57,8 @@ jobs:
           CI: true
       - name: Curriculum math and markup
         run: node scripts/full-site/validate_math.cjs
-      - name: Draft, progress and lesson regressions
-        run: >-
-          node --test checks/draft-migration.cjs checks/profile-transfer.cjs checks/reward-boundaries.cjs
-          checks/learning-load.cjs checks/learning-drafts.cjs checks/lesson-redesign.cjs checks/review-redesign.cjs
-          checks/ct-resume.cjs checks/ct-completion-save.cjs checks/ct-result-independent-review.cjs checks/ct-submission.cjs
-          checks/study-motion.cjs checks/full-site.cjs checks/progress-regressions.cjs checks/quest-availability.cjs checks/quest-catalog-ui.cjs
+      - name: Frontend regression checks
+        run: node --test checks/*.cjs
       - run: yarn build
         working-directory: source/frontend
         env:
@@ -75,6 +69,8 @@ jobs:
           build=source/frontend/build
           test -s "$build/index.html"
           test -d "$build/static/js"
+          test ! -e "$build/story"
+          test -z "$(find "$build" -name '*.map' -print -quit)"
           test -z "$(find "$build" \( -name '*style-lab*' -o -name 'duo-v1.png' -o -name 'reactions-study-v1.png' \) -print -quit)"
           status=0
           grep -rliE --include='*.js' --include='*.html' --include='*.css' \

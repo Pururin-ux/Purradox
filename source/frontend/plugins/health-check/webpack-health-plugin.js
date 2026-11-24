@@ -3,16 +3,16 @@
 
 class WebpackHealthPlugin {
   constructor() {
-    this.status = {
-      state: 'idle',           // idle, compiling, success, failed
-      errors: [],
-      warnings: [],
-      lastCompileTime: null,
-      lastSuccessTime: null,
-      compileDuration: 0,
-      totalCompiles: 0,
-      firstCompileTime: null,
-    };
+    this.reset();
+  }
+
+  finishCompilation() {
+    if (this.compileStartedAt === null) return;
+    const duration = Math.max(0, Date.now() - this.compileStartedAt);
+    this.status.compileDuration = duration;
+    this.status.totalCompileDuration += duration;
+    this.status.totalCompiles++;
+    this.compileStartedAt = null;
   }
 
   apply(compiler) {
@@ -23,10 +23,8 @@ class WebpackHealthPlugin {
       const now = Date.now();
       this.status.state = 'compiling';
       this.status.lastCompileTime = now;
-
-      if (!this.status.firstCompileTime) {
-        this.status.firstCompileTime = now;
-      }
+      this.status.firstCompileTime ??= now;
+      this.compileStartedAt = now;
     });
 
     // Hook: Compilation completed
@@ -37,8 +35,7 @@ class WebpackHealthPlugin {
         warnings: true,
       });
 
-      this.status.totalCompiles++;
-      this.status.compileDuration = Date.now() - this.status.lastCompileTime;
+      this.finishCompilation();
 
       if (stats.hasErrors()) {
         this.status.state = 'failed';
@@ -72,7 +69,7 @@ class WebpackHealthPlugin {
         message: error.message,
         stack: error.stack,
       }];
-      this.status.compileDuration = Date.now() - this.status.lastCompileTime;
+      this.finishCompilation();
     });
 
     // Hook: Invalid (file changed, recompiling)
@@ -104,14 +101,16 @@ class WebpackHealthPlugin {
 
   // Reset statistics (useful for testing)
   reset() {
+    this.compileStartedAt = null;
     this.status = {
       state: 'idle',
       errors: [],
       warnings: [],
       lastCompileTime: null,
       lastSuccessTime: null,
-      compileDuration: 0,
+      compileDuration: null,
       totalCompiles: 0,
+      totalCompileDuration: 0,
       firstCompileTime: null,
     };
   }

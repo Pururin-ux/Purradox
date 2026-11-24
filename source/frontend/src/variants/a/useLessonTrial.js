@@ -2,7 +2,10 @@ import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 
 export function updateTrialReading(node, value) {
-  if (node && node.textContent !== value) node.textContent = value;
+  if (!node || node.textContent === value) return;
+  const child = node.firstChild;
+  if (child?.nodeType === Node.TEXT_NODE && !child.nextSibling) child.nodeValue = value;
+  else node.textContent = value;
 }
 
 // Draw every frame. Publish time to React at the boundaries used by the reading.

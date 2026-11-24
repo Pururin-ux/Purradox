@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { Equation, Rich } from "@/components/shared/Tex";
 import { useAnswer } from "@/components/shared/useAnswer";
@@ -15,25 +15,26 @@ export function AnswerSign({ value, inputRef, onValueChange, disabled, testId })
     onClick={toggle}><span aria-hidden="true">±</span></Button>;
 }
 
-export function AnswerA({ item, check, onResult, tid, draft, onDraftChange, initialResult }) {
+export function AnswerA({ item, check, onResult, tid, draft, onDraftChange, initialResult, focusOnMount = false }) {
   const s = useAnswer(item, check, { draft, onDraftChange, initialResult });
   const play = useSfx();
   const numberInput = useRef(null);
-
-  const submit = async () => {
-    const r = await s.submit();
-    if (!r) return;
+  const answerRoot = useRef(null);
+  useEffect(() => {
+    if (focusOnMount) answerRoot.current?.querySelector("input:not(:disabled), button:not(:disabled)")?.focus();
+  }, [focusOnMount]);
+  const submit = () => s.submit(r => {
+    onResult?.(r);
     play(r.correct ? "ok" : "bad");
     haptic(r.correct ? 18 : [30, 50, 30]);
-    onResult?.(r);
-  };
+  });
 
   const inputState = s.result ? (s.result.correct ? "is-right" : "is-wrong") : "";
   const numericValue = s.input.trim();
   const signFits = numericValue.length < 32 || /^[+−-]/.test(numericValue);
 
   return (
-    <div className="space-y-3">
+    <div ref={answerRoot} className="space-y-3">
       {s.isNum ? (
         <div className="flex items-center gap-3">
           <Input
@@ -86,18 +87,26 @@ export function AnswerA({ item, check, onResult, tid, draft, onDraftChange, init
   );
 }
 
-export function Steps({ steps }) {
+export function ReviewedSteps({ feedback, nativeInline = false }) {
+  if (feedback.item) return <Steps steps={feedback.item.solution} nativeInline={nativeInline} />;
+  return <div className="text-sm">
+    <p role="status">{feedback.pending ? "Загружаем обновлённый разбор…" : "Обновлённый разбор не загрузился."}</p>
+    {!feedback.pending && <Button type="button" variant="secondary" onClick={() => feedback.retry()}>Повторить загрузку</Button>}
+  </div>;
+}
+
+export const Steps = memo(function Steps({ steps, nativeInline = false }) {
   return (
     <ol className="space-y-3" data-testid="solution-steps">
       {steps.map((st, i) => (
         <li key={i} className="a-step flex gap-3" style={{ animationDelay: `${i * 90}ms` }}>
           <span className="fm grid h-7 w-7 flex-none place-items-center rounded-lg bg-white/10 text-xs font-bold">{i + 1}</span>
           <div className="min-w-0 flex-1">
-            <Rich text={st.text} className="block leading-relaxed" />
+            <Rich text={st.text} className="block leading-relaxed" nativeInline={nativeInline} />
             {st.tex && <Equation tex={st.tex} label={`Формула в шаге ${i + 1}`} />}
           </div>
         </li>
       ))}
     </ol>
   );
-}
+});

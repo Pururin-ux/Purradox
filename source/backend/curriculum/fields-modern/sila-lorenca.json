@@ -155,6 +155,7 @@
   "tasks": [
     {
       "id": "sila-lorenca:t1",
+      "lessonBlock": "direction",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -191,6 +192,7 @@
     },
     {
       "id": "sila-lorenca:t2",
+      "lessonBlock": "direction",
       "code": "А2",
       "part": "A",
       "kind": "multi",
@@ -226,6 +228,7 @@
     },
     {
       "id": "sila-lorenca:t3",
+      "lessonBlock": "orbit",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -261,6 +264,7 @@
     },
     {
       "id": "sila-lorenca:t4",
+      "lessonBlock": "direction",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -284,6 +288,7 @@
     },
     {
       "id": "sila-lorenca:t5",
+      "lessonBlock": "orbit",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -306,6 +311,7 @@
     },
     {
       "id": "sila-lorenca:t6",
+      "lessonBlock": "orbit",
       "code": "В3",
       "part": "B",
       "kind": "number",

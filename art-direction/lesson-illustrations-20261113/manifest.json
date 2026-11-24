@@ -1,0 +1,638 @@
+{
+  "created": "2026-11-13",
+  "method": "Image generation; visual selection and composition review by Codex. Scientific diagrams are authored as JSX; generated images are not measurement drawings.",
+  "referenceSet": "art-direction/cute-style-probe-20261106/references/",
+  "houseReference": "source/frontend/public/art/full-site-20261107/home-wide-v1.webp",
+  "accepted": {
+    "observation": {
+      "base": "chashka-i-luzha",
+      "filename": "exec-a74a7516-ce64-4d7a-8c5e-4d13ec5140be.png",
+      "prompt": "Create a NEW stand-alone 3:2 landscape illustrated scene for a Russian teen physics lesson. Image 1 is a character and painting reference: reuse the Purradox cat's dark plum tuxedo silhouette, cream muzzle and front toes, amber oval eyes; keep the girl's copper-red side lock, loose bun with one swept hair loop and burgundy sweatshirt if visible. Image 2 is an inspiration for a cat's curiosity about a glass; do not use its panel structure or artwork. Show the quiet funny instant before an experiment: in a slightly top-down view of an indigo workshop table, one pale cream ceramic teacup with a very distinct ear handle sits safely on the tabletop, in a small shallow irregular wet patch. A small pale amber patch of lamplight makes the wet area clear against the dry wood. From the right Mefistofel sneaks his ONE nearer cream forepaw towards the cup and peers intently at the small puddle, one other supporting paw natural, the remainder of the cat's body crouches coherently behind, one long tapering tail. On the far side of the table see only a little of the girl's burgundy cuff and copper hair as she lowers her head to the level of the tabletop to watch, as if she just caught him about to do it. Hands can be out of frame. Make the cup handle and thin glints in the puddle easily recognizable at 300 px. Give the tabletop and framing large flat indigo and slate shadows and a few uneven broad dry gouache marks. Amber near the cup, sparse muted mint reflected light, small coral accent on the cat's inner ear. Shape-first illustrative print/gouache, crisp silhouette, asymmetric moment of action, no airbrushed gradients, no point grain, no shiny plastic, no decorative stars, no letters, no measurement marks, no watermark, no borders. Compose the whole art edge to edge with the cup and cat together near the middle. We will place the lesson text in the interface outside this image.",
+      "review": "У чашки видна лужа, лапа тянется к воде. Мотив наблюдения из 17-scientific-meowthod; композиция своя.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/chashka-i-luzha-v1.webp",
+        "source/frontend/public/art/lesson-hooks/chashka-i-luzha-v1-768.webp"
+      ]
+    },
+    "carriage": {
+      "base": "fonar-za-oknom",
+      "filename": "exec-84c705d6-b25e-4c24-8ed8-6675bb887455.png",
+      "prompt": "Create a NEW, quiet 3:2 landscape two-dimensional gouache illustration for a physics lesson, using image 1 for character identity ONLY and image 2 for reflection color ONLY. Interior of an old suburban train moving on a straight track. View straight into the side of the cabin, waist-height, symmetrical one big landscape train window occupies upper middle two thirds. Our small slim dark plum tuxedo cat with cream chest and paws and two amber eyes seen from side and behind, sitting absolutely still at the left on a simple burnt-coral window bench looking OUT at one fixed brass streetlamp on a nearly empty railway platform outside. One small amber lamp anchored at its foot, a few strokes of lavender/mint light reflected on the wet platform beyond. Window frame clearly separates inside/outside. Warm upholstery in lower foreground, weathered paint on a metal handrail, broad indigo and steel blue shadow blocks. Cat's single tail relaxed along seat, no paws toward camera, no person, profile silhouette attentive and ears recognizable. Artwork like a simple hand-painted independent comic panel with purposeful brush marks and warm/cool contrast, frame within frame, a calm face of empty rain-blue window away from the lamp. Keep hierarchy cat > lamp > carriage. No flashy lighting, motion streaks, superimposed reflection of the cat, duplicate lamps, rain glitter, raster noise, text or interface. Crop margin at all sides, important objects fall inside middle 76 percent. No border.",
+      "review": "Кот, скамейка и фонарь различимы. Система отсчёта задаётся отдельно в тексте.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/fonar-za-oknom-v1.webp",
+        "source/frontend/public/art/lesson-hooks/fonar-za-oknom-v1-768.webp"
+      ]
+    },
+    "fall": {
+      "base": "busina-padaet",
+      "filename": "exec-f16e03fa-dafd-43ce-b940-3bfc66c9502c.png",
+      "prompt": "Create a NEW original 3:2 landscape graphic gouache plate for Purradox about free fall. Image 1 shows the painterly world and the cat identity only; Image 2 shows the color contrast of blue-violet dark and amber source. Very low viewpoint just above the boards of a warmly lit workshop. A single round burnt-orange wooden bead (about 4 cm across) has just left the front edge of the tabletop, its silhouette completely separated from the dark table edge by a tiny clear air gap. One lilac shadow on the lower half of the falling bead. We see the dark plum head and ears of the small tuxedo cat peeking over the tabletop at top right, paws resting naturally on the edge. The cat is startled and looking at the falling bead in the open air to the left of it. One ringed almond amber eye in clear profile. Crop the cat naturally at table edge. No human figure, no hand, no graph, no diagrams, no motion lines, no dashed path, no duplicated bead, no stars. Dramatic simple division of light and shadow and scale, crisp hard shapes with a few broad strokes, tinted navy lower space with sparse mint bounce, one warm focal accent. The bead must clearly read as in midair with an unobstructed fall beneath. No fake film grain, no blur, no text or borders.",
+      "review": "Одна бусина оторвалась от края стола. Траекторию показывает отдельная схема.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/busina-padaet-v1.webp",
+        "source/frontend/public/art/lesson-hooks/busina-padaet-v1-768.webp"
+      ]
+    },
+    "optics": {
+      "base": "lampa-v-zerkale",
+      "filename": "exec-0de084e8-d2dd-4c15-b5ba-b2868275f313.png",
+      "prompt": "Create a NEW stand-alone 3:2 landscape graphic gouache editorial illustration for the Purradox lesson on light and reflection. Image 1 is an exact CHARACTER AND PAINT STYLE reference: same lanky young woman with high loose copper bun and one swept hair loop, expressive simple eyes, burgundy sweatshirt. Image 2 is a color and materials reference: use brief pink and pale mint reflected highlights on dark surfaces. Scene: the girl in near-profile, seen at the LEFT of the composition from just below shoulders, looks down into a low horizontal rectangular mirror that sits on a wooden desk. On the desk at center-right sits a small clearly defined brass dome desk lamp with a visibly warm bulb under the shade. The mirror shows one modest, upside-down reflection of the bright underside of the lamp, aligned directly below it in perspective. Keep the mirror and lamp both visible and clearly separate; show a finite clean rectangular glass edge so the light patch is obviously reflected in it, the rest of the desk matte plum with darker shadows. No reflection of a face is needed. The point is a recognizable reflected light source, not a beam diagram. Soft wry concentration, slight raised eyebrow, mouth neutral, natural profile, no visible hands. Cropped intimate scene, one warm amber area, indigo and mulberry masses, tiny pink and mint sheen only in the mirror's edge. Strong intentional hard gouache edges, some broad directional brush strokes inside objects, simple uncluttered negative space. No photorealism, bloom, sparkles, gradients, grain, generated letters, text, optics formulas, lens flare, watermarks or borders. Must read on a phone.",
+      "review": "В отражении различима лампа. Точные углы показаны только в интерактивной схеме.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/lampa-v-zerkale-v1.webp",
+        "source/frontend/public/art/lesson-hooks/lampa-v-zerkale-v1-768.webp"
+      ]
+    },
+    "pendulum": {
+      "base": "latunnyj-mayatnik",
+      "filename": "exec-dddd6b74-1a7f-4cf9-a109-2b3083ffb157.png",
+      "prompt": "Create a NEW original 3:2 landscape illustration about a real pendulum, for the Purradox teen physics textbook. Image 1 is the house gouache style, Image 2 is warm-lamp and indigo reference only. Close side view of a real simple tabletop pendulum: one dark slender upright wooden stand on the far left, one rigid horizontal arm coming from its top. One thin single taut cord is visibly attached to the end of this arm near the upper middle and slants down to the right under tension to one tiny round brass sphere with a small attachment eye. The metal sphere hangs in clear air just to right of center, nothing touches it. Behind on the right, amber eyes of the small dark plum tuxedo cat follow the ball, ears forward, cream chin on table edge. No human, no hand, paws hidden, no additional strings, no arc or diagram, no support behind the ball. Use a sliver of lavender reflected light on the desk, large muted indigo background shape and small area of gold on sphere as in the mood board. Spatially coherent, no optical illusion, honest join of stand and cord, no busy science equipment, matte graphic painting and spare uneven strokes, no point noise, no lettering, no borders.",
+      "review": "Нить прикреплена к опоре, груз показан в одном положении. Положение во времени вынесено на график.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/latunnyj-mayatnik-v1.webp",
+        "source/frontend/public/art/lesson-hooks/latunnyj-mayatnik-v1-768.webp"
+      ]
+    },
+    "relative": {
+      "base": "dva-velosipedista",
+      "filename": "exec-9f7883b3-3a2a-4f98-b65e-be7d01984d5f.png",
+      "prompt": "New 3:2 landscape editorial gouache art for Purradox's physics lesson about average and relative speed. Style reference image 1 for shape-first gouache brushwork and image 2 for reflected colors. Early morning canal towpath after rain, viewed from slightly above, two adult-sized simple bicycles with two distinctly different riders moving in the same direction to the right on one straight level path. Rear rider closer to camera rides a dark blue bike and wears a muted plum raincoat, ahead rider rides a yellow bike and wears a small pale ochre raincoat. Rider anatomy legible, both sit on bicycle seats, each bicycle has exactly two round aligned wheels, only hands on handlebars, no racing tricks. Buildings and railing cast broad cool pink-blue shadows in the distance, one open low yellow gap in clouds. Independent comic composition with a quiet long straight horizontal line; riders are simple graphic silhouettes, no face details needed. Readable at small size, no cat, no labels or lines on top of art, no bloom, no typographic decoration, no dots, no generic digital rendering.",
+      "review": "Силуэты велосипедов, общий путь, цветные отражения из 55-boots-reflections.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/dva-velosipedista-v1.webp",
+        "source/frontend/public/art/lesson-hooks/dva-velosipedista-v1-768.webp"
+      ]
+    },
+    "circle": {
+      "base": "metka-na-plastinke",
+      "filename": "exec-f9a22586-eb9b-4472-964f-b04ad20f152e.png",
+      "prompt": "New stand-alone 3:2 landscape graphic gouache illustration, movement in a circle for Purradox. Reference 1 for loose independent painted shapes and reference 2 for the limited palette of warm lantern light against slate-blue. Bird's-eye view directly down onto ONE small classic warm ochre vinyl record, a circle of dark ink with sparse concentric grooves and an amber paper center, on a plum turntable in a blue-shadowed room. On the record one single tiny coral removable square sticker on the groove area near its right-hand edge. At right the arm rests on its holder off the disk, away from the sticker; no cat. One clean clear subject, broad painterly flat tones and a few crisp uneven print edges, restrained terracotta and cool mint reflections on the lid hinge only. The circular outline, center, and single sticker must clearly read. No letters or album sleeve, no formula, no arrows, no glowing spiral, no texture overlay.",
+      "review": "Одна метка на пластинке. Вектор скорости строится отдельно.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/metka-na-plastinke-v1.webp",
+        "source/frontend/public/art/lesson-hooks/metka-na-plastinke-v1-768.webp"
+      ]
+    },
+    "balance": {
+      "base": "kot-na-rychage",
+      "filename": "exec-669519de-6bfa-4d2b-8163-2c3aef0838fa.png",
+      "prompt": "New 3:2 standalone gouache illustration for a school physics card about levers and torque. Use image 1 only for character silhouette and color world, image 2 for balanced warm light. Workbench seen from the side, one narrow wooden plank with a triangular wooden fulcrum closer to its right end. A single large plum cat with amber eyes, cream muzzle and chest sits firmly on the SHORT right arm, looking toward one terracotta flowerpot with a little aloe resting at the far LEFT tip of the LONG arm. The plank is horizontal, the underside genuinely contacts the apex of the fulcrum, a gap is visible underneath both ends. Nothing else touches the plank. Almost stage-like composition with warm cream space behind, dark purple objects and subdued patches of reflected indigo. Make the asymmetry at the support clearly visible, use just one continuous plank. Distinct matte painted silhouettes, no excessive texture. No extra paws, tool clutter, text, arrows, stars, vignette, or frame.",
+      "review": "Малый предмет и кот на разных плечах. Числа в схеме отдельные, не считываются с иллюстрации.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/kot-na-rychage-v1.webp",
+        "source/frontend/public/art/lesson-hooks/kot-na-rychage-v1-768.webp"
+      ]
+    },
+    "waves": {
+      "base": "lenta-na-verevke",
+      "filename": "exec-48c4d660-7972-4114-953d-0c3919bc6877.png",
+      "prompt": "A NEW 3:2 graphic painted educational illustration about mechanical waves for Purradox. Image 1 gives the house painting style and optional cat design, image 2 gives the restrained dark blue and warm rim palette. View a single long thick lilac braided cord from the side, stretched roughly horizontal across a near-black blue stage. The cord forms ONE localized well-shaped up hump near the middle, with a straight taut section to each side. A short single orange ribbon is tied at the crest to mark a bit of the rope, two little ends of ribbon visible below the knot; it does not trace the hump. One clearly anchored left cord end in a metal wall eye at the edge of the image; right end continues out of frame. Large quiet blue space around the cord and a little warm ochre side light. Paint like spare screen-printed gouache with a couple of dry stroke edges, no person or cat, no extra loops, no diagram labels, no arrows, no letters, no glitter or noise.",
+      "review": "Одна лента на верёвке. Три положения импульса показаны отдельно.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/lenta-na-verevke-v1.webp",
+        "source/frontend/public/art/lesson-hooks/lenta-na-verevke-v1-768.webp"
+      ]
+    },
+    "blocks": {
+      "base": "derevo-i-stal",
+      "filename": "exec-951658e5-f94d-4e97-b0c4-ba543b19b3ea.png",
+      "prompt": "New landscape 3:2 editorial gouache still life for a teen physics chapter about density. Exactly two solid CUBES of visually equal size in the same clean isometric orientation and at the same distance from the camera, entirely resting on a flat muted lilac workbench. Left is pale finely grained wood, right is matte dark steel with a single soft amber glint. Equal width height and depth, same shape, separate by one palm width. At the far upper left the edge of a burgundy sleeve is visible resting on the bench, no hands or people in frame. A few modest ochre and slate brush marks on the table, dark broad shadow under the steel and a soft cinnamon one under wood. Deliberate restraint, large painterly flat areas, dry gouache edge variation. Use the attached Purradox artwork only as palette and brushwork reference. No weighing scale, no rod or strings, no labels or numerals, no artificial glow, no glitter, no fine noise, no frame.",
+      "review": "Кубы одинаковой формы и близкого видимого размера, различаются материалом.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/derevo-i-stal-v1.webp",
+        "source/frontend/public/art/lesson-hooks/derevo-i-stal-v1-768.webp"
+      ]
+    },
+    "gravity": {
+      "base": "sputnik-nad-zemlej",
+      "filename": "exec-ef76c71c-d90a-4be1-b93d-03f50b91d050.png",
+      "prompt": "New original 3:2 landscape gouache illustration for a specific Purradox physics lesson. Image 1 is a style and character reference only. Image 2 is a lighting reference only. A quiet original paper-cut and gouache scene: a modest angular little uncrewed research satellite, with exactly two rectangular indigo solar panels and a small cream body, above a curved blue Earth horizon. Camera looking horizontally past the satellite, an amber glint along one rim and a shadow on the opposite face. A few broad flattened cloud shapes, dark open space. The satellite must read as in orbit, no flames, no exhaust or debris, no labels or path. Make the main physical relationship legible at 300 pixels. Different stage and viewpoint from the references, hand-shaped color masses, restrained dry-brush edges, lilac/indigo, amber or coral, one focal event. No overlaid grain, plastic shading, ray effects, text, numerals, watermarks or borders.",
+      "review": "На спутнике обе панели связаны с корпусом. Кадр не задаёт масштаб или вид орбиты.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/sputnik-nad-zemlej-v1.webp",
+        "source/frontend/public/art/lesson-hooks/sputnik-nad-zemlej-v1-768.webp"
+      ]
+    },
+    "friction": {
+      "base": "brusok-na-nazhdake",
+      "filename": "exec-280afdd5-79ea-463a-bb2c-e53945b93813.png",
+      "prompt": "New original 3:2 landscape gouache illustration for a specific Purradox physics lesson. Image 1 is a style and character reference only. Image 2 is a lighting reference only. A still life from directly above of a small maple rectangular block with one single taut cord stretching horizontally to the right and out of the frame, on a patch of blue rough sandpaper laid on pale wooden desk. A second patch of glossy plum tile sits beside it; only one block is present. Point light makes texture and the join between samples legible. Contrast matte grain INSIDE the sandpaper with a clean tile, no dotted overlay or labels. Single plausible attachment at the face of the block. Make the main physical relationship legible at 300 pixels. Different stage and viewpoint from the references, hand-shaped color masses, restrained dry-brush edges, lilac/indigo, amber or coral, one focal event. No overlaid grain, plastic shading, ray effects, text, numerals, watermarks or borders.",
+      "review": "Нить закреплена на бруске. Сцена показывает положение покоя.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/brusok-na-nazhdake-v1.webp",
+        "source/frontend/public/art/lesson-hooks/brusok-na-nazhdake-v1-768.webp"
+      ]
+    },
+    "impulse": {
+      "base": "dve-telezhki",
+      "filename": "exec-a8c8fbb0-8897-4ee0-ae35-82abe3af34bd.png",
+      "prompt": "New original 3:2 landscape gouache illustration for a specific Purradox physics lesson. Image 1 is a style and character reference only. Image 2 is a lighting reference only. A profile of two low toy laboratory carts on one flat table rail at the instant their dark rubber bumpers touch. One is coral, one is deep indigo, exactly two visible wheels per cart at normal scale. A pale mint sidelight makes the contact point legible. Limited palette on soft blue-purple paper, colored hard gouache shapes and graphic shadows, a little swept color behind the approaching cart if needed. Side elevation, no characters or arrows. Make the main physical relationship legible at 300 pixels. Different stage and viewpoint from the references, hand-shaped color masses, restrained dry-brush edges, lilac/indigo, amber or coral, one focal event. No overlaid grain, plastic shading, ray effects, text, numerals, watermarks or borders.",
+      "review": "Тележки сведены по буферам на одной направляющей.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/dve-telezhki-v1.webp",
+        "source/frontend/public/art/lesson-hooks/dve-telezhki-v1-768.webp"
+      ]
+    },
+    "energy": {
+      "base": "zavodnaya-telezhka",
+      "filename": "exec-29131e2b-fc8a-4032-b2fa-8452502a0df8.png",
+      "prompt": "New original 3:2 landscape gouache illustration for a specific Purradox physics lesson. Image 1 is a style and character reference only. Image 2 is a lighting reference only. One small brass wind-up toy trolley climbing a simple wooden ramp; side view with its single chunky wind-up key clearly visible behind the cab. Ramp slopes upward to the right, all wheels resting on the same plane. On the left, the larger quiet workshop background is cool plum, and the plane itself catches one amber reflection. Flattened print/gouache composition, broad blocks with a few brush strokes, no schematic arrows, no lightning icons, no person, no cat. Make the main physical relationship legible at 300 pixels. Different stage and viewpoint from the references, hand-shaped color masses, restrained dry-brush edges, lilac/indigo, amber or coral, one focal event. No overlaid grain, plastic shading, ray effects, text, numerals, watermarks or borders.",
+      "review": "Доска и ключ подсказывают устройство. Расчёт преобразования энергии в тексте.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/zavodnaya-telezhka-v1.webp",
+        "source/frontend/public/art/lesson-hooks/zavodnaya-telezhka-v1-768.webp"
+      ]
+    },
+    "buoyancy": {
+      "base": "poplavok",
+      "filename": "exec-417f2717-ea8d-44a1-acd0-d70f34bb8746.png",
+      "prompt": "New original 3:2 landscape gouache illustration for a specific Purradox physics lesson. Image 1 is a style and character reference only. Image 2 is a lighting reference only. Side-on close up of a large clear tank of indigo-tinted water and a single orange cork fishing float clearly partly above the horizontal waterline, pale amber reflection in the glass. Ignore deep background. A cream paw and one pair of amber cat eyes behind the tank, far to one side, if the composition allows without occlusion or optical ambiguity. Water looks flat and slightly transparent, no glowing particles or bubbles needed. Sharp object silhouette and waterline separated, no labels or scale. Make the main physical relationship legible at 300 pixels. Different stage and viewpoint from the references, hand-shaped color masses, restrained dry-brush edges, lilac/indigo, amber or coral, one focal event. No overlaid grain, plastic shading, ray effects, text, numerals, watermarks or borders.",
+      "review": "Видна граница жидкости и часть поплавка под ней. Размеры не считываются.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/poplavok-v1.webp",
+        "source/frontend/public/art/lesson-hooks/poplavok-v1-768.webp"
+      ]
+    },
+    "mkt": {
+      "base": "gaz-pod-kolpakom",
+      "filename": "exec-3f578191-44ff-44fb-a72c-199da0916168.png",
+      "prompt": "New 3:2 landscape illustration for Purradox teen physics. Image 1 is an original house-art brushwork reference only, image 2 is a color-light reference only. Mid-morning, a close side view of one transparent glass bell jar, fully intact on a matte plum base, with a small number of tiny, scattered luminous pale ochre dots entirely in its interior. The dots are a deliberately enlarged imaginary view of an invisible gas; keep them evenly sparse, with subtly varied positions and no halos, no model atom icons, no chemical bonds, no arrows. A calm monochromatic field of sea-green and jade with shadows in lilac. The bell jar silhouette and the dots inside it form a simple strong editorial sign. Express the scene with independent comic gouache and broad intentional shapes. High readability at 320 px, one dominant relationship, controlled edge highlights. No UI, labels, digits, diagrams or watermark, no digital noise, no vignettes.",
+      "review": "Светлые точки условно обозначают частицы, не их реальный размер или число.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/gaz-pod-kolpakom-v1.webp",
+        "source/frontend/public/art/lesson-hooks/gaz-pod-kolpakom-v1-768.webp"
+      ]
+    },
+    "temperature": {
+      "base": "zazor-v-relse",
+      "filename": "exec-9dc8d93c-f591-4bc8-978a-1d59b37faf30.png",
+      "prompt": "New 3:2 landscape illustration for Purradox teen physics. Image 1 is an original house-art brushwork reference only, image 2 is a color-light reference only. A close, carefully observed scene of a dark blue railway expansion joint: two aligned steel rail ends separated by a thin visible gap, viewed from a shallow angle, both resting on violet-gray sleepers. The join sits off-center under soft late-summer ochre light. Show only the ends of one line of rail in focus, with a hint of ballast in the periphery, no train, no figure, no danger scene. The thin gap must be readable at small size. Use a cream/green ochre background and slate violet painted steel, blocks of color and a dry edge, plausible rail cross-sections. Express the scene with independent comic gouache and broad intentional shapes. High readability at 320 px, one dominant relationship, controlled edge highlights. No UI, labels, digits, diagrams or watermark, no digital noise, no vignettes.",
+      "review": "Виден стык с зазором; длину зазора в задаче с рисунка не измеряют.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/zazor-v-relse-v1.webp",
+        "source/frontend/public/art/lesson-hooks/zazor-v-relse-v1-768.webp"
+      ]
+    },
+    "heattransfer": {
+      "base": "nagrevanie-kolby",
+      "filename": "exec-190f1067-f800-4767-bb1b-a348706f6df2.png",
+      "prompt": "New 3:2 landscape illustration for Purradox teen physics. Image 1 is an original house-art brushwork reference only, image 2 is a color-light reference only. An uncapped, shallow transparent round-bottom flask of blue-tinted water is held above a warm ceramic heater on a workshop countertop, viewed in close side profile, with one thin ribbon of steam rising from the open mouth. Keep its lower round contour and the flat water surface clear, with soft color patches from the small heater and cool window. Frosty dusty lavender field with strong muted coral only near the heater. One metal clamp gripping the neck securely, one rod. No invented pressure apparatus, no condensation fog surrounding the whole image, no character. Express the scene with independent comic gouache and broad intentional shapes. High readability at 320 px, one dominant relationship, controlled edge highlights. No UI, labels, digits, diagrams or watermark, no digital noise, no vignettes.",
+      "review": "Вода и туман различимы. В тексте поясняется, что видны капли сконденсировавшегося пара.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/nagrevanie-kolby-v1.webp",
+        "source/frontend/public/art/lesson-hooks/nagrevanie-kolby-v1-768.webp"
+      ]
+    },
+    "dew": {
+      "base": "kapli-na-okne",
+      "filename": "exec-b0ace20f-0b52-463f-af73-236a521fca2e.png",
+      "prompt": "New 3:2 landscape art for an illustrated Russian teen physics lesson. The first reference is the project brushwork and atmosphere, the second is a palette cue only. New wide macro editorial illustration of the inner surface of a cold window at morning with several large distinct water droplets near the lower corner, beyond it a simple violet and cyan silhouette of a winter street. One foreground out-of-focus shape at bottom left is a plum ceramic mug with no big steam cloud. The droplets have a small warm pink edge and flattened streak, no repeated noisy bead pattern across the whole surface. Focus on droplets on one surface, with warm interior and cool outside separated by the frame. No face, symbols, diagrams, text or grain. Matte independent comic gouache with decisive large flat shapes, light strokes restricted to meaningful surfaces, legible on a phone. Single clear focus. No labels or letters, logos, decorative stars, fake paper texture, UI or borders.",
+      "review": "Капли на оконном стекле; холодная улица и тёплая кромка внутри читаются по цвету.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/kapli-na-okne-v1.webp",
+        "source/frontend/public/art/lesson-hooks/kapli-na-okne-v1-768.webp"
+      ]
+    },
+    "charge": {
+      "base": "sharik-i-bumaga",
+      "filename": "exec-b121d995-9ffa-4ab6-a8df-54caa0822749.png",
+      "prompt": "Original 3:2 horizontal illustrated textbook panel for Purradox on electric charge. Use the house reference for graphic gouache handling, and the other attached reference only for its restrained magenta and mint color bounces. In a quiet desk corner, crop very close on a single inflated dark magenta balloon with knot pointed right, gently held sideways just above the desk by a single human hand cropped at the wrist, palm supporting the knot end without hiding it. On the desk near the free rounded part of the balloon, three or four visibly torn cream paper scraps lift off the desk toward its underside; the rest of the paper sits in a few quiet clumps on the desk. At far right just a soft out-of-focus blue knitted sleeve. No electrical sparks, no lines or charges drawn, no random flecks, no cats or people beyond that one hand. Make clear which papers are still on the surface by short shadows, and which is airborne by a separated shadow. Use a slightly unusual overhead-leaning side composition, dusty lavender table, a graphic pink balloon, ink-blue shadow, a patch of hard warm window light from upper left. Broad painterly patches, local sparse drybrush where actually useful, matte, crisp focus only on the contact event. No text, logos, repeated textures, graphic borders or UI. Keep the gesture readable when reduced to a thumbnail.",
+      "review": "Нейтральная бумага показана в воздухе и на поверхности. Поляризация объясняется отдельно.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/sharik-i-bumaga-v1.webp",
+        "source/frontend/public/art/lesson-hooks/sharik-i-bumaga-v1-768.webp"
+      ]
+    },
+    "induction": {
+      "base": "magnit-i-katushka",
+      "filename": "exec-3a37d58c-54f6-40c9-8310-28a415e87afe.png",
+      "prompt": "New original 3:2 landscape textbook illustration for magnetic induction. Reference 1 sets the Purradox shape-first matte gouache house style, reference 2 supplies warm gold reflection on deep ultramarine only. Quiet high-contrast bench scene: a single copper solenoid consisting of one neat winding of many copper turns around a pale cardboard tube lying horizontally, open circular end visibly facing left foreground. A short two-tone bar magnet hovers a small distance directly in front of that opening, aligned with the tube's axis and about half its diameter, held in place by one single human hand partly cropped off the left edge. Hold by the far end so magnet near the tube is clearly separated from the entrance. Magnet is painted red and desaturated cool indigo, NO lettering. The right end of the coil is darker and vanishes towards the right; do not depict wire terminals, meters or any invented connector. Highlight the air gap in pale lilac. Draw materials with a few deliberate long strokes, shadow as one deep violet plane, copper glints ochre and coral, cool indigo background. Strong silhouette with clean empty upper and right space. No glow around the magnet, sparks, arbitrary arrows, clutter, text, decorative stars or smooth 3D shading. Clear legible simple physical shapes and natural crop.",
+      "review": "Магнит не касается катушки, виден зазор. Схема цепи и направление тока не берутся из живописи.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/magnit-i-katushka-v1.webp",
+        "source/frontend/public/art/lesson-hooks/magnit-i-katushka-v1-768.webp"
+      ]
+    },
+    "refraction": {
+      "base": "karandash-v-vode",
+      "filename": "exec-f0a1a65b-d585-45ba-bb67-b7cb4a4e2ebd.png",
+      "prompt": "Original 3:2 horizontal painted editorial scene for a teen physics lesson, optics/refraction. Existing Purradox reference for matte graphic gouache and brush restraint; second reference only for magenta/mint/amber edge reflections. One quiet setup: side view of one wide square glass beaker of still, transparent water and a single straight honey-colored wooden pencil with a coral eraser resting diagonally into the water. Pencil visually appears bent at the horizontal water surface, lower submerged section shifted to the right a little, joins on the same water line, no extra repeated pencils, no separate pencil-like reflections. Water surface is clear and level, geometry solid. Beaker centered but partly closer to right; deep bluish-violet shadows from evening light, pale cyan clean transparency with just a slim pink reflection at right. Leave the background calm, only rough broad colored strokes on the desk and simple glass edges. Modern illustrated editorial artwork, physically believable, stylish, no characters, no fake text or scale ticks, no sparkles, no framing border, no 3D render, no grain. Read the angle shift at phone size.",
+      "review": "Одно видимое отклонение у поверхности. Преломление и критический угол заданы в интерактивной модели.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/karandash-v-vode-v1.webp",
+        "source/frontend/public/art/lesson-hooks/karandash-v-vode-v1-768.webp"
+      ]
+    },
+    "curvedMirror": {
+      "base": "kot-v-lozhke",
+      "filename": "exec-ab6b7ccc-769f-4e0e-b974-23c1ca5ce827.png",
+      "prompt": "A new 3:2 horizontal Purradox editorial illustration about spherical mirrors. Use the first reference only for the original house comic and brushwork, the second only for warm-vs-blue light. A small polished stainless steel spoon upright with bowl concave side facing viewer. In the bowl clearly show a tiny single UPSIDE-DOWN colored reflection of the black project cat: recognizable black head with two short triangular ears pointing DOWN and two wide small amber eyes, with one purple fabric shade behind him. The reflection only exists inside the bowl; omit the cat in the actual foreground. Show a simple empty blue-lilac scene around it, maybe the edge of a night stand and a barely visible wine-color reflection near one edge. Spoon bowl is the hero, fills most of the middle of the image, and there is no other cutlery. One image only; no sequential panels, physics arrows, diagram, stars, halos, text or borders. Use chunky purposeful painted values, warm bronze highlight along bowl rim against indigo shadow, a few visible strokes in the metal, crisp readable shapes, no fake material noise. Negative space balanced, inviting and slightly mischievous.",
+      "review": "Один перевёрнутый силуэт внутри чаши ложки. Условие переворота и расстояния в отдельной схеме.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/kot-v-lozhke-v1.webp",
+        "source/frontend/public/art/lesson-hooks/kot-v-lozhke-v1-768.webp"
+      ]
+    },
+    "spectral": {
+      "base": "linii-vodoroda",
+      "filename": "exec-f9234664-df1e-492b-8286-6d7f7e0f5ba1.png",
+      "editPrompt": "EDIT image 1, the existing Purradox dark spectroscope scene. Preserve the four thin colored lines in that order and all their positions, the lab background, crop, framing, gaze to left, same age and graphic brush language. Change only the girl's hairstyle and its color to match the established Purradox heroine in reference image 2, then slightly soften the black value in the shelf if necessary. She has warm rust-copper red hair in an obvious messy, loose low bun behind the ear, with one high curling lock arcing up above her head and long copper face-framing loose strands. She does not have a black bob or short black hair. Match the confident nose and cheek silhouette, thick angled eyebrows, single elongated oval eye and simplified facial marks from the reference; the mouth stays slightly open and gaze attentive to the spectral lines. Same burgundy sweatshirt. Preserve the clear silhouette and enough headroom for the arcing lock. Warm muted rust color in shadow with a very small lavender edge reflection; leave darkness between screen and face. No new props, no extra color lines, no text, no cat, no grain. Original 3:2 horizontal illustration. Do not reproduce reference 2's pose, just the original heroine's recognizable features.",
+      "prompt": "Create one original 3:2 landscape gouache editorial scene for Purradox about the line spectrum of hydrogen. House reference supplies the established teenage girl and her drawing style, second reference supplies cold highlights and the idea of a reflection only. Low-key student lab seen from side, tight crop, a few brilliant narrow vertical spectral lines stand apart across a DARK unmarked rectangular spectroscope screen on left. Show the four visible Balmer lines in order from left to right: dim violet, blue violet, cyan, then a single bright red separated by the largest gap. No continuous rainbow, no rays coming out into the room. At right the established slim young girl with short ink black asymmetric bob, light face and straight burgundy cuff, viewed in attentive 3/4 profile with a curious raised eyebrow, NOT smiling at viewer. Her face gently catches cold pale violet light; no hands visible. Keep screen's rectangle far from her face, do not draw the lines across her hair. Slightly crooked desk level, one decisive shape per object, much deep ink negative space. Painted color blocks and small relevant bristle strokes, more subdued than a cosmic poster, no cat, stars, laser beams, outlines around the whole image, numbers, letters or other logos.",
+      "review": "Сохранён порядок четырёх цветов. Сменили неверную причёску и силуэт в отдельном проходе. Точные длины волн по картинке не считываются.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/linii-vodoroda-v1.webp",
+        "source/frontend/public/art/lesson-hooks/linii-vodoroda-v1-768.webp"
+      ]
+    },
+    "chamber": {
+      "base": "sledy-v-kamere",
+      "filename": "exec-ab233848-dca9-4368-b15f-bafb571a793f.png",
+      "prompt": "One original 3:2 horizontal Purradox teen textbook illustration about visible condensation traces in a particle cloud chamber. Use the house reference only for painterly graphic styling, other reference only for faint pink and teal reflected light. Make it like a quiet dark instrument still life. Slightly overhead oblique view into a shallow simple closed rectangular clear glass box with a flat matte near-black base. Against that base only, two or three thin softly luminous vapor tracks at separate positions, one short straight thick whitish streak and one long thin slightly bent whitish streak, NOT evenly spaced, no colored laser beams, no dots connecting them. A modest side light picks out the glass at the right edge; the left half falls away into ink. No radioactive source shown, no people, warning signs, labels, diagrams, machinery, tubes, containers or glow flying out of the device. Sparse composition, asymmetrical, calm, desaturated near-black violet with cool cyan glass edge and small warm clay reflection. Use large dark painterly strokes and simple lighting. Do not add stars or atmospheric smoke outside the box. Make the few trails clear at mobile size.",
+      "review": "Внутри два следа; иллюстрация не устанавливает происхождение частицы. Закон полураспада показан графиком.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/sledy-v-kamere-v1.webp",
+        "source/frontend/public/art/lesson-hooks/sledy-v-kamere-v1-768.webp"
+      ]
+    },
+    "kettles": {
+      "base": "dva-chajnika",
+      "filename": "exec-6abf772c-b8a9-419b-b0e5-77127ed78cb6.png",
+      "review": "Два разных чайника с понятными ручками и носиками; мощность не указана на предметах. Блики берут цвет, а не мотив, из 55-boots-reflections.",
+      "prompt": "Original wide 3:2 editorial matte gouache illustration for a Purradox school physics lesson about the power of two electric kettles. Use reference one only for painted shapes and house handling and reference two for pink and pale mint reflections. In a small student kitchen at first daylight: two distinctly different everyday electric kettles sitting upright on their bases, side by side. The left one squat painted coral enamel with a continuous simple black handle behind it and spout pointing left. The right one taller blue-grey metal with a clean curved handle and spout pointing right, small clear water-level window with no numbers. A hint of steam only above the taller kettle, for one kettle has started boiling. No heating coils, no stovetop, no electricity effects. Low straight-on crop across the backsplash from counter height; keep both vessels whole, prominent and almost reaching the frame edges. Hard cool pastel light from upper left, an unexpected peach and mint tile reflection on the steel, one sheet of dark blue cast shadow on the counter. No characters, cup, symbols or explanatory arrows. Paint with large deliberate shapes, restrained hand-drawn contours and local broad brush strokes, entirely matte background. No noise, fake dust, gradients or glowy bokeh. Phone-sized detail hierarchy, a spare calm kitchen with one focus, the pair of kettles.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/dva-chajnika-v1.webp",
+        "source/frontend/public/art/lesson-hooks/dva-chajnika-v1-768.webp"
+      ]
+    },
+    "glasses": {
+      "base": "kot-za-ochkami",
+      "filename": "exec-6226aaae-7890-49b4-921f-a9006753f06a.png",
+      "review": "Латунная оправа и узнаваемый кот. Он смотрит поверх стёкол, поэтому их оптический эффект показан отдельно. Мотив выглядывания из 22-optics-cat.",
+      "prompt": "Original wide 3:2 editorial graphic gouache for a Purradox lesson about vision. Reference 1 supplies the exact house cat identity, and reference 2 is inspiration for the idea of peeking over objects, do not trace its photographs or layout. One funny quiet close-up: on a cool lilac desk sit a pair of clearly readable thin round muted brass eyeglasses, temples folded behind, lenses very transparent with no eye behind them, correct overlapping front rim and no double temples. Behind them the established Purradox black plum cat is just high enough to peek with two wide amber eyes OVER the rim of the glasses, looking left at a small warm bokeh light in an out-of-focus window; the lenses do not overlap the eyes. Keep cat muzzle small and simple, no exaggerated grin or long cheek line, visible red-pink inner ears and optional warm cream patch under the chin. It's a tiny observational joke, not an advertisement, no human visible. View close at the desk level with the glasses angled a little, broad soft cyan morning light, one copper edge and a warm salmon shape in the window against slate lilac. Shape-first matte painted brush marks with no full-surface texture, sharp enough to distinguish the rim and ears. No stars, letters, duplicated reflections, formula, text, UI, borders or unrelated props.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/kot-za-ochkami-v1.webp",
+        "source/frontend/public/art/lesson-hooks/kot-za-ochkami-v1-768.webp"
+      ]
+    },
+    "swing-push": {
+      "base": "kachayu-kacheli",
+      "filename": "exec-acfa1e7a-8bab-44eb-928a-8eeaf6a896dc.png",
+      "prompt": "Create an ORIGINAL 3:2 horizontal gouache illustration for a Russian school physics course about the timing of pushes on a swing. A small single plank swing hung on two parallel ropes is moving from left to right; show ONE instant at the lower half of its arc, with the two parallel ropes leaning together just a little to the LEFT of vertical from their visible overhead anchoring bar. The pupil from Image 1, the young woman with copper-red messy bun, distinctive loose side lock and burgundy oversized sweater, is standing on the left at three-quarter rear view, gently pushing the back of the single empty swing plank to the right with one hand, her weight leaning forward. Show a believable point of contact, one natural hand mostly seen from behind. Mefistofel, her small dark plum tuxedo cat with cream chin and toes and amber eyes, sits out of the swing's path on a low wall far right, head turned toward the plank. Late blue hour in a small apartment courtyard; bright honey light through a single hallway window lands just along the moving plank and girl's cuff. Image 1 is only the exact character reference; image 2 is inspiration for warm against cool edge light and an alert gaze, not a composition to copy. A composed independent comic still with broad cut-paper shadow shapes, irregular dry-gouache brush edges, quiet deep cornflower/indigo and plum, selective honey accent. Restrained texture inside paint, no dots on canvas, no motion ghosts or lines, no notebook, no glass panels, no framing, no captions, no text. Keep the plank and hand readable at 290px wide. Leave generous safe margins. Show exactly one playground swing.",
+      "review": "Две верёвки сходятся к одной доске, рука касается края. Кот на опоре вне траектории. Тёплый свет окна выделяет руку и доску.",
+      "lesson": "mehanicheskie-kolebaniya",
+      "card": "driving",
+      "reference": "53-cat-amber-jar.png",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/kachayu-kacheli-v1.webp",
+        "source/frontend/public/art/lesson-hooks/kachayu-kacheli-v1-768.webp"
+      ]
+    },
+    "melting-ice": {
+      "base": "lyod-v-blyudce",
+      "filename": "exec-dd7d8262-9526-43cb-91e0-205a2d1475d2.png",
+      "prompt": "Make an ORIGINAL 3:2 horizontal still-life illustration for Purradox, a teenage physics course. Subject is the flat-temperature phase of melting ice. Extreme close-up from tabletop level, at one side of a shallow slightly chipped cream ceramic dish is a SINGLE irregular piece of partly melted ice with clear round edges, sitting in a very shallow continuous puddle of its own clear water. Show the visible waterline around its base; retain broad blank dark blue-gray tabletop at left, ice just right of center, light from a warm amber desk lamp raking in from top left and a cool lavender window reflection in the puddle. Three or four large, deliberately placed cream, rose and turquoise painted reflections around the ice, a coherent apparent light direction. At the top right a small part of Mefistofel's dark plum tuxedo foreleg with cream toes rests on the DRY table beyond the edge of the dish, well away from the ice. Image 1 informs the cat's coloration only; Image 2 is a reference for the juxtaposition of colored reflections with their dark surroundings, not for boots or leaves. Artist's digital gouache, a little brush edge only where color meets color, broad quiet background with no digital grain overlay. Read at thumbnail scale as solid ice in liquid water, not a gemstone or ice hovering above the plate. No second animal, no visible face, no glass jar, no thermometer, no marks or diagrams, no steam, no text, no labels, no borders. Subject in the middle 75% with margins safe for mobile.",
+      "review": "Кусок льда отделяется от воды видимой кромкой. Лапа стоит за блюдцем. Цветные отражения ограничены водой и краем посуды.",
+      "lesson": "teplovoj-balans-i-fazovye-perehody",
+      "card": "intro",
+      "reference": "55-boots-reflections.png",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/lyod-v-blyudce-v1.webp",
+        "source/frontend/public/art/lesson-hooks/lyod-v-blyudce-v1-768.webp"
+      ]
+    },
+    "lens-projection": {
+      "base": "strelka-na-ekrane",
+      "filename": "exec-afb6855f-4217-49d9-8ca0-cff7deef65b5.png",
+      "prompt": "Create an original 3:2 landscape illustration for a Russian physics course about a real image formed by a converging lens. Side three-quarter view of a student-built optical bench on a dark desk with three objects in a single clearly readable left-to-right optical line. At the left, a small opaque plum lamp box with one warm glowing upward-arrow-shaped hole on its right-facing plate, that plate in profile and the glowing warm upward arrow still visible to the viewer. In the center, one circular biconvex glass lens in a dark brass ring on a wooden stand. At the right, one rectangular warm cream paper screen held upright by a simple wooden slot, facing the lens and showing an upside-down glowing orange arrow, same shape as the upright arrow on the lamp, pointing distinctly DOWN. One image, confined to the screen with room around it. Orient lens and screen roughly parallel, lens exactly between object and screen, no independent light at the screen. A folded burgundy sleeve lightly touches the edge of the screen from behind, no other person or animal. Midnight blue and soft violet studio, localized amber light glancing off brass, pale blue curved reflection on rim; broad, matte painted shadows, clean silhouettes, richly painted but few marks, precisely the warmth and depth of the two references, avoid particle glitter. Image 1 is house palette and brush treatment, Image 2 is a lighting reference. No decorative arrows, no lines purporting to be rays, no text, markings, repeated screens, frames or UI; these three props must read unambiguously at web scale. Deliberate horizontal rhythm, all three objects within the middle 86 percent.",
+      "review": "Линза между предметом и экраном. Стрелка на листе перевёрнута и светлее бумаги. Ракурс позволяет различить и источник, и его изображение.",
+      "lesson": "tonkie-linzy",
+      "card": "intro",
+      "reference": "54-lantern-ghost.png",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/strelka-na-ekrane-v1.webp",
+        "source/frontend/public/art/lesson-hooks/strelka-na-ekrane-v1-768.webp"
+      ],
+      "correction": "Edit the attached optical bench illustration only on the paper screen at the right. It currently has a dark orange downward arrow and an amber background, which depicts the optics backward. Replace the arrow with a crisply bounded pale golden-white projected silhouette of the exact same downward-pointing arrow shape, as bright as the upward-facing lit aperture on the source box. The rectangular screen itself is plain warm-gray matte paper in a much darker violet-gray ambient light, lit by the arrow-shaped beam only. The bright downward pointing arrow must be visually lighter than the paper along every part of its boundary. A small edge glow is okay, but no decorative soft spot or independent light on the rest of the screen. Keep the exact existing position and shape of all objects, the arrow direction up at source and down on the screen, the horizontal optical axis of the three devices, the lighting and painting on the left 72 percent, the window, the gentle hand and sleeve, the 3:2 aspect ratio. One screen, one arrow on it, no text, no added light beams, no surface markings.",
+      "editSource": "exec-66f5bda2-3b35-4c5f-863d-269a6a1cc8a2.png"
+    },
+    "radio-station": {
+      "prompt": "Original horizontal 3:2 painterly image for the chapter on electromagnetic waves in the Purradox school physics course. Blue hour indoors in a small lived-in apartment, looking from the end of a wooden window bench. A little pocket radio is in the foreground left of center, one circular speaker grille, a small tuning knob, one clear slim telescoping antenna extended diagonally up to the right. Through the window the dim silhouette of a distant rooftop antenna with ordinary thin rods. Our copper-haired pupil in a burgundy sweater is mostly out of frame; just the shoulder and half-profile on the right, hand turned naturally with two fingers adjusting the tuning knob, head bent to listen. Her dark plum tuxedo cat sits on the inside of the sill far behind the radio, facing the same way, one ear cocked at the sound. Single warm yellow-orange lamp reflected on the wood at the radio, deep ultramarine shadow, quiet violet sky, sparse lavender highlights on glass. The domestic action matters more than the furniture. Style: independent print illustration in matte gouache with broad shadow masses and crisp selected edges, no shiny vector look, no texture laid over whole frame. Image 1 only for character appearance, Image 2 only for asymmetrical silhouette and breathing room. No floating waves, star motifs, writing, scale graduations or numbers, wires in the way or repeated radios. Antenna and hand readable in a small frame, keep key parts in middle 82%.",
+      "base": "radio-na-podokonnike",
+      "filename": "exec-386e2697-19be-4c74-bd43-49203406191d.png",
+      "lesson": "elektromagnitnye-volny",
+      "card": "intro",
+      "reference": "42-cat-cups-monitor.png",
+      "review": "Ручка настройки, выдвинутая антенна и лампа узнаваемы. Кисть держит ручку; профиль и волосы совпадают с выбранным образом. Размеры волн показаны отдельно на учебной шкале.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/radio-na-podokonnike-v1.webp",
+        "source/frontend/public/art/lesson-hooks/radio-na-podokonnike-v1-768.webp"
+      ]
+    },
+    "copper-winding": {
+      "prompt": "Original landscape 3:2 still-life for Purradox chapter on self-induction. Almost overhead view of a small hand-wound copper coil at the center of a pale cornflower work mat, angled diagonally from lower left to upper right. It is a real object: one slim dark ferrite cylinder, one single continuous enamelled copper wire wrapped in one neat closely spaced layer of 13 turns around the cylinder, then a little free wire clearly comes out at each end. Flat dark ferrite ends visible, show thin variation in highlights over copper, keep coil recognizably one piece. Near the upper right a small dark plum cat's muzzle and two bright amber eyes peek in from beyond the edge of the table, staring at the loose end, cream chin and small quiet expression. No paws on wires. One short piece of rolled yellow fabric near the left edge, the rest of the mat largely empty and quiet. Image 1 for the cat’s coloration and shape, Image 2 only to suggest a cat's comic fascination with a coil, Image 3 for pale honey light beside colored blue and lilac reflections. Distinct editorial-style hand-painted matte wash with crisp selective ink edge, natural irregular mark at rim of coil but no photo noise. No electricity effects, exposed mains, diagram arrows, imaginary cables, labels, letters, text, or more than one coil. Keep the two ends and cat's eyes clearly inside mobile crop. The wire should be obvious even when the image is 300px wide.",
+      "base": "mednaya-obmotka",
+      "filename": "exec-a8782265-b9bf-461d-b036-506dd373a522.png",
+      "lesson": "samoindukciya",
+      "card": "linkage",
+      "reference": "20-induction-cat.png, 55-boots-reflections.png",
+      "review": "Виден один провод с двумя концами на одном сердечнике. Крупный план даёт разглядеть обмотку. Кот смотрит на ближайший конец провода.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/mednaya-obmotka-v1.webp",
+        "source/frontend/public/art/lesson-hooks/mednaya-obmotka-v1-768.webp"
+      ]
+    },
+    "diffraction-disc": {
+      "base": "raduga-na-diske",
+      "filename": "exec-2d4b7816-1c36-4e03-a319-d32d2108ce40.png",
+      "lesson": "interferenciya-i-difrakciya",
+      "card": "intro",
+      "reference": "53-cat-amber-jar.png, 55-boots-reflections.png",
+      "prompt": "Create one original horizontal 3:2 illustrated plate for a teen physics course Purradox. Scene is the readable data side of a real compact disc on a dark mulberry desk, viewed from near overhead, slightly oblique. It fills the middle and lower half, with an obvious clear center hole and thin translucent inner ring, the whole rim readable against desk, no label. A single large sector shows strong diffraction color as radial bands naturally on the surface of the disk: amber and salmon melting into a narrow pink stripe, touches of turquoise and lavender. Leave the other half dark silvery periwinkle, not a rainbow all over. No light streaks or rainbow floating in air, no literal beam, no glows from the center hole. A corner of an unprinted black paper record sleeve below the left side of the CD and a subtly lit violet woven ribbon disappearing from frame. Upper right background in low cool purple value, so the disc silhouette carries the picture. Let the camera feel like a candid still-life. Brushed digital gouache with a few deliberate flat interlocking highlights, edges vary from lost to crisp, concise drawn forms, plain solid surface areas, no faux paper grain/noise, no outlines everywhere, no photographic CGI. Match the intimate rich blue-violet/amber color relationship in image 1 and the pearly pink and teal glancing reflections in image 2, but no elements from either drawing are depicted. Large forms stay readable at a small size. No text, watermark, title, icons, measurement scales, people, cat, hands or extra objects.",
+      "review": "Виден контур настоящего диска и отверстие в центре. Цвет остаётся на читаемой стороне диска. Отражение используется как наблюдение; углы максимумов и ширину полос показывают точные схемы.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/raduga-na-diske-v1.webp",
+        "source/frontend/public/art/lesson-hooks/raduga-na-diske-v1-768.webp"
+      ]
+    },
+    "train-inertia": {
+      "base": "penal-v-vagone",
+      "filename": "exec-9129f813-6579-4957-84a5-67e1a800fa2a.png",
+      "lesson": "zakony-nyutona-i-plotnost",
+      "card": "inertia",
+      "reference": "home-wide-v1.webp, 55-boots-reflections.png",
+      "prompt": "Original horizontal 3:2 hand-painted illustration for the Purradox teen physics lesson about inertia in a braking train. Low tabletop close-up from just above a straight smooth dark purple table between two seats in a city commuter train. One small warm ochre rectangular soft zip pencil case with a clean turquoise zipper, no printed letters, sits close to the LEFT front-facing raised short wooden lip of the table. It is parallel to the length of the table, bottom flush with the surface, only a slim gap to the lip. Show the table extending well to its right with clear unobstructed lacquered surface. No arrows, no drawn motion lines, no readable signs; the text will establish that the train was moving left and is braking. The angle of the train window and receding landscape give the closeup a diagonal composition. A small curious dark plum tuxedo cat from the first reference appears beyond the far right edge of the table with only head and one naturally resting pale forepaw visible; the cat's amber eyes are focused on the pencil case, the cat is stationary. His asymmetric pointed ears and simple triangular nose with a pale muzzle match image 1. The cat is small in the composition. No humans or hands. This is an ordinary train compartment in pale dawn light. Paint the view outside as cool fog-blue fields with a few indigo marks, and a pink-amber reflection across the plain smooth tabletop. Use image 2 only for palette and reflected pink, amber and turquoise light. Rich painterly gouache, selective angular brushwork, a few restrained highlights, two large quiet planes, warm ochre as the highest chroma accent, clearly drawn pencil case, clean contours and readable shapes in a 300px-wide view, no global grain, no logos, no pattern or photo texture. No visible marks that could be mistaken for another set of physics quantities. Avoid repeating the house reference's dark indoor desk and lamp. One continuous scene.",
+      "review": "Кот смотрит на пенал. Оба объекта читаются в одной сцене, пенал лежит на столе. Направление движения задано в тексте. Бортик не используется для объяснения движения.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/penal-v-vagone-v1.webp",
+        "source/frontend/public/art/lesson-hooks/penal-v-vagone-v1-768.webp"
+      ]
+    },
+    "oil-field": {
+      "base": "krupinki-mezhdu-elektrodami",
+      "filename": "exec-47987e24-637a-4e1d-8e79-ccffa8605ef6.png",
+      "prompt": "Revise this exact gouache scene, keep its 3:2 shape, the large glass dish on the plum table, golden highlights with pink/cyan only on the rim, two metal contacts, ink-blue shadows, original off-centre close overhead composition. Make two specific edits. 1. The lantern is off-screen. Remove the lantern and its defined silhouette or reflection completely, keep only the warm side-light falling on the glass from off-screen left. Replace the top-left with broad dark ultramarine and aubergine planes so the bowl is the focus. 2. Make the chains in the oil look like a photographed classroom demonstration rather than decorative beads: use smaller and irregular groups of straw-tinted rice-like grains, short incidental gaps, some single imperfect flecks well aligned nearby. Preserve a strong central almost straight row from left to right contact and two well-separated fanning arches above and below; no rings, no intersecting bands, no arrows. The round bronze ends can each have a small thin black wire approaching from behind them and leaving the composition, with dark wire resting on glass beyond the liquid; keep the apparatus safe, simple and no exposed leads or hardware beyond the dish. Avoid any tiny procedural detail. Brush marks should follow surface shape. No text or graphical overlay. Keep material rendering grounded, no spark, no glow, no high frequency texture.",
+      "firstPrompt": "Paint an original 3:2 landscape editorial gouache illustration, a close overhead view for the Russian physics site Purradox. Subject is a filmed university demonstration of an electric field: a shallow oval clear glass dish, pale amber oil, two small round flat bronze electrode tips separated horizontally within it. In the oil, fine oat-coloured short rice-grain-like specks lie end to end, showing a small number of long gently curved bands that connect the left and right metal tip; the main band between the tips is straight, outer bands bow above and below it; bands do not cross. Keep the exact field mapping for a separate diagram, no drawn arrows, no digital symbols. Show the lab demonstration as a moment of observation, only the apparatus. No person, animal, hands, live sparks, batteries or visible dangerous apparatus. The extreme side foreground is a calm slab of black-purple tabletop. One directional warm light hits the thin curved edge of the glass and the seed streaks; indigo and cobalt shadows in the distance, a narrowly placed cyan reflection and a tiny pink reflection on the glass edge only. Color rhythm from a tiny amber lantern against nocturnal ultramarine and plum shadows and chromatic reflections in a puddle. Very clear silhouetted composition with enough scale to recognise the disk ends and curves at 300 pixels. Offset the dish slightly to the right, a corner of the desktop on a diagonal, generous clean space around it. Matte broad gouache strokes, unpolished subtle handmade edges, graphic/independent book illustration, calm controlled shadows; no even grain, no fake film noise, no bloom across the image, no sci-fi circuits, no particle glow, no decorative stars, no annotation, no watermark, no panel or border.",
+      "review": "Крупинки различимы на центральной цепочке и двух дугах; приглушённые малиновые и голубые блики только на стекле. Свечение только как отражение в материале. Это условная иллюстрация наблюдения; измерение и стрелки отданы отдельному интерактиву.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/krupinki-mezhdu-elektrodami-v1.webp",
+        "source/frontend/public/art/lesson-hooks/krupinki-mezhdu-elektrodami-v1-768.webp"
+      ],
+      "ref": "54-lantern-ghost и 55-boots-reflections (свет и палитра), лабораторная демонстрация Iowa State University"
+    },
+    "thermometer-reading": {
+      "base": "termometr-v-stakane",
+      "filename": "exec-f7bc3de7-44d6-4152-a4d4-af08a9d52f29.png",
+      "prompt": "Edit this exact Purradox gouache frame. Keep the framing, both characters and their established faces, palette and the plain vessels. Make two local repairs. Add one small dark blue, thin one-piece U-shaped clip attached to the BACK edge of the small glass, at the left of the thermometer, and clearly gripping the thermometer at the rim. It is only a support holding the glass tube upright without anyone holding it. Use a believable simple thumb-width clip silhouette, do not add any other apparatus. The thermometer remains straight and transparent with a single thin red liquid column; its small red bulb is clearly immersed a short distance above the glass bottom. Add just a few tiny simple engraved tick marks along the upper visible shaft so she could actually read it, no numerals or symbols. Keep the girl unchanged and ensure both amber eyes of the cat look toward the column; its tiny closed mouth is just the short nose and two small branches with no sweeping cheek curve. Do not alter the room, face style, placement, lighting, or composition. This image is for a science lesson and legibility of the thermometer and the small support are the main edit.",
+      "firstPrompt": "Create one new landscape 3:2 gouache frame for Purradox, a Russian teen physics course. First reference is exact identity and graphic painting approach: slim copper-red-haired teenage girl with loose side-swept bun and ONE distinctive loop of hair, burgundy roomy sweater, and an ordinary dark plum tuxedo cat with cream muzzle and fore toes, tall slightly asymmetric ears and amber eyes. Second reference is only a guide to amber versus nocturnal indigo local light, no ghost, no stars, no lamp in frame. New scene, back and side view at kitchen counter, mid-afternoon pale blue light from the left, warm reflections from the right. Girl leans very slightly to see the mark on a SINGLE plain analog lab thermometer already suspended vertically in a small translucent straight-walled tumbler of warm water. Behind it, to the right and farther away, a much larger low rectangular dish with a generous volume of water and simple rounded corners. In the center the small thermometer and glass need the cleanest contrast against a dark counter, with a very simple burgundy-red liquid column rising inside the thermometer, no labels or fabricated numerals. Do not show the girl holding it, hands can be entirely outside the composition, girl is mostly cut off at the right but her recognizable profile and hair loop read naturally. Her expression is focused, one brow slightly furrowed, relaxed mouth. One small cat face with both amber eyes looking at the thermometer from behind the left edge of the counter, no visible paw needed, less than one quarter of frame. Avoid repeating the home pose or the original seated-at-a-table composition. Make the glass legible at 300 px with calm broad highlights, strong negative space, painted edges and local soft brush marks in the fabric and shadow, no surface grain or heavy outlines. The thermometer must have one red column with a bulb at the immersed bottom, no second thermometer, no measuring spoon, no signs or text, no petals, no watermark, no extra objects. Do not make water bubble or steam. Make the visual action simply waiting to read the temperature.",
+      "review": "Термометр закреплён за край, резервуар погружён и не лежит на дне. Столбик и две ёмкости читаются. Девушка видна в профиль, взгляд кота направлен к прибору. Исходный кадр без держателя отклонён.",
+      "ref": "home-wide-v1.webp (пара), 54-lantern-ghost (локальный тёплый свет), 55-boots-reflections (отражение на столе)",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/termometr-v-stakane-v1.webp",
+        "source/frontend/public/art/lesson-hooks/termometr-v-stakane-v1-768.webp"
+      ]
+    },
+    "heat-engine-flywheel": {
+      "base": "mahovik-teplovogo-dvigatelya",
+      "filename": "exec-de99854c-51a4-40c1-9df7-149f90f7e537.png",
+      "prompt": "Paint a NEW wide 3:2 picture for Purradox, a warm illustrated physics course. First attached reference is the house palette and hand-painted matte gouache with big shapes. Second is light design inspiration: a tiny amber source against purple-blue shadows, do not put a lantern or ghost in the picture. Subject: a small working Stirling demonstration engine on a physics club bench seen almost at flywheel level from a slight left oblique view. A large, slim, dark plum spoked flywheel is the main visual shape toward the right centre, with warm brass on its illuminated edge and muted blue on its shadow edge. A short horizontal flywheel axle and its simple support are visibly attached to the body below; one small rod links its off-centre crank to a little piston assembly, connected coherently, no floating rods. Below and to the left an enclosed horizontal metal cylinder and a cast metal base with warm copper reflected from below, suggest an understated hot end and a cooler end through the light. Show a stationary instance with one subtly blurred highlight on the wheel rim only, preserve readable wheel spokes. No clutter of tubes, no detailed how-to mechanical blueprint, no flames or smoke, no lettering, no numbers, no digital traces. A dark petrol-blue shadow, a little plum, warm copper and a single pale blue edge; no rainbow gradient. Put all the engine within the central 80% of both dimensions so it reads if cropped vertically on a lesson opening. Empty table around it. Three-quarter view from slightly below tabletop object, illustration from an independent teen science comic, visible brush direction along wood and metal surfaces and quiet large planes, matte shading, sparse marks, clean silhouette. Keep it a specific recognizable small engine on a bench, not a fantastical machine, not a technical cross section. No watermark, title, frame, real-life branding or decorative stars.",
+      "review": "Видны маховик на опоре, цилиндр и связь через шатун. Композиция читается без подписей. Устройство условное, схему цикла вынесли отдельно.",
+      "ref": "home-wide-v1.webp (палитра проекта), 54-lantern-ghost (цвет тёплого света и холодной тени)",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/mahovik-teplovogo-dvigatelya-v1.webp",
+        "source/frontend/public/art/lesson-hooks/mahovik-teplovogo-dvigatelya-v1-768.webp"
+      ]
+    },
+    "parallel-plates": {
+      "base": "latunnye-obkladki",
+      "filename": "exec-ea96035c-6143-43f6-9c0c-a110681df014.png",
+      "prompt": "Original three-to-two landscape gouache illustration for a school physics textbook. A still life of a variable parallel-plate capacitor used in a museum classroom display, seen diagonally from slightly above. Two perfectly matching plain round brass discs face one another with a clearly visible empty gap. Their faces are parallel and their axes match exactly. Each disc is mounted upright by its back on one dark ceramic insulating foot, with the two feet standing on one long wood track. The facing flat surfaces never touch, only one straight slot in the wood track visible. Look across the gap as the main focal point and use a cool sky-blue patch of background visible through it so the separation reads at small size. The near plate catches one warm orange arc on its edge. One turquoise-green reflection on the rear plate, quiet deep blue tabletop, large plum shadows. Render with matte hand-painted gouache surface shapes and a few directionally painted edges in the brass. Enough negative space around the apparatus, original book illustration with a flat color emphasis. Show only the two discs, their feet and the wood track. This is an unpowered apparatus on display, no wires, people, characters, writing, diagrams, sparks, digital graphics or logos.",
+      "ref": "home-wide-v1.webp (графическая гуашь и палитра), USC Dornsife (конструкция с раздвижными дисками)",
+      "review": "Две круглые обкладки, раздельные изолирующие опоры, хорошо читаемый зазор. Голубой свет выделяет просвет. Рисунок показывает устройство, размеры и зависимость ёмкости вынесены в отдельную модель.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/latunnye-obkladki-v1.webp",
+        "source/frontend/public/art/lesson-hooks/latunnye-obkladki-v1-768.webp"
+      ]
+    },
+    "parallel-lamps": {
+      "base": "odna-lampa-gorit",
+      "filename": "exec-0ae923bd-3ef1-4118-a45a-651494c505c5.png",
+      "prompt": "Create an original 3:2 landscape gouache still life for Purradox. Tight tabletop side view of two matching small clear incandescent lab bulbs in short black ceramic bases. Put both glass silhouettes in the central area side by side, slightly staggered in depth so they stand apart. The nearer one at left is unlit, its filament and the lower stems are visible as a simple matte dark silhouette against clear cool-blue glass. The one farther right is lit, with one tiny crisp amber glowing filament in clear glass. The glowing lamp throws one irregular amber reflection on the table only directly below and beside it. The unlit lamp may catch a narrow distant blue edge. The emotional detail is the completely different light in two identical objects. Nothing else in the middle, both sockets and glass fully in frame with room above and on both sides. Stage it at night by a dark cobalt window. Borrow the first attached Purradox reference for broad violet-indigo planes and graphic painterly matte texture, the second for small, contrasting teal and peach highlights on physical surfaces. Restrained warm center, large calm shapes, rounded, human brush edges and colour separation. No person or animal, visible wires, sparks, gradients spanning the page, glow outside the lighted bulb except the table reflection, subtitles, product markings, numbers or logos.",
+      "ref": "home-wide-v1.webp (манера), 54-lantern-ghost.png (локальный свет на холодном фоне)",
+      "review": "На обеих лампах нити и опоры согласованы. Только правая нить светится и даёт локальный блик. Вид ламп показывает результат размыкания, схема соединения открывается в лаборатории.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/odna-lampa-gorit-v1.webp",
+        "source/frontend/public/art/lesson-hooks/odna-lampa-gorit-v1-768.webp"
+      ]
+    },
+    "magnetic-compass": {
+      "filename": "exec-e511f474-0b1d-4a29-918e-f91b64b99a1a.png",
+      "base": "kompas-u-magnita",
+      "lesson": "magnitnoe-pole-i-sila-ampera",
+      "card": "intro",
+      "reference": "55-boots-reflections.png, 22-optics-cat.png",
+      "prompt": "Original Purradox educational site illustration, independent graphic gouache, 3:2 landscape. Image 1 is the house palette and paint handling only. Image 2 is a reference for small, distinct reflected patches of saturated raspberry and mint, not for subject or overall composition. Image 3 supplies the idea of looking into a small instrument from close by, not the subject. Our scene is a cozy dark tabletop seen directly from above. One small round tarnished brass compass at center-right, open face, soft cream enamel, precisely ONE two-tone needle, straight across its single center pin. A single old-fashioned straight rectangular bar magnet lies left of the compass on the same horizontal axis at a clear gap; the blue half is on the far left, the coral-red half on its right, facing the compass. The needle points along this common axis: its colored red pointed end is on the RIGHT, AWAY from the magnet, while its pale green pointed end is to the LEFT, toward the magnet. Both objects are completely in the frame; the tabletop gets generous plum negative space. Soft blue and red reflections only at metal edges, with one clear pool of cream light. At the top left corner a folded yellow cloth, partly cut off, gives a diagonal; no other apparatus. Clearly distinguish a directional needle from a decorative clock hand. A few soft untitled radial ticks only, no letters, no numerals, no captions, no lines representing fields, no multiple needles, no stars, no humans, no cats, no exterior frame, no dotted digital texture. Hand-painted color blocks, flattened shape and small honest brush marks within surfaces. Photograph nothing; feeling of a quiet comic-panel observation. Keep main things legible at 300 CSS pixels.",
+      "review": "Одна стрелка и одна ось поворота. Красный конец стрелки смотрит от обращённого к нему северного полюса. Пурпурный стол, охра на металле и отдельные холодные отражения.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/kompas-u-magnita-v1.webp",
+        "source/frontend/public/art/lesson-hooks/kompas-u-magnita-v1-768.webp"
+      ]
+    },
+    "magnetic-trace": {
+      "filename": "exec-00883dc6-963f-4f81-af0c-e9efaa590774.png",
+      "base": "sled-elektronov",
+      "lesson": "sila-lorenca",
+      "card": "intro",
+      "reference": "50-cat-reflected-eyes.png",
+      "prompt": "Original cropped editorial gouache study for Purradox, 3:2 landscape. Image 1 is ONLY a palette/brushwork reference, image 2 ONLY a reference for how saturated reflections fall on a dark smooth surface. View from up close through the glass of a dark-room classroom electron-beam demonstration. Frame it AS AN EXTREME CLOSE-UP of the visible circle and the glass: just a single slender turquoise circular trace from glowing gas inside the bulb and ONE curved glass boundary with amber reflection, near the right edge. Most of the bulb extends beyond the frame; the foreground viewpoint clips the apparatus completely so no stand, gun, coils, cables, or other machinery are visible. Keep the entire luminous circle within the image, positioned to the right of center with cobalt and violet darkness to its left. The circle has a tiny variation in brightness and a fine soft halo; the glass rim makes a broader soft reflection separated from the trace. Physical atmosphere of a close-up through glass in a dim school lab, empty dark tabletop shadows, no galaxy, portal, decorative light rings, instrument readouts, star particles, figures, typography, digital noise, signatures or labels. A clear quiet contrast between one precise light trace and painterly glass highlight. Matte hand-painted broad gouache, no plastic effect. Feature remains readable at 300 px wide.",
+      "review": "Круг полностью виден, от отражения на стекле его отделяет тёмный промежуток. Кадр показывает след, устройство трубки и ориентация катушек остаются за краем.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/sled-elektronov-v1.webp",
+        "source/frontend/public/art/lesson-hooks/sled-elektronov-v1-768.webp"
+      ]
+    },
+    "optics-fibre": {
+      "base": "svet-na-konce-volokna",
+      "filename": "exec-1d618fa7-d400-4ddd-b2d2-1e8e5d641a64.png",
+      "lesson": "prelomlenie-i-polnoe-otrazhenie",
+      "card": "total",
+      "reference": "54-lantern-ghost.png, 55-boots-reflections.png",
+      "prompt": "Original small landscape 3:2 teaching illustration for Purradox, observed graphic gouache with confident large color masses. Image 1 for existing house matte paint and bench universe only. Image 2 for ONE local amber spot in an indigo room. Image 3 for a single reflected pool of cyan or muted pink on nearby surfaces, not for spectrum or subject. A short piece of VERY THIN optical fiber, not a hose, curled into one generous arc on a deep dusky lilac tabletop. Its left visible part is anchored in a small understated brass holder, the thin dark blue cable curves across the lower half of the frame and its exposed cut tip on the right points diagonally down toward a small patch of matte cream card. One tiny amber point at the cable tip and a tiny pale honey-colored patch on the cream card aligned with the end. The rest of the cable is matte dark indigo with a cool edge highlight from a window, it is NOT shiny and it does NOT emit light along its length. No light streak in ambient air; light can be seen at the tip and where it lands. Modern enough to be an optical fiber sample; no switches, candles, fire, devices, hands, faces, futuristic weapon hardware, decorative stars, sparkle bloom, patterned grain, magical glowing cable, lens flares, digits, arrows, captions, border or watermark. Camera just above the tabletop, composition readable at 300px. Most of the dark surface remains quiet, color collects close to the little spot. Flat brushwork and visible drawn edges only where appropriate.",
+      "review": "Свет заметен у торца и на бумаге. На остальной дуге только холодный блик от окна. Положение пятна связано с направлением свободного конца.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/svet-na-konce-volokna-v1.webp",
+        "source/frontend/public/art/lesson-hooks/svet-na-konce-volokna-v1-768.webp"
+      ]
+    },
+    "optics-film": {
+      "base": "polosy-na-plenke",
+      "filename": "exec-5b45ff79-2368-4fcf-875a-f6e6713a5e83.png",
+      "lesson": "interferenciya-i-difrakciya",
+      "card": "interference",
+      "reference": "55-boots-reflections.png, 35-cat-light-ripples.png",
+      "prompt": "Original landscape 3:2 gouache still life for a Purradox school physics lesson on interference. Image 1 supplies house colors and ink/gouache brushwork only. Image 2 is for how small clear patches of cyan, amber and rose move through colored reflections; take no subject or motifs from it. Image 3 for deep matte indigo space around very small glints. A single simple oval brass wire loop held upright in a dark purple lab support, seen nearly straight on from close up. Inside the ring is a flat, completely unbroken, thin vertical soap film. The top third of the film is almost transparent brown-blue, the middle and lower sections carry several gently bending bands of distinct reflected amber, dusty rose and mint, the bands mostly horizontal as the film drains. Give the film a dark clear upper section and 3 or 4 broad color strokes with enough contrast visible on a phone. The brass is one thin continuous wire, no doubles or ornate embellishment. Wide empty cobalt workshop background, a trickle of diffused warm light at table level, cropped simple support, uneven matte brush edges inside specific surfaces. One physically plausible object. The colorful light is visible ONLY across the film, not in the air or on the metal. No bubble sphere, smoke, liquid outside the loop, stars, circuitry, electronics, many rainbow stripes, hands, characters, text, frame, grain overlay, glow border or watermark. Small painting in a confidently inhabited workshop, not a photograph.",
+      "review": "Полосы остаются внутри одного кольца. Сверху плёнка темнее и прозрачнее. Плоский кадр показывает цвета; условие интерференции поясняется отдельно.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/polosy-na-plenke-v1.webp",
+        "source/frontend/public/art/lesson-hooks/polosy-na-plenke-v1-768.webp"
+      ]
+    },
+    "relativity-carriage": {
+      "base": "kot-v-vagone",
+      "filename": "exec-7126fe36-7433-4411-8e7a-9874a21396ea.png",
+      "lesson": "otnositelnost-i-energiya-pokoya",
+      "card": "intro",
+      "reference": "42-cat-cups-monitor.png, 55-boots-reflections.png",
+      "prompt": "Original 3:2 wide Purradox editorial gouache scene for an educational site, exceptionally strong silhouette. Image 1 is the exact original house character identity and matte colored brushwork. Image 2 inspires the single warm pool of light in a dark ordinary place, and Image 3 inspires selective streaks of cyan, amber and muted pink in reflections only. Scene: the cat is a passenger in an empty dark indigo train carriage at night. Camera INSIDE the carriage, viewing one large long horizontal train window face-on at close distance. Outside, just a few distant broad horizontal color strokes slide by, teal and dusty mauve on cobalt; no star shapes, leaves, rain drops or many details. The only cat, our Mefistofel, is seen mainly from behind with his head slightly turned toward the window and ONE amber eye visible in profile. Dark plum fur, one tall pointed ear and the other angled outward, small warm cream muzzle only where profile allows, natural lean cat body. He sits on the edge of the plum bench below the window and watches the light outside, proper cat proportions; one tail curls along the seat, paws can be hidden by the seat edge. Use one finely placed brass reading light near the window's edge so that the left edge of the cat and the seat catch a little honey light. The cat is small in the composition, slightly right of center. Clear separation from the flat pane, no second cat reflected in the window. Original matte painted comic atmosphere, inhabited and quiet, broad color masses, small dry brush strokes only on painted surfaces. No faces other than the cat, no ticking clock, track, diagram, equations, stars, visual noise, decorative vignette, text, border, stock art gloss or generic anime. Leave good margins around the cat's ears; readable at 300px.",
+      "review": "Читаются профиль с янтарным глазом и асимметрия ушей. За окном только полосы движения. Сцена задаёт точку зрения из вагона; геометрия световых часов показана в опыте.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/kot-v-vagone-v1.webp",
+        "source/frontend/public/art/lesson-hooks/kot-v-vagone-v1-768.webp"
+      ]
+    },
+    "photoelectric-cell": {
+      "base": "plastina-v-fotoelemente",
+      "filename": "exec-fa491b55-7e8e-48ef-8917-7f38667e6747.png",
+      "lesson": "fotoeffekt",
+      "card": "intro",
+      "reference": "50-cat-reflected-eyes.png, 54-lantern-ghost.png",
+      "prompt": "A new original landscape 3:2 educational gouache illustration for Purradox, a tiny observational image for a physics lesson on the photoelectric effect. Use Image 1 only for the house color handling, Image 2 only for selective blue and amber reflections on glass, Image 3 only for the placement of one small local light in a deep dark room. An overhead three-quarter crop tightly framing one traditional laboratory vacuum phototube in a dark purple ceramic socket. This is a clear short cylindrical glass envelope with a rounded top. Inside, on the rear wall, is one thin gently curved matte silver sheet resembling a small half-cylinder, and in front of it one delicate plain collector loop made of narrow metal wire, clearly separated by a gap. Their two thin supports go down into the socket. No filament, floodlight spiral, visible electron dots, or anything glowing within the empty space. The silver rear plate catches a SMALL cool lilac patch of light entering quietly from a source outside the frame; the glass has a muted amber rim at one outer edge. The camera is close enough to read the open gap and separate pieces without showing other apparatus. The scene has deliberate asymmetric negative space and broad midnight blue paint, warm brass only near the base. No characters, magical rays, labels, numerals, gauges, circuit diagram, sparks, dramatic haze, stenciled texture, photography, stars, framing or watermark. Carefully painted expressive edges. Main subject readable at 300 CSS pixels.",
+      "review": "Пластина и проволочный коллектор различимы и разделены зазором. Сиреневый блик на металле, янтарный по кромке колбы. Кадр показывает конструкцию, электроны нарисованы только на схеме опыта.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/plastina-v-fotoelemente-v1.webp",
+        "source/frontend/public/art/lesson-hooks/plastina-v-fotoelemente-v1-768.webp"
+      ]
+    },
+    "solarLimb": {
+      "base": "kraj-solnca",
+      "filename": "exec-6589c705-6f35-4152-a38d-8695b5f1d584.png",
+      "reference": "54-lantern-ghost.png, 55-boots-reflections.png",
+      "visualSource": "Локальный переход от золотого к лиловому на границе света. На рисунке протуберанец и край Солнца; реакции внутри звезды описаны отдельно.",
+      "referenceURL": "https://science.nasa.gov/sun/facts/",
+      "prompt": "One original landscape 3:2 matte gouache illustration for the Purradox physics textbook, at the point where a lesson turns from binding energy to fusion in the Sun. Paint an unexpectedly close, oblique edge of the actual Sun as an astronomical observation; the lower right 65% is a broad cropped incandescent curved limb, a clean slow arc that exits both the right and bottom edges. The top left is ink blue space, calm negative space. The glowing surface is molten golden cream with about six sweeping irregular broad dry brush marks in persimmon and apricot, slightly paler toward the centre of the disk; there is a thin cool violet edge in ONE off-axis area, and a single modest vermilion loop of gas visible above the limb near the lower centre. Make the scale feel immense by letting the disk extend beyond the frame and keeping the limb arc legible on a phone. Take the colour relationship of a tiny honey lamp against deep blue night, and localized cool reflected violet from the supplied colourful night art mood; this is an original nonliteral astronomical composition with the visual economy of independent painted animation backgrounds. A few edges made in one confident brush stroke, large adjacent areas of flat painterly colour with natural tonal transitions. No planet, cats, people, station, instruments, optics overlay, arrows, text, numbers, character eyes, scientific warning marks, nuclear apparatus, diagrams, bright uniform grain, repeated speckle, star field, rendered lens flare, digital gradients, or ornamental bloom. Keep the rim prominent in the central 80% for cropping. This is an image of the outer atmosphere and surface, with no depiction of the interior reaction or particle paths.",
+      "review": "Сцена отличается от вводных изображений крупным кадром. Очертание края и отдельная петля считываются в уменьшенном файле. Цвет и штрих условные.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/kraj-solnca-v1.webp",
+        "source/frontend/public/art/lesson-hooks/kraj-solnca-v1-768.webp"
+      ]
+    },
+    "moonDrop": {
+      "base": "molotok-i-pero",
+      "filename": "exec-31644002-a29e-4bfa-ad2a-784f0fe42ef7.png",
+      "reference": "Масштаб и резкий край света из 38-cat-on-moon и 54-lantern-ghost. Сюжет подтверждён NASA.",
+      "referenceURL": "https://science.nasa.gov/resource/the-apollo-15-hammer-feather-drop/",
+      "prompt": "Make an original wide 3:2 graphic gouache illustration of one historical detail from the Apollo 15 demonstration for Purradox, a teenage physics course. A very low camera looking a little across the Moon's dust near the foot of the lander (the lander is OUT of the frame). Both objects are at an identical height and just above a sunlit strip of gray lunar dirt, with hard shadows on the ground and airless nearly black violet sky. Near left-centre: ONE recognisable plain geological rock hammer from the early 1970s in three-quarter angle (slim silver rough steel head with a small square flat striking face and its opposite chisel end visible, short straight soft charcoal handle below; simple, not a fantasy maul). Right-centre and horizontally clear of it: ONE much smaller slender falcon flight feather, soft warm gray and cream bands and visible fine central rachis, tilted with the tip upward, floating at the same height as the lower point of the hammer. The objects' lower ends align horizontally across the image and both are completely separated from ground by the same small visible gap. No extra tools, feet, people, stars, flags, rocket, dust clouds, captions, mathematical lines, logos, borders, hanging wires or supports. Graphic matte brushwork; make the hard-edged form of the hammer and the pale feather distinguishable at phone width. Low horizon below the middle, unadorned ink-blue dark above, locally warm silver on the ground with cool lilac in dark cast shadow. Deliberate cropped cinematic composition like a frame in hand-painted animation, quiet empty areas. Limited tiny texture, no glitter or filter. Historic educational impression of the objects right before touchdown, not a photograph.",
+      "review": "Геологический молоток и полосатое перо узнаваемы, под обоими виден зазор. Рисунок показывает момент падения, размеры предметов и тени условные.",
+      "assets": [
+        "source/frontend/public/art/lesson-hooks/molotok-i-pero-v1.webp",
+        "source/frontend/public/art/lesson-hooks/molotok-i-pero-v1-768.webp"
+      ]
+    }
+  },
+  "rejected": [
+    {
+      "key": "motion",
+      "review": "Расположение рельсов вокруг вагона неубедительно. Взяли сцену из салона.",
+      "prompt": "Create a NEW stand-alone 3:2 landscape painted graphic illustration for a teen physics lesson on frames of reference and displacement. Use image 1 as the project's graphic gouache style and cat identity reference ONLY, and image 2 only for puddle reflections. A single clear scene: bird's-eye view of a mostly empty rectangular tram seen straight down through its open roof as an intentional visual cutaway. Its two rails run exactly left to right along the street, unmistakably OUTSIDE the tram. Tram occupies the upper-middle width of the image. Inside, our little dark plum tuxedo cat with cream face and front paws and amber eyes is sitting still on ONE amber bench near the front of the carriage, seen from above three-quarter; ears and the white muzzle clearly distinguish the shape. On the wet street outside and parallel to the rails is a fixed dark indigo curb, with one small warm streetlamp at far left. No human figures required. Architectural plan made as an editorial print: simple exact shapes, colored reflections on wet lilac and blue paving, strokes of warm coral on the roof, narrow mint and yellow along the track. Bright car shape against large cooler flat areas. Avoid perspective ambiguity and surreal objects, clean silhouettes, no text, no decorative grain, no arrows or graphs, no generic backdrop, no extra rails inside carriage, no blur. The fixed curb and the cat sitting in a vehicle must be apparent even in a small thumbnail. No UI or borders."
+    },
+    {
+      "key": "density",
+      "review": "На варианте весов тяги проходят через грузы. Вместо него в уроке два куба."
+    },
+    {
+      "key": "gaslaws",
+      "filename": "exec-7bff0b9b-b065-42f4-a626-493dc3d688cb.png",
+      "review": "Синяя область под поршнем похожа на жидкость. Заменено подписанной схемой.",
+      "prompt": "New 3:2 landscape illustration for Purradox teen physics. Image 1 is an original house-art brushwork reference only, image 2 is a color-light reference only. A single big laboratory gas piston shown side-on as a deliberately open educational cutaway: one clear glass cylinder with vertical parallel sides and a flat sealed bottom, one horizontal dark teal disk fitted exactly between the vertical walls midway up, one brass rod joining the center of the disk and rising vertically above the opening. Visible blue empty gas space below the disk; above the disk transparent pale glass and rod. Warm coral lower bounce, cream field, large sharp forms. The disk seals the gas, contacts both walls, and stays perpendicular to the cylinder. No particles or hoses, no machine clutter, no lettering. Express the scene with independent comic gouache and broad intentional shapes. High readability at 320 px, one dominant relationship, controlled edge highlights. No UI, labels, digits, diagrams or watermark, no digital noise, no vignettes."
+    },
+    {
+      "key": "engine",
+      "filename": "exec-dde2c97f-af14-4cd1-b881-a53bce9bee5f.png",
+      "prompt": "New 3:2 landscape art for an illustrated Russian teen physics lesson. The first reference is the project brushwork and atmosphere, the second is a palette cue only. Victorian classroom model of a compact external-heat Stirling engine, viewed carefully from the side: one dark copper cylindrical hot end above one tiny flame from a small contained spirit lamp, and a large brass flywheel to its right visibly linked by a single bent metal rod to the model's moving cylinder. Keep the flame modest and confined, bottom base sturdy, enough air around the large wheel. Use plate-like graphic gouache with side light on the brass, dusty teal shadows and coral orange hot side; simple calm rosy background. Conceptual illustration, not a construction diagram, no labels, person, diagrams or flying sparks. Matte independent comic gouache with decisive large flat shapes, light strokes restricted to meaningful surfaces, legible on a phone. Single clear focus. No labels or letters, logos, decorative stars, fake paper texture, UI or borders.",
+      "review": "Поршень и привод колеса не образуют ясную механику. Вместо кадра схема баланса энергии."
+    },
+    {
+      "key": "ice",
+      "filename": "exec-0fc89940-ca84-4987-b5fa-db76f8793523.png",
+      "prompt": "New 3:2 landscape art for an illustrated Russian teen physics lesson. The first reference is the project brushwork and atmosphere, the second is a palette cue only. Quiet tabletop closeup. One large mostly transparent ice cube with recognizably rounded square edges floats in a half full plain heavy clear tumbler of amber tea. The ice breaks the horizontal surface, lower part visible through the tea. A second small puddle is not needed. A sliver of plum sleeve and cat's dark ear may appear beyond the glass, out of the center. Late afternoon coral and pale honey with small mint reflections through ice, rich dark burgundy table shadow. Clean legible glass geometry and one subject. No steam, no extra cubes, no glitter or text. Matte independent comic gouache with decisive large flat shapes, light strokes restricted to meaningful surfaces, legible on a phone. Single clear focus. No labels or letters, logos, decorative stars, fake paper texture, UI or borders.",
+      "review": "Лёд в воде кажется слишком высоко поднятым. Вместо кадра график плавления."
+    },
+    {
+      "key": "spectral-first",
+      "filename": "exec-a2c083f7-96eb-4053-a99a-8e37ad6d9a1c.png",
+      "review": "Девушка с короткими тёмными волосами не совпадает с образом на сайте. Использована исправленная версия."
+    },
+    {
+      "key": "lens-dark-arrow",
+      "filename": "exec-66f5bda2-3b35-4c5f-863d-269a6a1cc8a2.png",
+      "review": "На первом варианте стрелка была темнее освещённого листа. Исправлено локальной правкой рисунка."
+    },
+    {
+      "key": "oil-field-lantern",
+      "filename": "exec-4f994ea3-6063-483b-a2dd-6f289874dc58.png",
+      "review": "Фонарь отвлекал от демонстрации, цепочки выглядели как бусы. Убран фонарь, крупинки разнесены и подведены провода."
+    },
+    {
+      "key": "thermometer-first",
+      "filename": "exec-4e55aa93-a471-4f9c-8995-6c82d2f5bd43.png",
+      "review": "Термометр стоял без опоры и делений. Подключена версия с зажимом на краю стакана и короткой шкалой."
+    },
+    {
+      "key": "electron-loop-first",
+      "filename": "exec-4ba61fe0-09c8-40da-ace6-89790df1f5ab.png",
+      "review": "Боковые кольца прибора задавали сомнительную геометрию катушек. Для урока выбран крупный план светящегося следа и стекла."
+    }
+  ],
+  "referencesForPhysics": [
+    "https://openstax.org/books/physics/pages/16-1-reflection",
+    "https://openstax.org/books/physics/pages/16-2-refraction",
+    "https://openstax.org/books/physics/pages/16-3-lenses",
+    "https://openstax.org/books/physics/pages/11-3-phase-change-and-latent-heat",
+    "https://openstax.org/books/university-physics-volume-2/pages/4-2-heat-engines",
+    "https://openstax.org/books/university-physics-volume-2/pages/10-2-resistors-in-series-and-parallel",
+    "https://openstax.org/books/university-physics-volume-2/pages/13-2-faradays-law",
+    "https://openstax.org/books/university-physics-volume-3/pages/6-2-photoelectric-effect",
+    "https://openstax.org/books/university-physics-volume-3/pages/10-3-radioactive-decay",
+    "https://openstax.org/books/college-physics/pages/27-introduction-to-wave-optics",
+    "https://learning.physics.iastate.edu/electric-field-lines",
+    "https://openstax.org/books/university-physics-volume-2/pages/5-4-electric-field",
+    "https://openstax.org/books/university-physics-volume-2/pages/7-5-equipotential-surfaces-and-conductors",
+    "https://openstax.org/books/university-physics-volume-2/pages/3-2-work-heat-and-internal-energy",
+    "https://openstax.org/books/university-physics-volume-2/pages/1-3-thermal-expansion",
+    "https://openstax.org/books/college-physics-2e/pages/13-6-humidity-evaporation-and-boiling",
+    "https://openstax.org/books/university-physics-volume-2/pages/8-4-capacitor-with-a-dielectric",
+    "https://openstax.org/books/university-physics-volume-2/pages/10-4-electrical-measuring-instruments",
+    "https://openstax.org/books/university-physics-volume-2/pages/10-1-electromotive-force",
+    "https://dornsife.usc.edu/lecture-support-lab/parallel-plate-capacitor/",
+    "https://physicslabs.colorado.edu/demos/electricity-and-magnetism/magnetic-materials/magnets/magnets/",
+    "https://dornsife.usc.edu/lecture-support-lab/electron-motion-in-a-uniform-magnetic-field/",
+    "https://openstax.org/books/university-physics-volume-2/pages/13-1-faradays-law",
+    "https://openstax.org/books/university-physics-volume-2/pages/11-3-motion-of-a-charged-particle-in-a-magnetic-field",
+    "https://openstax.org/books/university-physics-volume-2/pages/11-4-magnetic-force-on-a-current-carrying-conductor",
+    "https://openstax.org/books/university-physics-volume-2/pages/16-2-plane-electromagnetic-waves",
+    "https://openstax.org/books/university-physics-volume-3/pages/2-1-images-formed-by-plane-mirrors",
+    "https://openstax.org/books/university-physics-volume-3/pages/2-2-spherical-mirrors",
+    "https://openstax.org/books/university-physics-volume-3/pages/2-4-thin-lenses",
+    "https://openstax.org/books/university-physics-volume-3/pages/1-4-total-internal-reflection",
+    "https://openstax.org/books/university-physics-volume-3/pages/2-5-the-eye",
+    "https://openstax.org/books/college-physics/pages/27-7-thin-film-interference",
+    "https://openstax.org/books/university-physics-volume-3/pages/5-3-time-dilation",
+    "https://openstax.org/books/university-physics-volume-3/pages/6-4-bohrs-model-of-the-hydrogen-atom",
+    "https://physics.nist.gov/PhysRefData/Handbook/Tables/hydrogentable2.htm",
+    "https://physics.uark.edu/about-the-department/historical-equipment/vacuum-tubes-photocells.php"
+  ],
+  "catalogArt": {
+    "bookmark-peek": {
+      "filename": "exec-67be2637-b020-4145-99ff-23bcc74f156c.png",
+      "asset": "source/frontend/public/art/lesson-hooks/kot-u-zakladki-v1.webp",
+      "size": [
+        240,
+        377
+      ],
+      "placement": "/learn, ссылка возврата к последней теме",
+      "reference": "avatar-cat-notebook-v1.webp, 46-cat-peeking.png",
+      "prompt": "One isolated cutout sticker of the existing Purradox cat, on completely transparent alpha background. Reference image 1 is the exact identity: dark inky plum coat with small light peach tuxedo muzzle, one long tall ear and the other angled outward, warm amber almond eyes, thin off-white whiskers, triangular wine-dark nose, a short simple mouth. Reference image 2 is a guide for an unexpected peeking gesture, not a source for facial details. Draw an original pose for the right edge of the learning library Continue strip. Very narrow peek: the cat stands behind the imaginary RIGHT edge, leans its head and one forepaw out to the LEFT with the head turned about 25 degrees toward the lower left. Both warm eyes follow something to the left with a skeptical curious narrowed look; left eye partially occluded by the bridge of the nose. One visible small cream forepaw at the bottom reaching left like touching a bookmark. Only the head, shoulders and this one paw, no book, no body or tail or other leg. Make the outer silhouette organic but stable, asymmetry in ears and head tilt. Preserve colors, proportions and graphic gouache quality from reference 1. Slight violet highlight on the dark cheek and one amber glancing edge at top. A few calm brush edges, flat solid colors, no texture noise, no grain, no plastic shine, no glowing halo or white stroke. Keep generous 10% transparent margins on top and on both sides, figure centered, full ears and paw in frame. No text, no prop, no background, no shadows on the background, no extra eyes, no human face. Portrait-ish sticker with the eyes visible at a thumbnail height of 80px.",
+      "review": "Смотрит в сторону названия урока. Сохранены янтарные глаза, светлая мордочка и асимметрия ушей. Вертикальный срез спрятан на краю полосы. Прозрачность проверена на светло-сиреневой подложке."
+    }
+  }
+}

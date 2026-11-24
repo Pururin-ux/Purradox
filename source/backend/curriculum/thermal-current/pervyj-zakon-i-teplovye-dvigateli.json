@@ -204,6 +204,7 @@
   "tasks": [
     {
       "id": "pervyj-zakon-i-teplovye-dvigateli:t1",
+      "lessonBlock": "special",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -230,6 +231,7 @@
     },
     {
       "id": "pervyj-zakon-i-teplovye-dvigateli:t2",
+      "lessonBlock": "balance",
       "code": "А2",
       "part": "A",
       "kind": "single",
@@ -270,6 +272,7 @@
     },
     {
       "id": "pervyj-zakon-i-teplovye-dvigateli:t3",
+      "lessonBlock": "cycle",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -313,6 +316,7 @@
     },
     {
       "id": "pervyj-zakon-i-teplovye-dvigateli:t4",
+      "lessonBlock": "balance",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -336,6 +340,7 @@
     },
     {
       "id": "pervyj-zakon-i-teplovye-dvigateli:t5",
+      "lessonBlock": "cycle",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -359,6 +364,7 @@
     },
     {
       "id": "pervyj-zakon-i-teplovye-dvigateli:t6",
+      "lessonBlock": "cycle",
       "code": "В3",
       "part": "B",
       "kind": "number",
@@ -382,6 +388,57 @@
         "expression": "4*1200*(1-300/400)/60",
         "expected": 20,
         "unit": "Вт"
+      }
+    },
+    {
+      "id": "pervyj-zakon-i-teplovye-dvigateli:t7",
+      "code": "В4",
+      "section": "thermal",
+      "lessonBlock": "special",
+      "practiceExtension": "2027",
+      "part": "B",
+      "kind": "number",
+      "level": 2,
+      "text": "Одноатомный идеальный газ изобарно расширился от 2 до 5 л при 80 кПа. Сколько теплоты получил газ?",
+      "unit": "Дж",
+      "answer": 600,
+      "hint": "Свяжи изменение внутренней энергии с изменением произведения pV.",
+      "solution": [
+        {
+          "text": "Газ совершил работу pΔV = 240 Дж. Изменение внутренней энергии равно 3pΔV/2 = 360 Дж."
+        },
+        {
+          "text": "Теплота Q = ΔU + A = 600 Дж."
+        }
+      ],
+      "audit": {
+        "expression": "2.5*80*(5-2)",
+        "expected": 600,
+        "unit": "Дж"
+      }
+    },
+    {
+      "id": "pervyj-zakon-i-teplovye-dvigateli:t8",
+      "code": "В5",
+      "section": "thermal",
+      "lessonBlock": "special",
+      "practiceExtension": "2027",
+      "part": "B",
+      "kind": "number",
+      "level": 2,
+      "text": "При медленном изотермическом сжатии идеального газа внешние силы совершили над ним работу 170 Дж. Найди алгебраическую величину Q, положительную при передаче теплоты газу.",
+      "unit": "Дж",
+      "answer": -170,
+      "hint": "Чему равно изменение внутренней энергии при постоянной температуре?",
+      "solution": [
+        {
+          "text": "У идеального газа ΔU = 0. Работа самого газа равна −170 Дж. По первому закону Q = ΔU + A = −170 Дж: газ отдал энергию."
+        }
+      ],
+      "audit": {
+        "expression": "0-170",
+        "expected": -170,
+        "unit": "Дж"
       }
     }
   ]

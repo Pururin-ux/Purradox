@@ -1,4 +1,6 @@
-import { useRef, useState } from "react";
+import { withProgressWrite } from "./progressLock";
+import { useCallback, useRef, useState } from "react";
+import { saveLearningResult } from "@/lib/game";
 import { currentDraftKey, mappedId, openDraftStore, remapChoice, remapEntries } from "./draftStore";
 
 const record = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
@@ -39,6 +41,8 @@ function validAnswer(item, value) {
 
 function validResult(item, value) {
   if (!record(value) || typeof value.correct !== "boolean") return false;
+  if (value.attemptId !== undefined && (!text(value.attemptId, 80) || !value.attemptId
+    || !Number.isSafeInteger(value.checkedAt) || value.checkedAt < 0)) return false;
   const answer = value.answer;
   const option = (n) => Number.isInteger(n) && n >= 1 && n <= (item.options?.length ?? 0);
   if (item.kind === "number" ? !Number.isFinite(answer)
@@ -61,7 +65,9 @@ export function validLearningDraft(kind, data, value) {
       && (value.cardId === "intro" || data.blocks.some((block) => block.id === value.cardId)
         || value.cardId === "finish" && data.quiz.every((item) => own(value.quiz.results, item.id)));
   }
-  return own(items, value.taskId) && Number.isInteger(value.level) && value.level >= 0 && value.level <= 3
+  return (value.summary === undefined || typeof value.summary === "boolean")
+    && (value.firstResults === undefined || map(value.firstResults, (_, correct) => typeof correct === "boolean"))
+    && own(items, value.taskId) && Number.isInteger(value.level) && value.level >= 0 && value.level <= 3
     && map(value.results, (item, result) => validResult(item, result) && Array.isArray(result.solution))
     && map(value.helpUsed, (_, used) => used === true);
 }
@@ -92,7 +98,8 @@ function migrateLearningDraft(kind, data, value, plan) {
   const taskId = mappedId(value.taskId, plan);
   const task = data.tasks.find(item => item.id === taskId);
   const level = value.level && task && task.level !== undefined && task.level !== value.level ? 0 : value.level;
-  return { ...value, taskId, level, answers, results, helpUsed: remapEntries(value.helpUsed, plan) };
+  return { ...value, taskId, level, answers, results,
+    ...(value.firstResults && { firstResults: remapEntries(value.firstResults, plan) }), helpUsed: remapEntries(value.helpUsed, plan) };
 }
 
 export function useLearningDraft(kind, slug, data, requestedTask) {
@@ -101,25 +108,46 @@ export function useLearningDraft(kind, slug, data, requestedTask) {
   const fresh = () => initialLearningDraft(kind, data);
   const [value, setValue] = useState(() => {
     const loaded = store.saved ?? fresh();
-    return directTask ? { ...loaded, taskId: directTask, level: 0 } : loaded;
+    return directTask ? { ...loaded, taskId: directTask, level: 0, summary: false } : loaded;
   });
   const current = useRef(value);
   const [pending, setPending] = useState(Boolean(store.saved) && !directTask);
   const [error, setError] = useState(store.error);
-  const update = (change) => {
+  const write = useCallback((next) => {
+    const failed = store.write(next);
+    setError(failed);
+    return failed;
+  }, [store]);
+  const apply = useCallback(change => {
     const next = typeof change === "function" ? change(current.current) : change;
     current.current = next;
     setValue(next);
-    setError(store.write(next));
+    return next;
+  }, []);
+  const update = useCallback(change => {
+    const next = apply(change);
+    return withProgressWrite(() => write(next));
+  }, [apply, write]);
+  const saveResult = (id, result, options, change) => {
+    if (!store.isCurrentProfile()) return "stale";
+    const next = change ? apply(change) : current.current;
+    return withProgressWrite(() => {
+      if (!store.isCurrentProfile()) return "stale";
+      const failed = write(next);
+      if (failed) return failed === CONFLICT_ERROR ? "stale" : "retry";
+      return saveLearningResult(id, result, options);
+    });
   };
-  const restart = () => {
+  const restart = () => withProgressWrite(() => {
+    if (write(null)) return false;
     const next = fresh();
     if (directTask) next.taskId = directTask;
     current.current = next;
     setValue(next);
-    setError(store.write(null));
     setPending(false);
-  };
-  return { value, savedAt: store.savedAt, update, error, warning: store.warning, pending, isCurrentProfile: store.isCurrentProfile,
+    return true;
+  });
+  return { value, savedAt: store.savedAt, update, saveResult, error, warning: store.warning, pending,
+    conflicted: error === CONFLICT_ERROR, isCurrentProfile: store.isCurrentProfile, canComplete: () => store.isCurrentProfile() && !store.checkConflict(),
     resume: () => setPending(false), restart };
 }

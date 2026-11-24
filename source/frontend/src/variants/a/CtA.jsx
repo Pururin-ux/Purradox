@@ -1,13 +1,12 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { Link, useParams } from "react-router-dom";
+import { lazy, Suspense, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, BookOpen, Calculator as CalcIcon, Clock3, LayoutGrid, PawPrint, RotateCcw, ScanLine, X } from "lucide-react";
-import { ShellA } from "./ShellA";
+import { LoadingA, ShellA } from "./ShellA";
 import { BrandMark } from "./BrandMark";
 import { AnswerSign } from "./AnswerA";
 import { Rich } from "@/components/shared/Tex";
 import { VtGraph } from "@/components/shared/VtGraph";
-import { CtResult } from "./CtReview";
-import { Calculator } from "@/components/shared/Calculator";
+import { Calculator, useCalculator } from "@/components/shared/Calculator";
 import { useCtExam, hasAnswer } from "@/components/shared/useCtExam";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -24,9 +23,14 @@ import { useCtVariant, submitVariant, submitCt } from "@/lib/hooks";
 import { useSfx, haptic } from "@/lib/sound";
 import { clock, answerText, plural } from "@/lib/format";
 import { LINKS } from "@/lib/nav";
-import { trackUnique, readCtResult, recordCt, useGame, useProfileGeneration } from "@/lib/game";
-import { ctDraftKey } from "@/lib/ctDraft";
-import { CompanionPortrait } from "./Companion";
+import { dayKey, trackUnique, readCtResult, recordCt, useGame, useProfileGeneration } from "@/lib/game";
+import { ctDraftKey, ctReportFor } from "@/lib/ctDraft";
+const Result = lazy(() => import("./CtReview").then(module => ({ default: module.CtResult })));
+const CompanionPortrait = lazy(() => import("./Companion").then(module => ({ default: module.CompanionPortrait })));
+
+function CtResult(props) {
+  return <Suspense fallback={<LoadingA />}><Result {...props} /></Suspense>;
+}
 
 function DomesticScene() {
   return <figure className="ct-intro-cast ct-domestic">
@@ -47,7 +51,7 @@ function SaveNotice({ exam }) {
     <AlertTitle>{conflict ? "Попытка уже обновилась" : "Попытка не сохранена"}</AlertTitle>
     <AlertDescription>{exam.saveError}</AlertDescription>
     {conflict ? <Button type="button" className="ct-secondary" onClick={() => window.location.reload()}>Открыть сохранённую попытку</Button>
-      : exam.stage !== "intro" && <Button type="button" className="ct-secondary" disabled={exam.sending} onClick={exam.retrySave} data-testid="ct-retry-save">Повторить сохранение</Button>}
+      : exam.stage !== "intro" && <Button type="button" className="ct-secondary" disabled={exam.sending} onClick={exam.retrySave} data-testid="ct-retry-save">{exam.resetRetry ? "Повторить" : "Повторить сохранение"}</Button>}
   </Alert>;
 }
 
@@ -70,7 +74,7 @@ function Resume({ exam }) {
   return <div className="ct-layout ct-entry ct-resume" data-testid="ct-resume">
     <h1 tabIndex={-1} ref={heading}>{exam.title}</h1>
     <div className="ct-intro-grid ct-entry-grid ct-resume-grid">
-      <CompanionPortrait className="ct-return-portrait" />
+      <Suspense fallback={null}><CompanionPortrait className="ct-return-portrait" /></Suspense>
       <Card className="ct-card ct-resume-card">
         <CardHeader className="ct-resume-heading">
           <CardTitle className="ct-intro-title" role="heading" aria-level={2} data-testid="ct-resume-place">{expired ? "Время вышло" : "Продолжим с " + task.code + "?"}</CardTitle>
@@ -81,9 +85,9 @@ function Resume({ exam }) {
           <p>{expired ? "Бланк сохранён. Его можно сдать." : "Отсчёт продолжался, пока тебя не было."}</p>
         </CardContent>
         <CardFooter className="ct-intro-actions ct-resume-actions">
-          <Button type="button" className="study-next ct-resume-primary" onClick={exam.resume} data-testid="ct-resume-btn">{expired ? "Проверить ответы" : "Продолжить"}<span className="ct-action-paws" aria-hidden="true"><PawPrint data-icon="inline-start" /><PawPrint data-icon="inline-start" /></span><ArrowRight aria-hidden="true" data-icon="inline-end" /></Button>
+          <Button type="button" className="study-next ct-resume-primary" onClick={exam.resume} disabled={exam.error === "conflict"} data-testid="ct-resume-btn">{expired ? "Проверить ответы" : "Продолжить"}<span className="ct-action-paws" aria-hidden="true"><PawPrint data-icon="inline-start" /><PawPrint data-icon="inline-start" /></span><ArrowRight aria-hidden="true" data-icon="inline-end" /></Button>
           <AlertDialog>
-            <AlertDialogTrigger asChild><Button type="button" variant="ghost" className="ct-secondary" data-testid="ct-resume-restart"><RotateCcw aria-hidden="true" data-icon="inline-start" />Начать заново</Button></AlertDialogTrigger>
+            <AlertDialogTrigger asChild><Button type="button" variant="ghost" className="ct-secondary" disabled={exam.error === "conflict"} data-testid="ct-resume-restart"><RotateCcw aria-hidden="true" data-icon="inline-start" />Начать заново</Button></AlertDialogTrigger>
             <AlertDialogContent className="ct-modal ct-confirm">
               <AlertDialogHeader>
                 <AlertDialogTitle className="ct-dialog-title">Начать новую попытку?</AlertDialogTitle>
@@ -283,21 +287,28 @@ function Confirm({ exam, onCloseAutoFocus }) {
   </DialogPortal>;
 }
 
+function useMediaMatches(query) {
+  const [media] = useState(() => typeof window === "undefined" ? null : window.matchMedia?.(query));
+  const [matches, setMatches] = useState(() => media?.matches ?? false);
+  useEffect(() => {
+    if (!media) return undefined;
+    const sync = () => setMatches(media.matches);
+    media.addEventListener("change", sync);
+    sync();
+    return () => media.removeEventListener("change", sync);
+  }, [media]);
+  return matches;
+}
+
 function Exam({ data, exam }) {
+  const calculator = useCalculator();
   const [calc, setCalc] = useState(false), [sheet, setSheet] = useState(false), [confirm, setConfirm] = useState(false);
   const [sheetFilter, setSheetFilter] = useState("all");
-  const [sheetQuery] = useState(() => typeof window === "undefined" ? null : window.matchMedia?.("(max-width: 1100px)"));
-  const [compactSheet, setCompactSheet] = useState(() => sheetQuery?.matches ?? false);
+  const compactSheet = useMediaMatches("(max-width: 1100px)");
+  const compactCalculator = useMediaMatches("(max-width: 760px), (max-height: 580px)");
   const finishOrigin = useRef(null), article = useRef(null), pickedFromSheet = useRef(false);
   const play = useSfx(), task = exam.tasks[exam.current];
   const section = data.sections.find(item => item.id === task.section)?.title;
-  useEffect(() => {
-    if (!sheetQuery) return undefined;
-    const sync = () => setCompactSheet(sheetQuery.matches);
-    sheetQuery.addEventListener("change", sync);
-    sync();
-    return () => sheetQuery.removeEventListener("change", sync);
-  }, [sheetQuery]);
   useEffect(() => {
     article.current?.focus({ preventScroll:true });
     article.current?.scrollIntoView?.({ block:"start" });
@@ -309,10 +320,11 @@ function Exam({ data, exam }) {
         <div className="ct-exam-identity"><Button asChild variant="ghost" className="ct-tool ct-leave" title="К вариантам ЦТ · таймер продолжит идти"><Link to={LINKS.ct} aria-label="К вариантам ЦТ"><ArrowLeft aria-hidden="true" /></Link></Button><BrandMark /><div><h1>{data.title ?? "Демо ЦТ"}</h1><p>Задание {exam.current + 1} из {exam.tasks.length}</p></div></div>
         <ExamClock timer={exam.timer} />
         <div className="ct-exam-tools">
-          <Dialog modal={false} open={calc} onOpenChange={next => { if (next) setSheet(false); setCalc(next); }}>
+          <Dialog modal={compactCalculator} open={calc} onOpenChange={next => { if (next) setSheet(false); setCalc(next); }}>
             <DialogTrigger asChild><Button type="button" variant="ghost" className="ct-tool" onClick={() => play("tap")} aria-label="Калькулятор" title="Калькулятор" data-testid="ct-calculator-toggle"><CalcIcon aria-hidden="true" /></Button></DialogTrigger>
-            <DialogPortal><DialogSurface className="ct-calculator-surface" onInteractOutside={event => event.preventDefault()}>
-              <Calculator dialog onClose={() => setCalc(false)} onKey={() => play("tap")} />
+            <DialogPortal><DialogOverlay className="ct-dialog-overlay" /><DialogSurface className="ct-calculator-surface" aria-modal={compactCalculator || undefined}
+              onInteractOutside={event => { if (!compactCalculator) event.preventDefault(); }}>
+              <Calculator calculator={calculator} dialog onClose={() => setCalc(false)} onKey={() => play("tap")} />
             </DialogSurface></DialogPortal>
           </Dialog>
           <Dialog open={sheet} onOpenChange={next => { if (next) { setCalc(false); pickedFromSheet.current = false; } setSheet(next); }}>
@@ -350,6 +362,7 @@ function Exam({ data, exam }) {
 
 export default function CtA() {
   const { variantId } = useParams();
+  const [params] = useSearchParams();
   const { data, isError, isFetching, refetch } = useCtVariant(variantId);
   if (!data && isError) return <ShellA><div className="ct-layout ct-load-state">
     <Alert className="ct-notice" data-testid="ct-load-error" aria-busy={isFetching}>
@@ -359,7 +372,23 @@ export default function CtA() {
     </Alert>
   </div></ShellA>;
   if (!data) return <ShellA><div className="ct-layout ct-loading" role="status" aria-label="Загружаем задания ЦТ" data-testid="ct-loading"><Skeleton /><Skeleton /><span className="sr-only">Загружаем задания ЦТ…</span></div></ShellA>;
-  return <CtContent key={ctDraftKey(data)} data={data} />;
+  const key = ctDraftKey(data);
+  return params.get("report") === "previous"
+    ? <PreviousCtResult key={key} data={data} />
+    : <CtContent key={key} data={data} />;
+}
+
+function PreviousCtResult({ data }) {
+  const game = useGame();
+  const attemptPath = data.variantId ? "/ct/variant/" + data.variantId : "/ct/demo";
+  const result = ctReportFor(data, { key: ctDraftKey(data) }, game.examResults?.[data.variantId ?? "demo"]);
+  return <ShellA>
+    {result ? <CtResult data={data} exam={{ tasks: data.tasks, result }} attemptPath={attemptPath} />
+      : <div className="ct-layout ct-load-state"><Alert className="ct-notice">
+        <AlertTitle role="heading" aria-level={1}>Сохранённого результата нет</AlertTitle>
+        <Button asChild variant="secondary"><Link to={attemptPath}>К варианту</Link></Button>
+      </Alert></div>}
+  </ShellA>;
 }
 
 function CtContent({ data }) {
@@ -370,10 +399,11 @@ function CtContent({ data }) {
     savedResult: g.examResults?.[id],
     readResult: () => readCtResult(id),
     submit: data.variantId ? submitVariant(data.variantId, data._assessment?.revision) : submitCt,
-    onAnswer: task => trackUnique("ct_answer", "ct-" + id + ":" + task.id, profileGeneration),
+    onAnswer: (task, answeredAt) => dayKey(new Date(answeredAt)) !== dayKey()
+      || trackUnique("ct_answer", "ct-" + id + ":" + task.id, profileGeneration),
     onFinish: (result, previousResult) => recordCt({ correct: result.correct, id, full: Boolean(data.variantId), result, previousResult, profileGeneration })
   });
-  if (exam.stage === "exam") return <ShellA bare><Exam data={data} exam={exam} /></ShellA>;
+  if (exam.stage === "exam") return <ShellA bare><Exam key={exam.runKey} data={data} exam={exam} /></ShellA>;
   return <ShellA>
     {exam.warning && <div className="ct-layout ct-save-banner"><Alert className="ct-notice"><AlertDescription>{exam.warning}</AlertDescription></Alert></div>}
     {exam.saveError && <div className="ct-layout ct-save-banner"><SaveNotice exam={exam} /></div>}

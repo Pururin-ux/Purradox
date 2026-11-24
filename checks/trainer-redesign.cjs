@@ -93,7 +93,7 @@ test('a failed check leaves the typed answer and can be retried without a second
   });
 });
 
-test('the return portrait has no pause control, stops hidden, and uses the static reduced-motion path', async () => {
+test('the return portrait stops when hidden and becomes static on a live reduced-motion change', async () => {
   setReducedMotion(false);
   Object.defineProperty(document, 'hidden', { configurable: true, value: false });
   try {
@@ -120,8 +120,17 @@ test('the return portrait has no pause control, stops hidden, and uses the stati
       const stopped = portraitFrames.length;
       await new Promise(resolve => setTimeout(resolve, 70));
       assert.equal(portraitFrames.length, stopped);
-      setReducedMotion(true);
-      await h.remount();
+      await act(async () => {
+        Object.defineProperty(document, 'hidden', { configurable: true, value: false });
+        document.dispatchEvent(new dom.window.Event('visibilitychange'));
+        await tick();
+      });
+      const portrait = figure(), position = field(h, 'draft-resume-position').textContent;
+      assert.equal(portrait.getAttribute('data-playing'), 'true');
+      await act(async () => { setReducedMotion(true); await tick(); });
+      assert.equal(figure(), portrait);
+      assert.equal(field(h, 'draft-resume-position').textContent, position);
+      assert.equal(figure().getAttribute('data-playing'), null);
       assert.equal(figure().getAttribute('data-motion'), null);
       assert.equal(figure().getAttribute('data-rig-status'), 'static');
       assert.equal(figure().querySelector('canvas'), null);

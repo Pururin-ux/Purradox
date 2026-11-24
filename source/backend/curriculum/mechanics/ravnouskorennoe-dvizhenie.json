@@ -201,7 +201,7 @@
     {
       "id": "ravnouskorennoe-dvizhenie:q1",
       "kind": "single",
-      "text": "Самокат движется прямолинейно и равноускоренно: за 4 с его скорость выросла с 2 м/с до 6 м/с. Чему равен модуль ускорения?",
+      "text": "Самокат движется по прямой с постоянным ускорением и не меняет направления. За 4 с модуль его скорости вырос с 2 до 6 м/с. Чему равен модуль ускорения?",
       "options": [
         "0,5 м/с²",
         "1 м/с²",
@@ -257,6 +257,7 @@
   "tasks": [
     {
       "id": "ravnouskorennoe-dvizhenie:t1",
+      "lessonBlock": "idea",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -287,6 +288,7 @@
     },
     {
       "id": "ravnouskorennoe-dvizhenie:t2",
+      "lessonBlock": "direction",
       "code": "А2",
       "part": "A",
       "kind": "single",
@@ -317,6 +319,7 @@
     },
     {
       "id": "ravnouskorennoe-dvizhenie:t3",
+      "lessonBlock": "idea",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -348,6 +351,7 @@
     },
     {
       "id": "ravnouskorennoe-dvizhenie:t4",
+      "lessonBlock": "direction",
       "code": "А4",
       "part": "A",
       "kind": "multi",
@@ -382,6 +386,7 @@
     },
     {
       "id": "ravnouskorennoe-dvizhenie:t5",
+      "lessonBlock": "graph",
       "code": "А5",
       "part": "A",
       "kind": "single",
@@ -413,6 +418,7 @@
     },
     {
       "id": "ravnouskorennoe-dvizhenie:t6",
+      "lessonBlock": "ex2",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -435,6 +441,7 @@
     },
     {
       "id": "ravnouskorennoe-dvizhenie:t7",
+      "lessonBlock": "graph",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -472,6 +479,7 @@
     },
     {
       "id": "ravnouskorennoe-dvizhenie:t8",
+      "lessonBlock": "ex2",
       "code": "В3",
       "part": "B",
       "kind": "number",
@@ -497,6 +505,7 @@
     },
     {
       "id": "ravnouskorennoe-dvizhenie:t9",
+      "lessonBlock": "idea",
       "code": "В4",
       "part": "B",
       "kind": "number",
@@ -522,6 +531,7 @@
     },
     {
       "id": "ravnouskorennoe-dvizhenie:t10",
+      "lessonBlock": "graph",
       "code": "В5",
       "part": "B",
       "kind": "number",
@@ -544,6 +554,30 @@
         }
       ],
       "section": "mechanics"
+    },
+    {
+      "id": "ravnouskorennoe-dvizhenie:t11",
+      "code": "В6",
+      "section": "mechanics",
+      "lessonBlock": "graph",
+      "practiceExtension": "2027",
+      "part": "B",
+      "kind": "number",
+      "level": 2,
+      "text": "В начале трёхсекундного интервала проекция скорости тележки равна −4 м/с, в конце +2 м/с. Ускорение постоянно. Найди проекцию перемещения за этот интервал.",
+      "unit": "м",
+      "answer": -3,
+      "hint": "Участки графика по разные стороны оси времени дают вклады разного знака.",
+      "solution": [
+        {
+          "text": "Средняя проекция скорости равна (−4 + 2)/2 = −1 м/с. За 3 с тележка сместилась на −3 м."
+        }
+      ],
+      "audit": {
+        "expression": "(-4+2)/2*3",
+        "expected": -3,
+        "unit": "м"
+      }
     }
   ]
 }

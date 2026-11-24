@@ -1,3 +1,4 @@
+import { withProgressWrite } from "./progressLock";
 import { useSyncExternalStore } from "react";
 import { ARTIFACTS, ART_BY_ID } from "@/lib/artifacts";
 import { prepareProfileExport, replaceProfile } from "./profileTransfer";
@@ -73,7 +74,7 @@ function availableQuests(s) {
   return { ...q, ids };
 }
 
-const INITIAL = { joules: 200, xp: 0, streak: 0, lastDay: null, lessonDone: false, completedLessons: [], lessonSlugs: null, allTaskIds: null, completedExams: [], examResults: {}, avatar: "cat", nickname: "", solved: [], trainerTaskIds: null, mistakeAt: {}, trainerCheckedAt: {}, owned: ["cradle"], shelf: ["cradle"], capsules: 1, opened: 0, quests: null, mistakes: [], ctBest: null };
+const INITIAL = { joules: 200, xp: 0, streak: 0, lastDay: null, lessonDone: false, completedLessons: [], lessonSlugs: null, allTaskIds: null, completedExams: [], rewardedExams: null, examResults: {}, avatar: "cat", nickname: "", solved: [], trainerTaskIds: null, mistakeAt: {}, trainerCheckedAt: {}, learningChecks: {}, owned: ["cradle"], shelf: ["cradle"], capsules: 1, opened: 0, quests: null, mistakes: [], ctBest: null };
 
 function withCapsuleBonus(s) {
   if (s.opened < 1 || s.owned.includes("quark")) return s;
@@ -89,17 +90,35 @@ const isRecord = (v) => v !== null && typeof v === "object" && !Array.isArray(v)
 const isNumber = (v) => Number.isFinite(v) && v >= 0;
 const isCount = (v) => isNumber(v) && Number.isInteger(v);
 const boundedPoints = v => isCount(v) && v <= Number.MAX_SAFE_INTEGER;
+const addPoints = (current, points) => Math.min(Number.MAX_SAFE_INTEGER, current + points);
 const isList = (v) => Array.isArray(v) && v.every((id) => typeof id === "string");
 const isTaskList = (v) => isList(v) && v.every(id => id.trim().length > 0);
 const isDay = (v) => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v);
 const isMistakeMark = (v) => isRecord(v) && typeof v.at === "string";
+const isLearningCheck = value => isRecord(value) && boundedPoints(value.checkedAt)
+  && typeof value.attemptId === "string" && value.attemptId.length > 0 && value.attemptId.length <= 80;
+
+function compareLearningChecks(a, b) {
+  if (a.checkedAt !== b.checkedAt) return a.checkedAt - b.checkedAt;
+  return a.attemptId === b.attemptId ? 0 : a.attemptId > b.attemptId ? 1 : -1;
+}
+
+export function learningResultStatus(progress, id, result) {
+  if (!isLearningCheck(result)) return "legacy";
+  const key = canonicalProgressId(id);
+  const previous = progress.learningChecks?.[key];
+  if (!previous) return result.checkedAt < (progress.trainerCheckedAt?.[key] ?? 0) ? "stale" : "retry";
+  const order = compareLearningChecks(result, previous);
+  return order < 0 ? "stale" : order === 0 ? "saved" : "retry";
+}
 // Время первой ошибки: старые сохранения хранят строку, новые — объект {at, given}.
 export const mistakeTime = (mark) => typeof mark === "string" ? mark : isRecord(mark) ? mark.at : undefined;
-export function mistakeGiven(mark, revision, legacyPositions) {
+export function mistakeGiven(mark, revision, legacyPositions, compatibleRevisions = []) {
   if (!isRecord(mark)) return undefined;
   // Freebuff first added the typed/selected answer after shuffling. Earlier
   // saves can have a date or no mark, but no option number to reinterpret.
-  if (typeof mark.given === "string" || (typeof revision === "string" && revision === mark.revision)) return mark.given;
+  if (typeof mark.given === "string" || (typeof mark.revision === "string"
+    && (revision === mark.revision || compatibleRevisions.includes(mark.revision)))) return mark.given;
   if (mark.revision === undefined && Array.isArray(legacyPositions)) {
     const position = index => Number.isInteger(index) ? legacyPositions[index - 1] : undefined;
     if (!Array.isArray(mark.given)) return position(mark.given);
@@ -108,6 +127,9 @@ export function mistakeGiven(mark, revision, legacyPositions) {
   }
   return undefined;
 }
+const blankAnswer = value => value == null || value === "" || value === "-" || value === "−"
+  || (Array.isArray(value) && value.length === 0);
+
 export const solvedTaskCount = state => state.solved.filter(id => !id.startsWith("quiz:")).length;
 const isExamResult = v => isRecord(v) && isCount(v.correct) && isCount(v.total) && v.total > 0 && v.total <= 30
   && v.correct <= v.total && isCount(v.elapsed_sec) && Array.isArray(v.review) && v.review.length === v.total
@@ -123,10 +145,12 @@ export function validSave(s) {
     solved: isList, owned: isList, shelf: isList, mistakes: isList,
     mistakeAt: (v) => isRecord(v) && Object.values(v).every((t) => typeof t === "string" || isMistakeMark(t)),
     trainerCheckedAt: (v) => isRecord(v) && Object.values(v).every(isCount),
+    learningChecks: value => isRecord(value) && Object.values(value).every(isLearningCheck),
     trainerTaskIds: (v) => v === null || isTaskList(v),
     allTaskIds: (v) => v === null || isTaskList(v),
     lessonSlugs: (v) => v === null || isTaskList(v),
     completedLessons: isTaskList, completedExams: isTaskList,
+    rewardedExams: v => v === null || isTaskList(v),
     examResults: v => isRecord(v) && Object.values(v).every(isExamResult),
     avatar: v => ["cat","girl","prism","moon"].includes(v),
     nickname: v => typeof v === "string" && v.length <= 28,
@@ -156,21 +180,17 @@ function load(store = readStorage()) {
     if (s[key] !== null) s[key] = [...new Set(s[key].map(canonicalProgressId))];
   }
   const marks = new Map();
+  const blanks = new Set();
   const kept = new Set(s.mistakes);
   for (const [key, mark] of Object.entries(s.mistakeAt)) {
     const id = canonicalProgressId(key);
-    if (kept.has(id) && (!marks.has(id) || mistakeTime(mark) < mistakeTime(marks.get(id)))) marks.set(id, mark);
+    if (!kept.has(id)) continue;
+    // Old CT reports could list skips as mistakes. Discard them before
+    // choosing between a dated alias and the current id's actual answer.
+    if (isRecord(mark) && Object.hasOwn(mark, "given") && blankAnswer(mark.given)) blanks.add(id);
+    else if (!marks.has(id) || mistakeTime(mark) < mistakeTime(marks.get(id))) marks.set(id, mark);
   }
-  // Old CT reports recorded skipped answers as explicit errors. An ordinary
-  // answer form never submits these placeholders. Keep unknown dated marks.
-  s.mistakes = s.mistakes.filter(id => {
-    const mark = marks.get(id);
-    if (!isRecord(mark) || !Object.hasOwn(mark, "given")) return true;
-    const value = mark.given;
-    const blank = value === null || value === "" || value === "-" || value === "−" || (Array.isArray(value) && !value.length);
-    if (blank) marks.delete(id);
-    return !blank;
-  });
+  s.mistakes = s.mistakes.filter(id => marks.has(id) || !blanks.has(id));
   s.mistakeAt = Object.fromEntries(marks);
   const checked = new Map();
   for (const [key, at] of Object.entries(s.trainerCheckedAt)) {
@@ -178,6 +198,12 @@ function load(store = readStorage()) {
     checked.set(id, Math.max(at, checked.get(id) ?? 0));
   }
   s.trainerCheckedAt = Object.fromEntries(checked);
+  const learningChecks = new Map();
+  for (const [key, check] of Object.entries(s.learningChecks)) {
+    const id = canonicalProgressId(key);
+    if (!learningChecks.has(id) || compareLearningChecks(check, learningChecks.get(id)) > 0) learningChecks.set(id, check);
+  }
+  s.learningChecks = Object.fromEntries(learningChecks);
   if (s.lessonDone && !s.completedLessons.includes(FIRST_LESSON)) s.completedLessons = [...s.completedLessons, FIRST_LESSON];
   if (s.quests?.day !== dayKey()) s.quests = freshQuests(dayKey());
   s.quests = availableQuests(s);
@@ -232,7 +258,7 @@ const fx = (e) => pendingFx ? pendingFx.push(e) : fxSubs.forEach((f) => f(e));
 
 // One synchronous user action, including nested rewards, produces one save.
 // Re-read before computing: max/union merging would undo spending and removals.
-const change = (action, failure) => (...args) => {
+const change = (action, failure) => (...args) => withProgressWrite(() => {
   if (pendingFx) return action(...args);
   let loaded;
   try { loaded = load(); }
@@ -256,8 +282,7 @@ const change = (action, failure) => (...args) => {
     if (quests !== state.quests) set({ quests });
     let raw = loaded.raw;
     if (dirty) {
-      // Best effort only: localStorage has no atomic compare-and-swap. A write
-      // after this check can still race with setItem in another tab.
+      // Detect profile replacement and writes by older clients as well.
       const store = readStorage();
       if (store.generation !== loaded.generation || store.getItem(KEY) !== loaded.raw) throw new SaveError(CONFLICT_ERROR);
       raw = JSON.stringify(state);
@@ -280,7 +305,7 @@ const change = (action, failure) => (...args) => {
   notify();
   events.forEach(fx);
   return result;
-};
+});
 
 export const onFx = (cb) => {
   fxSubs.add(cb);
@@ -339,30 +364,27 @@ export const unlock = change((id) => {
   return true;
 }, false);
 
-export const award = change(({ joules = 0, xp = 0, label = "" }) => {
-  const events = [];
+function recordStudyDay() {
   const today = dayKey();
-  const patch = { joules: state.joules + joules, xp: state.xp + xp, capsules: state.capsules };
-  if (state.lastDay !== today) {
-    const gap = state.lastDay ? daysBetween(state.lastDay, today) : Infinity;
-    patch.streak = gap === 1 ? state.streak + 1 : 1;
-    patch.lastDay = today;
-    if (patch.streak % 3 === 0) {
-      patch.capsules += 1;
-      events.push({ type: "capsule", text: `Серия ${patch.streak} дней — капсула в лавке` });
-    }
-  }
-  const before = levelInfo(state.xp).level;
-  const after = levelInfo(patch.xp).level;
-  if (after > before) {
-    patch.capsules += after - before;
-    patch.joules += LEVEL_BONUS * (after - before);
-    events.push({ type: "levelup", level: after });
-  }
-  set(patch);
-  if (joules || xp) fx({ type: "reward", joules, xp, label });
-  events.forEach(fx);
-  if ((patch.streak ?? 0) >= 7) unlock("shard");
+  if (state.lastDay && state.lastDay >= today) return;
+  const gap = state.lastDay ? daysBetween(state.lastDay, today) : Infinity;
+  const streak = gap === 1 ? state.streak + 1 : 1;
+  const capsules = state.capsules + (streak % 3 === 0 ? 1 : 0);
+  set({ streak, lastDay: today, capsules });
+  if (streak % 3 === 0) fx({ type: "capsule", text: `Серия ${streak} дней — капсула в лавке` });
+  if (streak >= 7) unlock("shard");
+}
+
+export const award = change(({ joules = 0, xp = 0, label = "" }) => {
+  recordStudyDay();
+  const nextJoules = addPoints(state.joules, joules);
+  const nextXp = addPoints(state.xp, xp);
+  const gainedJoules = nextJoules - state.joules;
+  const gainedXp = nextXp - state.xp;
+  const levels = levelInfo(nextXp).level - levelInfo(state.xp).level;
+  set({ joules: addPoints(nextJoules, LEVEL_BONUS * levels), xp: nextXp, capsules: state.capsules + levels });
+  if (gainedJoules || gainedXp) fx({ type: "reward", joules: gainedJoules, xp: gainedXp, label });
+  if (levels > 0) fx({ type: "levelup", level: levelInfo(state.xp).level });
 });
 
 function trackEvent(ev, n = 1, source) {
@@ -388,12 +410,13 @@ function trackEvent(ev, n = 1, source) {
 
 export const track = change(trackEvent);
 export const trackUnique = change((ev, source, profileGeneration) => {
-  if (profileGeneration !== undefined && profileGeneration !== generation) return;
-  if (typeof source !== "string" || !source.trim()) return;
+  if (profileGeneration !== undefined && profileGeneration !== generation) return false;
+  if (typeof source !== "string" || !source.trim()) return false;
   // Store the source with the progress in the same guarded write. Component
   // remounts, reloads and sequential stale tabs must not count it again.
   trackEvent(ev, 1, source);
-});
+  return true;
+}, false);
 
 export const syncQuestTasks = change((ids) => {
   if (!isTaskList(ids)) return false;
@@ -413,9 +436,16 @@ export const syncCourseCatalog = change(({ lessonSlugs, taskIds }) => {
   return true;
 }, false);
 
-export const saveProfile = change(({ avatar, nickname }) => {
-  if (!["cat","girl","prism","moon"].includes(avatar) || typeof nickname !== "string" || nickname.length > 28) return false;
-  set({ avatar, nickname: nickname.trim() });
+export const saveProfile = change(({ avatar, nickname, profileGeneration, expected }) => {
+  if (profileGeneration !== undefined && profileGeneration !== generation) return false;
+  if (avatar !== undefined && !["cat", "girl", "prism", "moon"].includes(avatar)) return false;
+  if (nickname !== undefined && (typeof nickname !== "string" || nickname.length > 28)) return false;
+  const patch = {};
+  if (avatar !== undefined && avatar !== state.avatar) patch.avatar = avatar;
+  if (nickname !== undefined && nickname.trim() !== state.nickname) patch.nickname = nickname.trim();
+  const fields = Object.keys(patch);
+  if (fields.some(key => expected?.[key] !== undefined && expected[key] !== state[key])) return "conflict";
+  if (fields.length) set(patch);
   return true;
 }, false);
 
@@ -441,8 +471,10 @@ export const openCapsule = change(() => {
   const base = withCapsuleBonus({ ...state, capsules: state.capsules - 1, opened: state.opened + 1 });
   const pool = ARTIFACTS.filter((a) => a.rarity !== "legendary" && !state.owned.includes(a.id));
   if (!pool.length) {
-    set({ ...base, joules: state.joules + 300 });
-    return { refund: 300, first };
+    const joules = addPoints(state.joules, 300);
+    const refund = joules - state.joules;
+    set({ ...base, joules });
+    return { refund, first };
   }
   const roll = Math.random();
   const tier = roll < 0.14 ? "epic" : roll < 0.44 ? "rare" : "common";
@@ -453,14 +485,11 @@ export const openCapsule = change(() => {
   return { art, first };
 }, null);
 
-export const toggleShelf = change((id) => {
+export const toggleShelf = change((id, onShelf = !state.shelf.includes(id)) => {
   if (!state.owned.includes(id)) return false;
-  if (state.shelf.includes(id)) {
-    set({ shelf: state.shelf.filter((x) => x !== id) });
-    return true;
-  }
-  if (state.shelf.length >= SHELF_MAX) return false;
-  set({ shelf: [...state.shelf, id] });
+  if (state.shelf.includes(id) === onShelf) return true;
+  if (onShelf && state.shelf.length >= SHELF_MAX) return false;
+  set({ shelf: onShelf ? [...state.shelf, id] : state.shelf.filter(item => item !== id) });
   return true;
 }, false);
 
@@ -478,13 +507,10 @@ export const completeLesson = change((joules, slug = FIRST_LESSON) => {
 
 export const trainerProgressAt = (state, id) => Math.max(state.trainerCheckedAt?.[id] ?? 0, Date.parse(mistakeTime(state.mistakeAt?.[id])) || 0);
 
-const commitTrainerSolution = change((id, { hinted = false, profileGeneration, checkedAt } = {}) => {
-  if (profileGeneration !== undefined && profileGeneration !== generation) return null;
-  id = canonicalTaskId(id);
-  if (checkedAt !== undefined && checkedAt < trainerProgressAt(state, id)) return null;
+function applyTrainerSolution(id, hinted, checkedAt, keepForTransfer = false) {
   const first = !state.solved.includes(id);
-  set({ trainerCheckedAt: { ...state.trainerCheckedAt, [id]: Date.now() } });
-  clearMistake(id);
+  set({ trainerCheckedAt: { ...state.trainerCheckedAt, [id]: Math.max(state.trainerCheckedAt[id] ?? 0, checkedAt) } });
+  if (!keepForTransfer) clearMistake(id);
   if (first) {
     set({ solved: [...state.solved, id] });
     track("solve");
@@ -492,10 +518,17 @@ const commitTrainerSolution = change((id, { hinted = false, profileGeneration, c
     award({ joules: 25, xp: 20, label: "Задача решена" });
   }
   return first;
+}
+
+const commitTrainerSolution = change((id, { hinted = false, profileGeneration, checkedAt } = {}) => {
+  if (profileGeneration !== undefined && profileGeneration !== generation) return null;
+  id = canonicalTaskId(id);
+  if (checkedAt !== undefined && checkedAt < trainerProgressAt(state, id)) return null;
+  return applyTrainerSolution(id, hinted, Date.now());
 }, null);
 
-export const solveTask = (...args) => commitTrainerSolution(...args) === true;
-export const saveTrainerSolution = (...args) => commitTrainerSolution(...args) !== null;
+export const solveTask = (...args) => withProgressWrite(() => commitTrainerSolution(...args) === true);
+export const saveTrainerSolution = (...args) => withProgressWrite(() => commitTrainerSolution(...args) !== null);
 
 function clearMistake(id) {
   if (!state.mistakes.includes(id)) return;
@@ -526,6 +559,44 @@ export const recordQuizAnswer = change((id, { correct, given }, revision, profil
   else addMistake(mark, given, { revision });
 });
 
+// Keep the check stamp and its consequences in the same progress write. The
+// stamp belongs to the submission, so response order cannot undo a later check.
+export const saveLearningResult = change((id, result, { hinted = false, revision, profileGeneration, lessonBlock, transferFrom, recall = false } = {}) => {
+  if (profileGeneration !== undefined && profileGeneration !== generation) return "stale";
+  if (!isLearningCheck(result) || typeof result.correct !== "boolean") return "stale";
+  id = canonicalProgressId(id);
+  const status = learningResultStatus(state, id, result);
+  if (status !== "retry") return status;
+  recordStudyDay();
+  const { checkedAt, attemptId } = result;
+  const previous = state.learningChecks[id];
+  const known = Boolean(previous) || state.solved.includes(id) || state.mistakes.includes(id);
+  const independent = lessonBlock && result.correct && !hinted && !known;
+  const lastStudy = previous?.checkedAt ?? trainerProgressAt(state, id);
+  const recalled = recall && result.correct && !hinted && lastStudy > 0 && checkedAt - lastStudy >= 72 * 3600000;
+  const stamp = { checkedAt, attemptId };
+  if (lessonBlock) {
+    stamp.lessonBlock = lessonBlock;
+    stamp.method = !result.correct ? "wrong" : independent ? "independent" : recalled ? "recall" : hinted || state.mistakes.includes(id) ? "assisted" : "repeat";
+    if (independent || previous?.independentAt) stamp.independentAt = independent ? checkedAt : previous.independentAt;
+    if (recalled || previous?.recalledAt) stamp.recalledAt = recalled ? checkedAt : previous.recalledAt;
+    const origin = state.learningChecks[transferFrom];
+    if (independent && transferFrom !== id && origin?.lessonBlock === lessonBlock
+      && transferFrom.split(":")[0] === id.split(":")[0] && origin.checkedAt <= checkedAt) clearMistake(transferFrom);
+  }
+  set({ learningChecks: { ...state.learningChecks, [id]: stamp } });
+  if (id.startsWith("quiz:")) {
+    if (result.correct) clearMistake(id);
+    else addMistake(id, result.given, { revision });
+  } else if (result.correct) {
+    applyTrainerSolution(id, hinted || state.mistakes.includes(id), checkedAt, Boolean(lessonBlock) && !independent && !recalled);
+  } else {
+    set({ trainerCheckedAt: { ...state.trainerCheckedAt, [id]: Math.max(state.trainerCheckedAt[id] ?? 0, checkedAt) } });
+    addMistake(id, result.given, { revision });
+  }
+  return "saved";
+}, "retry");
+
 export const exportProfile = () => {
   try {
     const store = readStorage();
@@ -535,7 +606,7 @@ export const exportProfile = () => {
   }
 };
 
-export const importProfile = (file, { replace } = {}) => {
+export const importProfile = (file, { replace } = {}) => withProgressWrite(() => {
   const result = replaceProfile(file, {
     replace, base: () => localStorage, load, validGame: validSave, initial: INITIAL,
   });
@@ -544,11 +615,13 @@ export const importProfile = (file, { replace } = {}) => {
     refresh();
   }
   return result;
-};
+});
 
 export function readCtResult(id) {
-  try { return JSON.parse(readStorage().getItem(KEY))?.examResults?.[id] ?? null; }
-  catch { return undefined; }
+  try {
+    const result = JSON.parse(readStorage().getItem(KEY))?.examResults?.[id];
+    return isExamResult(result) ? result : null;
+  } catch { return undefined; }
 }
 
 export const recordCt = change(({ correct, tahi = Infinity, id = "demo", full = false, result, previousResult, profileGeneration }) => {
@@ -577,10 +650,19 @@ export const recordCt = change(({ correct, tahi = Infinity, id = "demo", full = 
     }
   }
   set({ ctBest: Math.max(state.ctBest ?? 0, correct), ...(result ? { examResults: { ...state.examResults, [id]: result } } : {}) });
-  if (!state.completedExams.includes(id)) {
-    set({ completedExams: [...state.completedExams, id] });
-    if (correct) award({ joules: correct * 15, xp: correct * 20, label: "ЦТ завершено" });
+  // A zero score previously consumed this variant's only reward. Preserve
+  // every legacy completion as potentially credited, even if its last score was zero.
+  const rewarded = state.rewardedExams ?? state.completedExams;
+  if (!state.completedExams.includes(id)) set({ completedExams: [...state.completedExams, id] });
+  if (state.rewardedExams === null) set({ rewardedExams: rewarded });
+  const answered = correct > 0 || result?.review.some(row => !blankAnswer(row.given));
+  if (answered) {
+    recordStudyDay();
     if (full || correct > tahi) unlock("watch");
+  }
+  if (correct > 0 && !rewarded.includes(id)) {
+    set({ rewardedExams: [...rewarded, id] });
+    award({ joules: correct * 15, xp: correct * 20, label: "ЦТ завершено" });
   }
   return true;
 }, false);

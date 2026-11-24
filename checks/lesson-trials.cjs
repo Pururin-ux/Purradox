@@ -20,6 +20,7 @@ global.ResizeObserver = class { observe() {} unobserve() {} };
 const frames = new Map();
 let nextFrame = 0;
 let reducedMotion = false;
+window.matchMedia = query => ({ matches: reducedMotion && query === '(prefers-reduced-motion: reduce)' });
 const modules = new Map();
 function source(input) {
   const filename = [input, input + '.jsx', input + '.js'].find(file => fs.existsSync(file));
@@ -32,7 +33,7 @@ function source(input) {
     plugins: [req.resolve('@babel/plugin-transform-modules-commonjs')],
   }).code;
   vm.runInNewContext(code, {
-    module, exports: module.exports, window,
+    module, exports: module.exports, window, document, Node: window.Node,
     requestAnimationFrame: callback => { frames.set(++nextFrame, callback); return nextFrame; },
     cancelAnimationFrame: id => frames.delete(id),
     require: name => {
@@ -90,17 +91,21 @@ test('fall keeps both balls level and finishes at the original measurement with 
     const start = trial.commits();
     for (let frame = 0; frame <= 75; frame++) await trial.frame(frame * 1000 / 60);
     const moving = nodes('.drop-ball:not([data-echo])');
+    const sharedFall = host.querySelector('.drop-flight-zone > .drop-motion-layer');
+    const verticalOffset = () => Number(sharedFall.style.transform.match(/^translateY\(([-.\d]+)%\)$/)[1]);
     assert.equal(moving[0].style.top, moving[1].style.top);
-    assert.ok(parseFloat(moving[0].style.top) > 33.1, 'both balls travel between reports');
+    assert.ok(moving.every(ball => sharedFall.contains(ball)), 'both balls use the same vertical motion');
+    assert.ok(verticalOffset() > 0, 'both balls travel between reports');
+    assert.deepEqual(texts('.drop-readings dd'), ['0,20 с', '1,05 м', '0,40 м']);
     for (let frame = 76; frame <= 150; frame++) await trial.frame(frame * 1000 / 60);
-    assert.equal(moving[0].style.top, '93.1%');
+    assert.equal(parseFloat(moving[0].style.top) + verticalOffset(), 93.1);
     assert.deepEqual(texts('.drop-readings dd'), ['0,50 с', '0,00 м', '1,00 м']);
     assert.equal(nodes('.drop-ball[data-echo]:not([hidden])').length, 5);
     const renders = trial.commits() - start;
     t.diagnostic(`${renders} React commits during 151 fall frames`);
     assert.ok(renders <= 2, `${renders} React commits during 151 fall frames`);
     await trial.click('.drop-launch');
-    assert.equal(moving[0].style.top, '33.1%');
+    assert.equal(parseFloat(moving[0].style.top) + verticalOffset(), 33.1);
     assert.equal(nodes('.drop-ball[data-echo]:not([hidden])').length, 0);
   });
 });

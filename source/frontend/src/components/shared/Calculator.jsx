@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Delete, X } from "lucide-react";
-import { evaluate, formatResult } from "@/lib/calc";
+import { CalculatorDomainError, evaluate, formatResult } from "@/lib/calc";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -15,51 +15,63 @@ const KEYS = [
 ];
 const OPS = new Set(["×", "÷", "+", "−", "^", "^2", "×10^"]);
 const keyId = (label) => ({ "√": "sqrt", "x²": "sq", "xʸ": "pow", "×10ˣ": "exp", "π": "pi", "⌫": "back", "×": "mul", "÷": "div", "+": "plus", "−": "minus", ",": "comma", "=": "eq", "(": "lp", ")": "rp" }[label] || label.toLowerCase());
+const KEYBOARD_ACTIONS = {
+  ".": ",", "*": "×", "/": "÷", "-": "−", "=": "eq", Enter: "eq",
+  Backspace: "back", Delete: "back", c: "clear", C: "clear",
+};
+const INITIAL_STATE = { expr: "", out: "0", ans: 0, error: null };
 
-export function Calculator({ onClose, onKey, dialog = false }) {
-  const [expr, setExpr] = useState("");
-  const [out, setOut] = useState("0");
-  const [ans, setAns] = useState(0);
-  const [err, setErr] = useState(false);
+function enterValue(state, value) {
+  const { expr, ans } = state;
+  if (value === "clear") return { ...INITIAL_STATE, ans };
+  if (value === "back") {
+    return { ...state, expr: expr.replace(/(sin\(|cos\(|tg\(|lg\(|√\(|Ans|×10\^|.)$/, ""), error: null };
+  }
+  if (value === "eq") {
+    try {
+      const result = evaluate(expr, ans);
+      return { expr: "", ans: result, out: formatResult(result), error: null };
+    } catch (error) {
+      return { ...state, error: error instanceof CalculatorDomainError ? error.message : "Ошибка записи" };
+    }
+  }
+  return { ...state, expr: expr === "" && OPS.has(value) ? `Ans${value}` : expr + value, error: null };
+}
 
-  const press = (value) => {
+export function useCalculator() {
+  const [state, setState] = useState(INITIAL_STATE);
+  return { ...state, enter: value => setState(current => enterValue(current, value)) };
+}
+
+export function Calculator({ calculator, onClose, onKey, dialog = false }) {
+  const { expr, out, error, enter } = calculator;
+  const display = useRef(null);
+  const press = value => {
     onKey?.();
-    setErr(false);
-    if (value === "clear") {
-      setExpr("");
-      setOut("0");
-      return;
-    }
-    if (value === "back") {
-      setExpr((e) => e.replace(/(sin\(|cos\(|tg\(|lg\(|√\(|Ans|×10\^|.)$/, ""));
-      return;
-    }
-    if (value === "eq") {
-      try {
-        const v = evaluate(expr, ans);
-        setAns(v);
-        setOut(formatResult(v));
-        setExpr("");
-      } catch (e) {
-        setErr(true);
-      }
-      return;
-    }
-    setExpr((e) => (e === "" && OPS.has(value) ? `Ans${value}` : e + value));
+    enter(value);
   };
+  function keyDown(event) {
+    if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey || event.nativeEvent.isComposing) return;
+    if (event.key === "Enter" && event.target.closest("button")) return;
+    const value = /^[0-9+,()^eE×÷−]$/.test(event.key) ? event.key : KEYBOARD_ACTIONS[event.key];
+    if (!value) return;
+    event.preventDefault();
+    display.current?.focus({ preventScroll: true });
+    press(value);
+  }
 
   const Title = dialog ? DialogTitle : CardTitle;
   const Description = dialog ? DialogDescription : "p";
   return (
-    <Card className="calc ct-calculator" data-testid="ct-calculator-panel">
+    <Card className="calc ct-calculator" data-testid="ct-calculator-panel" onKeyDown={keyDown}>
       <CardHeader className="calc-head">
         <Title className="calc-title">Калькулятор</Title>
         <Button type="button" variant="ghost" size="icon" onClick={onClose} className="calc-close" aria-label="Закрыть калькулятор" data-testid="ct-calculator-close"><X aria-hidden="true" /></Button>
       </CardHeader>
       <CardContent className="calc-content">
-        <div className="calc-display" data-testid="ct-calculator-display">
-          <div className="calc-expr" aria-label="Выражение">{expr || " "}</div>
-          <output aria-live="polite" className={`calc-out ${err ? "is-err" : ""}`}>{err ? "Ошибка записи" : out}</output>
+        <div ref={display} tabIndex={-1} className="calc-display" data-testid="ct-calculator-display">
+          <div className="calc-expr">{expr ? <><span className="sr-only">Выражение: </span>{expr}</> : " "}</div>
+          <output aria-label="Результат" className={`calc-out ${error ? "is-err" : ""}`}>{error ?? out}</output>
         </div>
         <div className="calc-keys">
         {KEYS.map(([label, value]) => (

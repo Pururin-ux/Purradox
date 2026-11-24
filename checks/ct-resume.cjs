@@ -24,12 +24,13 @@ async function fixture(run, submit = async () => ({ correct: 1, total: 3 })) {
   const dom = new JSDOM('<div id="root"></div>', { url: 'http://ct-resume.test/' });
   const prior = { window: global.window, document: global.document, act: global.IS_REACT_ACT_ENVIRONMENT };
   global.window = dom.window; global.document = dom.window.document; global.IS_REACT_ACT_ENVIRONMENT = true;
-  let now = 1_000_000, latest, root, timerId = 0, answerEvents = 0, failWrites = false;
+  let now = 1_000_000, latest, root, timerId = 0, answerEvents = 0, failWrites = false, failAccounting = false;
   const raw = new Map([['unrelated-lesson', 'original answers']]);
   const storage = { getItem: key => raw.get(key) ?? null,
     setItem(key, value) { if (failWrites) throw new Error('quota'); raw.set(key, value); },
     removeItem(key) { if (failWrites) throw new Error('quota'); raw.delete(key); } };
   Object.defineProperty(dom.window, 'localStorage', { value: storage });
+  class Clock extends Date { constructor(...args) { super(...(args.length ? args : [now])); } static now() { return now; } }
   const timers = new Map(), modules = new Map(), submissions = [];
   function load(file) {
     const filename = [file, file + '.js', file + '.jsx'].find(candidate => fs.existsSync(candidate));
@@ -47,7 +48,7 @@ async function fixture(run, submit = async () => ({ correct: 1, total: 3 })) {
         if (name.startsWith('@/')) return load(path.join(frontend, 'src', name.slice(2)));
         if (name.startsWith('.')) return load(path.resolve(path.dirname(filename), name));
         return req(name);
-      }, window: dom.window, Date: { now: () => now },
+      }, window: dom.window, Date: Clock,
       setInterval(callback) { const id = ++timerId; timers.set(id, callback); return id; },
       clearInterval(id) { timers.delete(id); }, console,
     }, { filename });
@@ -60,7 +61,14 @@ async function fixture(run, submit = async () => ({ correct: 1, total: 3 })) {
     get now() { return now; },
     storage, raw,
     async mount(data = DATA, strict = false) {
-      function Harness() { latest = useCtExam(data, { onAnswer: () => { answerEvents++; } }); return null; }
+      function Harness() {
+        latest = useCtExam(data, { onAnswer: () => {
+          if (failAccounting) return false;
+          answerEvents++;
+          return true;
+        } });
+        return null;
+      }
       root = createRoot(dom.window.document.getElementById('root'));
       await act(() => root.render(strict ? React.createElement(React.StrictMode, null, React.createElement(Harness)) : React.createElement(Harness)));
     },
@@ -68,6 +76,7 @@ async function fixture(run, submit = async () => ({ correct: 1, total: 3 })) {
     async action(callback) { await act(async () => callback(latest)); },
     async advance(milliseconds, tick = false) { now += milliseconds; if (tick) await act(() => [...timers.values()].forEach(callback => callback())); },
     failWrites(value) { failWrites = value; },
+    failAccounting(value) { failAccounting = value; },
   };
   try { await f.mount(); await run(f); assert.equal(raw.get('unrelated-lesson'), 'original answers'); }
   finally { await f.unmount(); dom.window.close(); global.window = prior.window; global.document = prior.document; global.IS_REACT_ACT_ENVIRONMENT = prior.act; }
@@ -87,6 +96,27 @@ test('cold return restores answers, unfinished numeric input, current task and f
     await f.advance(5_000, true); assert.equal(f.exam.timer.getRemaining(), 90, 'resume screen is not a pause');
     await f.action(exam => exam.resume());
     assert.equal(f.exam.stage, 'exam'); assert.equal(f.exam.timer.getRemaining(), 90); assert.equal(f.answerEvents, events);
+  });
+});
+
+test('failed quest accounting survives reload and retries the saved answer once', async () => {
+  await fixture(async f => {
+    await f.action(exam => exam.start());
+    f.failAccounting(true);
+    await f.action(exam => exam.setAnswer('A1', 3));
+    assert.equal(f.answerEvents, 0);
+    assert.match(f.exam.saveError, /Бланк сохранён/);
+    await f.unmount();
+    await f.mount();
+    await f.action(exam => exam.resume());
+    assert.equal(f.exam.answers.A1, 3);
+    assert.match(f.exam.saveError, /Бланк сохранён/);
+    f.failAccounting(false);
+    await f.action(exam => exam.retrySave());
+    assert.equal(f.exam.saveError, null);
+    await f.action(exam => exam.retrySave());
+    assert.equal(f.answerEvents, 1);
+    assert.equal(f.submissions.length, 0);
   });
 });
 
@@ -124,6 +154,9 @@ test('a write refusal keeps in-memory answers and retry saves the current snapsh
     assert.ok(f.exam.saveError); assert.equal(f.exam.answers.A1, 4); assert.equal(f.entries.length, 0);
     f.failWrites(false); await f.action(exam => exam.retrySave());
     assert.equal(f.exam.saveError, null); assert.equal(f.entries.length, 1);
+    assert.equal(f.answerEvents, 1, 'a successful write retry counts the pending answer once');
+    await f.action(exam => exam.retrySave());
+    assert.equal(f.answerEvents, 1);
     await f.unmount(); await f.mount();
     assert.equal(f.exam.stage, 'resume'); assert.equal(f.exam.current, 1); assert.equal(f.exam.answers.A1, 4);
   });
@@ -156,5 +189,49 @@ test('corrupt and old-content records are preserved instead of silently becoming
     f.storage.setItem(key, corrupt); await f.mount();
     assert.equal(f.exam.stage, 'intro'); assert.ok(f.exam.saveError); assert.equal(f.storage.getItem(key), corrupt);
     await f.action(exam => exam.start()); assert.equal(f.storage.getItem(key), corrupt);
+  });
+});
+
+test('restarting a stale resume screen keeps its answers and timer until the newer draft is opened', async () => {
+  await fixture(async f => {
+    await f.action(exam => exam.start());
+    await f.action(exam => exam.setAnswer('A1', 2));
+    const [key, raw] = f.entries[0];
+    await f.unmount(); await f.advance(25_000); await f.mount();
+    assert.equal(f.exam.stage, 'resume');
+    const other = JSON.parse(raw);
+    other.value.answers.A1 = 3;
+    const newer = JSON.stringify(other);
+    f.storage.setItem(key, newer);
+    await f.action(exam => exam.start());
+    assert.equal(f.exam.stage, 'resume');
+    assert.equal(f.exam.error, 'conflict');
+    assert.equal(f.exam.answers.A1, 2);
+    assert.equal(f.exam.timer.getRemaining(), 95);
+    assert.equal(f.storage.getItem(key), newer);
+    await f.unmount(); await f.mount();
+    assert.equal(f.exam.stage, 'resume');
+    assert.equal(f.exam.answers.A1, 3);
+  });
+});
+
+test('refused replacement from resume is retried without showing a new run prematurely', async () => {
+  await fixture(async f => {
+    await f.action(exam => exam.start());
+    await f.action(exam => exam.setAnswer('A1', 2));
+    const [[key, raw]] = f.entries;
+    await f.unmount(); await f.advance(25_000); await f.mount();
+    f.failWrites(true);
+    await f.action(exam => exam.start());
+    assert.equal(f.exam.stage, 'resume');
+    assert.equal(f.exam.answers.A1, 2);
+    assert.equal(f.exam.timer.getRemaining(), 95);
+    assert.equal(f.storage.getItem(key), raw);
+    f.failWrites(false);
+    await f.action(exam => exam.retrySave());
+    assert.equal(f.exam.stage, 'exam');
+    assert.equal(f.exam.timer.getRemaining(), 120);
+    assert.equal(f.exam.saveError, null);
+    assert.deepEqual(plain(f.exam.answers), {});
   });
 });

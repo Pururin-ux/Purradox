@@ -2,7 +2,9 @@ import { readEnvelope, record } from "./draftStore";
 import { DRAFT_PREFIX, GAME_KEY, InvalidProfileStorage, activateProfile, progressStorage } from "./progressStorage";
 
 const APP = "purradox";
-const MAX_BYTES = 5_000_000;
+export const MAX_PROFILE_BYTES = 16 * 1024 * 1024;
+const sizeError = "Файл профиля больше 16 МБ. Сохрани текущие данные в браузере и проверь размер файла.";
+const bytes = value => new TextEncoder().encode(value).byteLength;
 const INVALID = "Не удалось прочитать файл Purradox. Проверь, что выбрал файл профиля.";
 const BROKEN = "В файле есть повреждённые данные. Текущий профиль остался без изменений.";
 const CONFLICT = "Профиль изменился в другой вкладке. Выбери файл ещё раз.";
@@ -24,7 +26,7 @@ const results = (value, lesson) => entries(value, item => record(item) && typeof
 
 function validDraft(key, raw) {
   const match = /^kvant_draft_v1:(lesson|trainer|trainer-review|ct):([a-z0-9-]{1,100}):(?:[0-9a-f]{1,8}\.[0-9a-f]{1,8}|r[0-9a-f]{20})$/.exec(key);
-  if (!match || !text(raw, MAX_BYTES)) return false;
+  if (!match || !text(raw, MAX_PROFILE_BYTES)) return false;
   let draft;
   try { draft = readEnvelope(raw).value; }
   catch { return false; }
@@ -33,14 +35,16 @@ function validDraft(key, raw) {
   // exact question ids, options and card against its content revision.
   if (match[1] === "ct") {
     return count(draft.startedAt) && draft.startedAt > 0 && count(draft.skip)
-      && text(draft.currentTaskId, 150) && ids(draft.flags) && entries(draft.answers, answer);
+      && text(draft.currentTaskId, 150) && ids(draft.flags) && entries(draft.answers, answer)
+      && (draft.questAnswers === undefined || entries(draft.questAnswers, count));
   }
   if (!inputs(draft.answers)) return false;
   return match[1] === "lesson"
     ? text(draft.cardId, 150) && text(draft.guess, 6) && record(draft.quiz)
       && count(draft.quiz.idx) && results(draft.quiz.results, true)
     : text(draft.taskId, 150) && count(draft.level) && draft.level <= 3
-      && results(draft.results, false) && entries(draft.helpUsed, used => used === true);
+      && results(draft.results, false) && entries(draft.helpUsed, used => used === true)
+      && (draft.firstResults === undefined || entries(draft.firstResults, value => typeof value === "boolean"));
 }
 
 const checksum = value => {
@@ -80,13 +84,15 @@ export function prepareProfileExport(store, game, dateKey) {
   const drafts = Object.fromEntries(entries.filter(([key, raw]) => validDraft(key, raw)));
   const skippedDrafts = entries.length - Object.keys(drafts).length;
   const json = JSON.stringify({ app: APP, schema: 1, exportedAt: new Date().toISOString(), game, drafts });
+  if (bytes(json) > MAX_PROFILE_BYTES) return { ok: false, error: sizeError };
   return { ok: true, json, code: checksum(json), filename: "purradox-profile-" + dateKey + ".json", summary: summary(game, drafts), skippedDrafts };
 }
 
 export function replaceProfile(file, { replace, base, load, validGame, initial }) {
   let payload;
   try {
-    if (!text(file, MAX_BYTES)) return { ok: false, error: INVALID };
+    if (typeof file !== "string") return { ok: false, error: INVALID };
+    if (file.length > MAX_PROFILE_BYTES || bytes(file) > MAX_PROFILE_BYTES) return { ok: false, error: sizeError };
     payload = JSON.parse(file);
   } catch { return { ok: false, error: INVALID }; }
   if (!record(payload) || payload.app !== APP || payload.schema !== 1) return { ok: false, error: INVALID };

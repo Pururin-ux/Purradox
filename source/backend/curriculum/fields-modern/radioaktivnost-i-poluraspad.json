@@ -174,6 +174,7 @@
   "tasks": [
     {
       "id": "radioaktivnost-i-poluraspad:t1",
+      "lessonBlock": "random",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -210,6 +211,7 @@
     },
     {
       "id": "radioaktivnost-i-poluraspad:t2",
+      "lessonBlock": "types",
       "code": "А2",
       "part": "A",
       "kind": "multi",
@@ -239,6 +241,7 @@
     },
     {
       "id": "radioaktivnost-i-poluraspad:t3",
+      "lessonBlock": "types",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -274,6 +277,7 @@
     },
     {
       "id": "radioaktivnost-i-poluraspad:t4",
+      "lessonBlock": "random",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -297,6 +301,7 @@
     },
     {
       "id": "radioaktivnost-i-poluraspad:t5",
+      "lessonBlock": "random",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -319,6 +324,7 @@
     },
     {
       "id": "radioaktivnost-i-poluraspad:t6",
+      "lessonBlock": "random",
       "code": "В3",
       "part": "B",
       "kind": "number",
@@ -342,6 +348,54 @@
         "expression": "640*2**(-4/2)+160*2**(-4/4)",
         "expected": 240,
         "unit": "Бк"
+      }
+    },
+    {
+      "id": "radioaktivnost-i-poluraspad:t7",
+      "code": "В4",
+      "section": "nucleus",
+      "lessonBlock": "types",
+      "practiceExtension": "2027",
+      "part": "B",
+      "kind": "number",
+      "level": 1,
+      "text": "Уран с зарядовым числом Z = 92 испустил α-частицу. Чему равно зарядовое число образовавшегося ядра сразу после распада?",
+      "unit": "ед.",
+      "answer": 90,
+      "hint": "Какой заряд у α-частицы в единицах элементарного заряда?",
+      "solution": [
+        {
+          "text": "С α-частицей уходят два протона. В дочернем ядре Z = 92 − 2 = 90."
+        }
+      ],
+      "audit": {
+        "expression": "92-2",
+        "expected": 90,
+        "unit": "ед."
+      }
+    },
+    {
+      "id": "radioaktivnost-i-poluraspad:t8",
+      "code": "В5",
+      "section": "nucleus",
+      "lessonBlock": "types",
+      "practiceExtension": "2027",
+      "part": "B",
+      "kind": "number",
+      "level": 2,
+      "text": "Ядро с Z = 82 последовательно испытало два β⁻-распада. Других превращений не было. Найди конечное зарядовое число.",
+      "unit": "ед.",
+      "answer": 84,
+      "hint": "Проследи за числом протонов в ядре при каждом превращении.",
+      "solution": [
+        {
+          "text": "В каждом β⁻-распаде нейтрон превращается в протон с испусканием электрона и электронного антинейтрино. После двух распадов Z = 84, массовое число прежнее."
+        }
+      ],
+      "audit": {
+        "expression": "82+1+1",
+        "expected": 84,
+        "unit": "ед."
       }
     }
   ]

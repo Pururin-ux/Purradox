@@ -48,6 +48,23 @@ test('profile transfer is all-or-nothing, notices a changed confirmation, and su
   assert.equal(output.drafts[localKey], undefined);
 });
 
+test('a Cyrillic file larger than the old byte limit round-trips in a fresh profile', () => {
+  storage.clear();
+  const answer = { correct: false, answer: 5, explanation: 'я'.repeat(11999) };
+  const results = Object.fromEntries(Array.from({ length: 8 }, (_, index) => ['q' + index, answer]));
+  for (let index = 0; index < 28; index++) {
+    storage.setItem(learningDraftKey('lesson', 'topic-' + index, lesson), wrap({ ...localDraft, quiz: { idx: 0, results } }));
+  }
+  const file = exportProfile();
+  assert.equal(file.ok, true);
+  assert.ok(Buffer.byteLength(file.json) > 5_000_000);
+  storage.clear(); // A different empty origin for the transfer.
+  const imported = importProfile(file.json);
+  assert.equal(imported.ok, true);
+  assert.equal(imported.summary.drafts, 28);
+  assert.equal(imported.code, file.code);
+});
+
 test('legacy solved ids stay earned; export refuses damaged data and import rejects malformed drafts', () => {
   storage.clear();
   storage.setItem('kvant_game_v1', JSON.stringify({ joules: 312, xp: 110, solved: ['t1'], mistakes: ['quiz:q1'],

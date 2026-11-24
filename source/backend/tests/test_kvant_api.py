@@ -2,6 +2,8 @@
 import os
 import re
 import pytest
+
+from curriculum import COURSE
 import requests
 
 BASE_URL = (os.environ.get("REACT_APP_BACKEND_URL") or "http://127.0.0.1:4183").rstrip("/")
@@ -43,8 +45,8 @@ def test_lesson_no_quiz_answers():
     r = S.get(f"{BASE_URL}/api/lessons/{SLUG}")
     assert r.status_code == 200
     d = r.json()
-    assert len(d["cards"]) == 10 if "cards" in d else True
-    assert len(d["quiz"]) == 5
+    assert [block["id"] for block in d["blocks"]] == [block["id"] for block in COURSE[SLUG]["lesson"]["blocks"]]
+    assert [item["id"] for item in d["quiz"]] == [item["id"] for item in COURSE[SLUG]["quiz"]]
     for q in d["quiz"]:
         assert "answer" not in q and "explanation" not in q and "solution" not in q
 
@@ -75,7 +77,7 @@ def test_trainer_no_answers():
     r = S.get(f"{BASE_URL}/api/trainer/{SLUG}")
     assert r.status_code == 200
     tasks = r.json()["tasks"]
-    assert len(tasks) == 10
+    assert [item["id"] for item in tasks] == [item["id"] for item in COURSE[SLUG]["tasks"]]
     for t in tasks:
         assert "answer" not in t and "solution" not in t
 
@@ -181,7 +183,7 @@ def test_tasks_catalog_shape():
     r = S.get(f"{BASE_URL}/api/tasks")
     assert r.status_code == 200
     tasks = r.json()["tasks"]
-    assert len(tasks) == 298  # 10 демо-урока + 288 курса
+    assert len(tasks) >= 300 and len({task["id"] for task in tasks}) == len(tasks)
     for t in tasks:
         assert "answer" not in t and "audit" not in t and "solution" not in t
         assert t["lessonSlug"] and t["lessonTitle"] and t["chapter"]

@@ -462,11 +462,13 @@
   position:relative;
   height:var(--drop-height);
   overflow:hidden;
+  contain:paint;
   border-radius:16px;
   background:#242040;
 }
 .drop-viewport img { display:block; height:100%; width:auto; max-width:none; }
 .drop-flight-zone { position:absolute; inset:0 3% 0 calc(var(--drop-height) * .43); }
+.drop-motion-layer { position:absolute; inset:0; }
 .drop-ball {
   position:absolute;
   width:var(--drop-ball);
@@ -489,6 +491,7 @@
 }
 .drop-heightline {
   position:absolute;
+  width:100%;
   border-top:1px dashed #d2d9f0;
   transform:translateY(calc(var(--drop-ball) / -2));
 }
@@ -530,6 +533,7 @@
 .drop-comparison .drop-launch:not([aria-disabled]):hover { background:#ffe9c9; }
 .drop-comparison button:focus-visible { outline:2px solid #f8deb9; outline-offset:2px; }
 .drop-readings {
+  contain:layout paint;
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:7px;

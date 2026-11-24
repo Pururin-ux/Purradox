@@ -1,11 +1,11 @@
-import { useLayoutEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { Activity, ArrowDownRight, ArrowRight, ArrowRightLeft, ArrowUpRight, AudioLines, Bike, BookOpen, Check, CircleAlert, Clock3, Droplets, Focus, Orbit, ScanLine, Search, Snowflake, Spline, Target, Thermometer, TrainFront, Waves, X, Zap } from "lucide-react";
 import { ShellA, LoadingA } from "./ShellA";
 import { useCatalog } from "@/lib/hooks";
 import { useGame } from "@/lib/game";
-import { recentDrafts } from "@/lib/courseProgress";
-import { artImg } from "@/lib/artifacts";
+import { useRecentDrafts } from "@/lib/courseProgress";
+import { artThumbnail } from "@/lib/artifacts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,11 +24,17 @@ const lessonStamp = {
 };
 export const lessonUrl = (slug, practice = false) => (practice ? "/trainer/" : "/lesson/") + slug;
 const searchKey = text => text.toLocaleLowerCase("ru").replaceAll("ё", "е").replace(/[^а-яa-z0-9]+/g, " ").trim();
+const searchPrepositions = new Set(["в", "во", "для", "из", "к", "ко", "на", "о", "об", "от", "по", "при", "с", "со", "у"]);
 
 function matchesTopic(row, words) {
   if (!words.length) return true;
   const searchable = searchKey([row.title, row.description, ...row.coverage].join(" "));
-  return words.every(word => searchable.includes(word));
+  const terms = searchable.split(" ");
+  return words.every(word => {
+    if (searchable.includes(word)) return true;
+    const base = word.replace(/(^[а-я]{4,})(?:ом|ем|[аеуюыи])$/, "$1");
+    return base !== word && terms.includes(base);
+  });
 }
 
 export default function CourseCatalog({ practice = false }) {
@@ -43,9 +49,13 @@ export default function CourseCatalog({ practice = false }) {
   const sectionRail = useRef(null);
   const activeSection = useRef(null);
   const pending = params.get("pending") === "1";
-  useLayoutEffect(() => {
+  useEffect(() => {
     const rail = sectionRail.current, tab = activeSection.current;
     if (!rail || !tab) return;
+    if (section === "all") {
+      rail.scrollLeft = 0;
+      return;
+    }
     const reveal = () => {
       if (rail.scrollWidth <= rail.clientWidth) return;
       const { left, right } = tab.getBoundingClientRect(), edge = rail.getBoundingClientRect();
@@ -58,7 +68,9 @@ export default function CourseCatalog({ practice = false }) {
   }, [section, data]);
   const progress = row => practice ? row.taskIds.filter(id => g.solved.includes(id)).length : Number(g.completedLessons.includes(row.slug));
   const filtered = useMemo(() => {
-    const words = term ? term.split(" ") : [];
+    const allWords = term ? term.split(" ") : [];
+    const contentWords = allWords.filter(word => !searchPrepositions.has(word));
+    const words = contentWords.length ? contentWords : allWords;
     return data?.lessons.filter(row => (section === "all" || row.section === section)
       && matchesTopic(row, words)
       && (!pending || (practice ? row.taskIds.some(id => !g.solved.includes(id)) : !g.completedLessons.includes(row.slug)))) ?? [];
@@ -66,7 +78,7 @@ export default function CourseCatalog({ practice = false }) {
   const update = (key, value) => setParams(previous => { const next = new URLSearchParams(previous); value ? next.set(key, value) : next.delete(key); return next; }, { replace: true });
   const completed = data?.lessons.filter(row => g.completedLessons.includes(row.slug)).length ?? 0;
   const showContinue = data && !term && section === "all" && !pending;
-  const resumed = showContinue && recentDrafts(data.lessons, undefined, { kind: practice ? "trainer" : "lesson", limit: 1 })[0];
+  const [resumed] = useRecentDrafts(showContinue ? data.lessons : undefined, { kind: practice ? "trainer" : "lesson", limit: 1 });
   const continueRow = showContinue && data.lessons.find(row => resumed
     ? row.slug === resumed.slug
     : practice
@@ -132,7 +144,8 @@ export default function CourseCatalog({ practice = false }) {
         const featuredArt = featured && lessonEditorial[featured.slug].art;
         return <section key={s.id} className="course-chapter" data-tone={tone[s.id]} aria-labelledby={"chapter-" + s.id}>
           <header className="course-chapter-heading">
-            <img src={artImg(s.art)} width="240" height="240" alt="" loading="lazy" />
+            <img src={artThumbnail(s.art, 180)} srcSet={`${artThumbnail(s.art, 180)} 180w, ${artThumbnail(s.art, 360)} 360w`}
+              sizes="(max-width: 640px) 84px, (max-width: 1000px) 120px, 144px" width="240" height="240" alt="" loading="lazy" decoding="async" />
             <div><h2 id={"chapter-" + s.id}>{s.title}</h2><p>{done}/{total} {practice ? "решено" : "пройдено"}</p><Progress value={done / total * 100} aria-label={"Прогресс: " + s.title} /></div>
           </header>
           <div className="course-lesson-list">

@@ -148,6 +148,7 @@
   "tasks": [
     {
       "id": "foton:t1",
+      "lessonBlock": "quantum",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -183,6 +184,7 @@
     },
     {
       "id": "foton:t2",
+      "lessonBlock": "quantum",
       "code": "А2",
       "part": "A",
       "kind": "multi",
@@ -212,6 +214,7 @@
     },
     {
       "id": "foton:t3",
+      "lessonBlock": "units",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -252,6 +255,7 @@
     },
     {
       "id": "foton:t4",
+      "lessonBlock": "quantum",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -274,6 +278,7 @@
     },
     {
       "id": "foton:t5",
+      "lessonBlock": "quantum",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -296,6 +301,7 @@
     },
     {
       "id": "foton:t6",
+      "lessonBlock": "quantum",
       "code": "В3",
       "part": "B",
       "kind": "number",

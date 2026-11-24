@@ -205,6 +205,7 @@
   "tasks": [
     {
       "id": "mehanicheskie-volny:t1",
+      "lessonBlock": "wavelength",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -241,6 +242,7 @@
     },
     {
       "id": "mehanicheskie-volny:t2",
+      "lessonBlock": "propagation",
       "code": "А2",
       "part": "A",
       "kind": "single",
@@ -277,6 +279,7 @@
     },
     {
       "id": "mehanicheskie-volny:t3",
+      "lessonBlock": "sound",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -317,6 +320,7 @@
     },
     {
       "id": "mehanicheskie-volny:t4",
+      "lessonBlock": "wavelength",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -340,6 +344,7 @@
     },
     {
       "id": "mehanicheskie-volny:t5",
+      "lessonBlock": "wavelength",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -367,6 +372,7 @@
     },
     {
       "id": "mehanicheskie-volny:t6",
+      "lessonBlock": "sound",
       "code": "В3",
       "part": "B",
       "kind": "number",

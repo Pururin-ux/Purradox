@@ -244,8 +244,9 @@ main:has(> .learning-resume) { padding-bottom: 0; }
 .va:is(:has(.learning-resume), .va-study) .a-tab.active { color: #8a3d58; background: #f4e7eb; }
 .va:is(:has(.learning-resume), .va-study) .a-tab.active svg { filter: none; }
 .va:is(:has(.learning-resume), .va-study) .a-tab:active { transform: none; }
-.va:is(:has(.learning-resume), .va-study) .mobile-nav { display:none; grid-template-columns:repeat(6,minmax(0,1fr)); padding-inline:calc(6px + var(--safe-left, env(safe-area-inset-left, 0px))) calc(6px + var(--safe-right, env(safe-area-inset-right, 0px))); }
+.va:is(:has(.learning-resume), .va-study) .mobile-nav { display:none; grid-template-columns:repeat(5,minmax(0,1fr)); padding-inline:calc(6px + var(--safe-left, env(safe-area-inset-left, 0px))) calc(6px + var(--safe-right, env(safe-area-inset-right, 0px))); }
 .va:is(:has(.learning-resume), .va-study) .a-tab { min-width:0; min-height:60px; margin-inline:0; white-space:nowrap; }
+html:has(.va .a-top) { --shell-scroll-top:84px; scroll-padding-top:var(--shell-scroll-top); }
 @media(min-width:1280px) {
     .va:is(:has(.learning-resume), .va-study) .desktop-nav { display:flex; }
 }
@@ -257,6 +258,11 @@ main:has(> .learning-resume) { padding-bottom: 0; }
     /* Keep automatic keyboard-focus scrolling above the fixed study navigation. */
     html:has(.va:is(:has(.learning-resume), .va-study) .mobile-nav) { scroll-padding-bottom:calc(100px + env(safe-area-inset-bottom)); }
 }
+
+.skip-to-content { position:fixed; z-index:60; top:8px; left:8px; transform:translateY(calc(-100% - 9px)); padding:12px 16px; border-radius:12px; background:var(--graphic-paper,#fffcfa); color:var(--resume-ink,#45334f); font-weight:600; }
+.skip-to-content:not(:focus) { clip-path:inset(50%); }
+.skip-to-content:focus { transform:none; outline:2px solid var(--resume-wine,#77519a); }
+#main-content :is(h1,[role=heading][aria-level="1"])[tabindex="-1"]:focus-visible { outline:2px solid var(--resume-wine); outline-offset:4px; }
 
 @media(max-width:1150px) {
     .learning-resume { padding: 30px 32px 108px; }

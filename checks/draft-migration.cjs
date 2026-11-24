@@ -4,6 +4,7 @@ const { test } = require('node:test');
 const { sourceModule, frontend, dom } = require('./learning-load.cjs');
 const { createLearningDraftStore } = sourceModule(path.join(frontend, 'src/lib/learningDraft.js'));
 const { createCtDraftStore } = sourceModule(path.join(frontend, 'src/lib/ctDraft.js'));
+const { draftSummary } = sourceModule(path.join(frontend, 'src/lib/draftStore.js'));
 const key = (kind, id, hash) => 'kvant_draft_v1:' + kind + ':' + id + ':' + hash;
 const storage = dom.window.localStorage;
 const oldTime = Date.UTC(2026, 10, 7, 13);
@@ -30,6 +31,37 @@ test('real legacy quiz ids and card restore; reset does not resurrect the archiv
   assert.equal(store.write(null), null);
   assert.equal(createLearningDraftStore('lesson', slug, data, storage).saved, null);
   assert.equal(storage.getItem(old), raw);
+});
+
+test('a reset in a known previous revision also suppresses older draft previews', () => {
+  storage.clear();
+  const slug = 'topic';
+  const old = key('trainer', slug, 'aa.bb');
+  const newer = key('trainer', slug, 'rprevious');
+  const value = { taskId: 'topic:t1', level: 0, answers: {}, results: {}, helpUsed: {} };
+  const original = put(old, value);
+  storage.setItem(newer, JSON.stringify({ version: 1, value: null, updatedAt: oldTime + 1000 }));
+  const data = { tasks: [{ id: 'topic:t1', kind: 'number' }],
+    _assessment: { revision: 'next', legacy: { 'aa.bb': {}, rprevious: {} } } };
+  assert.equal(createLearningDraftStore('trainer', slug, data, storage).saved, null);
+  assert.equal(draftSummary('trainer', slug, data._assessment, storage), null);
+  assert.equal(storage.getItem(old), original);
+});
+
+test('blocked saved answers do not create a false resume link', () => {
+  storage.clear();
+  const slug = 'topic';
+  const old = key('trainer', slug, 'aa.bb');
+  const value = { taskId: 'topic:t1', level: 0,
+    answers: { 'topic:t2': { input: '18', choice: null } }, results: {}, helpUsed: {} };
+  const original = put(old, value);
+  const data = { tasks: [{ id: 'topic:t1', kind: 'number' }, { id: 'topic:t2', kind: 'number' }],
+    _assessment: { revision: 'next', legacy: { 'aa.bb': { blocked: ['topic:t2'] } } } };
+  const store = createLearningDraftStore('trainer', slug, data, storage);
+  assert.equal(store.saved, null);
+  assert.ok(store.warning);
+  assert.equal(draftSummary('trainer', slug, data._assessment, storage), null);
+  assert.equal(storage.getItem(old), original);
 });
 
 test('trainer remaps marked answers and keeps the checked choice, help and location', () => {

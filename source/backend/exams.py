@@ -1,5 +1,7 @@
 """Practice forms linked to the course, including an independent assessment."""
 from copy import deepcopy
+import json
+from pathlib import Path
 from curriculum import COURSE, TASK_BY_ID, SECTIONS
 from ct_diagnostic_2026 import QUESTIONS
 
@@ -73,18 +75,57 @@ def make_exam(variant_id):
 EXAMS = {variant_id: make_exam(variant_id) for variant_id in FORMS}
 
 
-def make_diagnostic():
-    tasks = deepcopy(QUESTIONS)
+DIAGNOSTIC_BLOCKS = {
+    "A1": "vectors",
+    "A2": "graph",
+    "A3": "third",
+    "A4": "energy",
+    "A5": "pressure",
+    "A6": "phase",
+    "A7": "parallel",
+    "A8": "flux",
+    "A9": "snell",
+    "A10": "quantum",
+    "B1": "reference",
+    "B2": "graph",
+    "B3": "vertical",
+    "B4": "collision",
+    "B5": "work",
+    "B6": "speed",
+    "B7": "expansion",
+    "B8": "work",
+    "B9": "processes",
+    "B10": "balance",
+    "B11": "cycle",
+    "B12": "force",
+    "B13": "addition",
+    "B14": "work",
+    "B15": "power",
+    "B16": "whole",
+    "B17": "conditions",
+    "B18": "orbit",
+    "B19": "signs",
+    "B20": "random"
+}
+
+
+def make_diagnostic(variant_id, title, description, questions):
+    tasks = deepcopy(questions)
     for part in ("A", "B"):
         part_tasks = (task for task in tasks if task["part"] == part)
         for index, task in enumerate(part_tasks, 1):
             lesson = COURSE[task["lessonSlug"]]["lesson"]
+            if variant_id == "03":
+                task["lessonBlock"] = DIAGNOSTIC_BLOCKS[f"{part}{index}"]
             task.update(id=f"{part}{index}", code=f"{'А' if part == 'A' else 'В'}{index}",
                         section=lesson["section"], lessonTitle=lesson["title"])
-    return {"variantId": "03", "title": "Диагностический вариант",
-            "description": "30 заданий, которые встречаются только здесь.",
+    return {"variantId": variant_id, "title": title, "description": description,
             "independent": True, "minutes": 210, "total": 30, "part_a": 10, "part_b": 20,
             "sections": SECTIONS, "tasks": tasks}
 
 
-EXAMS["03"] = make_diagnostic()
+EXAMS["03"] = make_diagnostic("03", "Диагностический вариант",
+                              "30 заданий для самостоятельной диагностики по всем разделам.", QUESTIONS)
+FOLLOWUP = json.loads(Path(__file__).with_name("ct_diagnostic_followup.json").read_text(encoding="utf-8"))
+EXAMS["04"] = make_diagnostic("04", "Повторная диагностика",
+                              "Другие 30 заданий по тем же разделам. Можно пройти после первого разбора.", FOLLOWUP)

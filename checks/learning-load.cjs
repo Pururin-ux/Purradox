@@ -40,7 +40,14 @@ let gameActions;
 let gameSnapshot = {};
 let realGameMode = false;
 let reduceMotion = true;
-const setReducedMotion = value => { reduceMotion = value; };
+const motionPreference = new dom.window.EventTarget();
+Object.defineProperty(motionPreference, 'matches', { get: () => reduceMotion });
+dom.window.matchMedia = query => query === '(prefers-reduced-motion: reduce)' ? motionPreference : { matches: false };
+const setReducedMotion = value => {
+  if (value === reduceMotion) return;
+  reduceMotion = value;
+  motionPreference.dispatchEvent(new dom.window.Event('change'));
+};
 const portraitFrames = [];
 
 function sourceModule(input) {
@@ -57,19 +64,29 @@ function sourceModule(input) {
   const code = transformSync(fs.readFileSync(source, 'utf8'), {
     filename, babelrc: false, configFile: false,
     presets: [[req.resolve('@babel/preset-react'), { runtime: 'automatic' }]],
-    plugins: [req.resolve('@babel/plugin-transform-modules-commonjs')],
+    plugins: [req.resolve('@babel/plugin-transform-dynamic-import'), req.resolve('@babel/plugin-transform-modules-commonjs')],
   }).code;
   const requireModule = name => {
+    if (name.endsWith('.css')) return {};
     if (name === '@/lib/sound') return { useSfx: () => () => {}, haptic: () => {} };
     if (name === '@/lib/companionRenderer') return {
       createCompanionRenderer: () => ({ render: seconds => { portraitFrames.push(seconds); return true; }, dispose() {} }),
     };
     if (name === '@/lib/game') return {
       useProfileGeneration: () => realGameMode ? sourceModule(path.join(frontend, 'src/lib/game.js')).useProfileGeneration() : null,
+      dayKey: (...args) => sourceModule(path.join(frontend, 'src/lib/game.js')).dayKey(...args),
       mistakeTime: (...args) => sourceModule(path.join(frontend, 'src/lib/game.js')).mistakeTime(...args),
       mistakeGiven: (...args) => sourceModule(path.join(frontend, 'src/lib/game.js')).mistakeGiven(...args),
       recordQuizAnswer: (...args) => { if (realGameMode) return sourceModule(path.join(frontend, 'src/lib/game.js')).recordQuizAnswer(...args); },
-      useGame: () => realGameMode ? sourceModule(path.join(frontend, 'src/lib/game.js')).useGame() : ({ joules: 200, mistakes: [], ...gameSnapshot,
+      learningResultStatus: (...args) => sourceModule(path.join(frontend, 'src/lib/game.js')).learningResultStatus(...args),
+      saveLearningResult: (id, result, options) => {
+        if (realGameMode) return sourceModule(path.join(frontend, 'src/lib/game.js')).saveLearningResult(id, result, options);
+        if (!id.startsWith('quiz:')) (result.correct ? gameActions.solved : gameActions.failed).push([id, options]);
+        const canonical = sourceModule(path.join(frontend, 'src/lib/progressIds.js')).canonicalProgressId(id);
+        gameActions.learningChecks[canonical] = { checkedAt: result.checkedAt, attemptId: result.attemptId };
+        return 'saved';
+      },
+      useGame: () => realGameMode ? sourceModule(path.join(frontend, 'src/lib/game.js')).useGame() : ({ joules: 200, mistakes: [], ...gameSnapshot, learningChecks: gameActions.learningChecks,
         solved: [...(gameSnapshot.solved ?? []), ...gameActions.solved.map(([id]) => sourceModule(path.join(frontend, 'src/lib/progressIds.js')).canonicalTaskId(id))] }),
       trainerProgressAt: (...args) => sourceModule(path.join(frontend, 'src/lib/game.js')).trainerProgressAt(...args),
       saveTrainerSolution: (...args) => realGameMode ? sourceModule(path.join(frontend, 'src/lib/game.js')).saveTrainerSolution(...args) : gameActions.solved.push(args) > 0,
@@ -80,7 +97,10 @@ function sourceModule(input) {
     if (name === './ShellA') return { ShellA: asFragment, Logo: visual, LoadingA: () => React.createElement('div', null, 'Загрузка') };
     if (name === './Chars') return { Char: visual, Avatar: visual, Bubble: visual };
     if (name === './Scene') return { Scene: visual };
-    if (name === '@/components/shared/Tex') return { Rich: ({ text }) => React.createElement(React.Fragment, null, text), Tex: visual, Equation: visual };
+    if (name === '@/components/shared/Tex') return {
+      Rich: ({ text }) => React.createElement(React.Fragment, null, text), Tex: visual, Equation: visual,
+      preloadReviewFormulas: () => {},
+    };
     if (name === '@/components/shared/MotionModel') return { MotionModel: visual };
     if (name === '@/components/shared/VtGraph') return { VtGraph: visual };
     if (name === '@/components/shared/Vectors') return { Vectors: visual };
@@ -88,7 +108,7 @@ function sourceModule(input) {
     return name.startsWith('@/') ? sourceModule(path.join(frontend, 'src', name.slice(2)))
       : name.startsWith('.') ? sourceModule(path.resolve(path.dirname(filename), name)) : req(name);
   };
-  vm.runInNewContext(code, { module, exports: module.exports, require: requireModule, console, window, document, process, localStorage: dom.window.localStorage,
+  vm.runInNewContext(code, { module, exports: module.exports, require: requireModule, console, window, document, process, TextEncoder, localStorage: dom.window.localStorage,
     requestAnimationFrame: global.requestAnimationFrame, cancelAnimationFrame: global.cancelAnimationFrame, setTimeout, clearTimeout }, { filename });
   return module.exports;
 }
@@ -116,7 +136,7 @@ async function withPage(kind, seed, run, options = {}) {
   const key = kind === 'review' ? ['review', reviewIds] : [kind, slug];
   const data = options.data ?? (kind === 'lesson' ? lesson : trainer);
   const state = { getStatus: 200, postStatus: 200, gets: 0, getPaths: [], posts: [], reviewPosts: [], reviewStatus: 200, holdGet: null, holdReview: null };
-  gameActions = { solved: [], failed: [] };
+  gameActions = { solved: [], failed: [], learningChecks: {} };
   gameSnapshot = options.game ?? {};
   api.defaults.adapter = async config => {
     if (config.method === 'post') {

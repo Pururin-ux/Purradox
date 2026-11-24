@@ -189,6 +189,7 @@
   "tasks": [
     {
       "id": "ravnomernoe-dvizhenie:t1",
+      "lessonBlock": "reference",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -225,6 +226,7 @@
     },
     {
       "id": "ravnomernoe-dvizhenie:t2",
+      "lessonBlock": "distance",
       "code": "А2",
       "part": "A",
       "kind": "single",
@@ -261,6 +263,7 @@
     },
     {
       "id": "ravnomernoe-dvizhenie:t3",
+      "lessonBlock": "graphs",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -301,6 +304,7 @@
     },
     {
       "id": "ravnomernoe-dvizhenie:t4",
+      "lessonBlock": "graphs",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -328,6 +332,7 @@
     },
     {
       "id": "ravnomernoe-dvizhenie:t5",
+      "lessonBlock": "distance",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -355,6 +360,7 @@
     },
     {
       "id": "ravnomernoe-dvizhenie:t6",
+      "lessonBlock": "graphs",
       "code": "В3",
       "part": "B",
       "kind": "number",

@@ -1,7 +1,8 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ArrowDown, ArrowLeft, ArrowRight, BookOpen, Check, ChevronDown, Clock3, Minus, RotateCcw, X } from "lucide-react";
-import { Steps } from "./AnswerA";
+import { ReviewedSteps } from "./AnswerA";
+import { useUpdatedFeedback } from "@/lib/hooks";
 import { CtReviewFigure } from "./CtReviewFigures";
 import { TrainerFigure } from "./TrainerFigures";
 import { VtGraph } from "@/components/shared/VtGraph";
@@ -100,7 +101,13 @@ function ReviewItem({ item, task, section, data, open, onOpen, nextIssue, jumpTo
   const Icon = statusIcon[state];
   const current = !item.historical ? task : undefined;
   const [lessonSlug, lessonTitle] = (!data.variantId && current && demoLessons[item.id]) || [item.lessonSlug, item.lessonTitle];
-  const guide = current && item.guide;
+  const demoBlocks = { A1:"vertical", A2:"processes", A3:"ohm", A4:"rays", B1:"sliding", B2:"warming", B3:"signs", B4:"random" };
+  const block = item.lessonBlock || current?.lessonBlock || (!data.variantId && demoBlocks[item.id]);
+  const location = useLocation();
+  const back = new URLSearchParams(location.search);
+  back.set("item", item.id);
+  const feedback = useUpdatedFeedback(current, item, open, data.variantId);
+  const guide = current && feedback.item?.guide;
   const note = state !== "correct" && guide?.note;
   const title = guide?.title || (current && item.lessonTitle) || section || "Задание";
   return <Collapsible open={open} onOpenChange={onOpen}>
@@ -120,11 +127,15 @@ function ReviewItem({ item, task, section, data, open, onOpen, nextIssue, jumpTo
         {note && <div className="ct-review-note" data-testid="ct-review-note"><Rich text={note} /></div>}
         <ReviewVisual task={current} item={item} guide={guide} />
         <h4 className="ct-solution-title">Ход решения</h4>
-        <Steps steps={item.solution} />
+        <ReviewedSteps feedback={feedback} />
         <div className="ct-review-actions">
-          {lessonSlug && <Button asChild variant="secondary" className="ct-review-lesson"><Link to={"/lesson/" + lessonSlug}>
+          {lessonSlug && <Button asChild variant="secondary" className="ct-review-lesson"><Link to={"/lesson/" + lessonSlug + (block ? "?block=" + encodeURIComponent(block) : "")} state={{reviewOrigin: location.pathname + "?" + back}}>
             <BookOpen aria-hidden="true" /><span>{lessonTitle || "К уроку"}</span><ArrowRight aria-hidden="true" />
           </Link></Button>}
+          {lessonSlug && data.independent && state !== "correct" &&
+            <Button asChild variant="ghost" className="ct-secondary"><Link to={"/trainer/" + lessonSlug}>
+              К задачам по теме<ArrowRight aria-hidden="true" />
+            </Link></Button>}
           <div>
             <Button type="button" variant="ghost" className="ct-secondary" onClick={backToMap}><ArrowLeft aria-hidden="true" />К номерам</Button>
             {nextIssue && <Button type="button" variant="ghost" className="ct-secondary" onClick={() => jumpToItem(nextIssue)}>
@@ -174,12 +185,14 @@ function ResultMap({ rows, tasks, counts, filter, setFilter, sectionName, clearS
   </Card>;
 }
 
-export function CtResult({ data, exam }) {
+export function CtResult({ data, exam, attemptPath }) {
   const result = exam.result;
   const [section, setSection] = useState(null);
   const [filter, setFilter] = useState("all");
-  const [openId, setOpenId] = useState(null);
-  const [destination, setDestination] = useState(null);
+  const location = useLocation();
+  const linkedItem = new URLSearchParams(location.search).get("item");
+  const [openId, setOpenId] = useState(() => result.review.some(row => row.id === linkedItem) ? linkedItem : null);
+  const [destination, setDestination] = useState(() => openId ? { id:openId } : null);
   const top = useRef(null);
   const mapTitle = useRef(null);
   const openToggle = useRef(null);
@@ -211,11 +224,12 @@ export function CtResult({ data, exam }) {
     <header className="ct-result-heading">
       <div className="ct-result-copy">
         <p className="ct-result-context">{data.variantId ? data.title : "Демо ЦТ"}</p>
-        <h1 ref={top} tabIndex={-1}>Результат</h1>
+        <h1 ref={top} tabIndex={-1}>{attemptPath ? "Предыдущий результат" : "Результат"}</h1>
         <div className="ct-result-totals">
           <p className="ct-result-score" data-testid="ct-result-score"><strong>{result.correct}</strong>{" "}<span>из {result.total} верно</span></p>
           <p className="ct-result-time"><Clock3 aria-hidden="true" /><span className="sr-only">Затрачено времени </span>{clock(result.elapsed_sec)}</p>
         </div>
+        <p className="mt-2 text-sm text-muted-foreground">Считаются полностью верные ответы. Экзаменационные баллы не рассчитываются.</p>
       </div>
       <figure><img src="/art/learning-graphic-20261106/ct-report-sheet-v1.webp" width="720" height="540" alt="" decoding="async" draggable="false" /></figure>
       <div className="ct-result-summary">
@@ -263,7 +277,10 @@ export function CtResult({ data, exam }) {
         jumpToItem={jumpToItem} backToMap={() => { setOpenId(null); setDestination({ mapId: item.id }); }} />)}
     </section>}
     <div className="ct-result-actions">
-      <Button type="button" variant="secondary" className="ct-secondary" onClick={exam.restart} disabled={exam.completionPending} data-testid="ct-restart-btn">Пройти заново<RotateCcw aria-hidden="true" /></Button>
+      {attemptPath ? <Button asChild variant="secondary" className="ct-secondary">
+        <Link to={attemptPath}>К текущей попытке<ArrowRight aria-hidden="true" /></Link>
+      </Button> : <Button type="button" variant="secondary" className="ct-secondary" onClick={exam.restart}
+        disabled={exam.completionPending || exam.error === "conflict"} data-testid="ct-restart-btn">Пройти заново<RotateCcw aria-hidden="true" /></Button>}
       <Button asChild variant="ghost" className="ct-secondary" data-testid="ct-home-btn"><Link to={LINKS.ct}>К вариантам ЦТ<ArrowRight aria-hidden="true" /></Link></Button>
     </div>
   </div>;

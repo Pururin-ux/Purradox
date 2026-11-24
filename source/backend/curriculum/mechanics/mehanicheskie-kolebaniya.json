@@ -216,6 +216,7 @@
   "tasks": [
     {
       "id": "mehanicheskie-kolebaniya:t1",
+      "lessonBlock": "harmonic",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -252,6 +253,7 @@
     },
     {
       "id": "mehanicheskie-kolebaniya:t2",
+      "lessonBlock": "models",
       "code": "А2",
       "part": "A",
       "kind": "single",
@@ -288,6 +290,7 @@
     },
     {
       "id": "mehanicheskie-kolebaniya:t3",
+      "lessonBlock": "energy",
       "code": "А3",
       "part": "A",
       "kind": "multi",
@@ -321,6 +324,7 @@
     },
     {
       "id": "mehanicheskie-kolebaniya:t4",
+      "lessonBlock": "harmonic",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -344,6 +348,7 @@
     },
     {
       "id": "mehanicheskie-kolebaniya:t5",
+      "lessonBlock": "harmonic",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -367,6 +372,7 @@
     },
     {
       "id": "mehanicheskie-kolebaniya:t6",
+      "lessonBlock": "energy",
       "code": "В3",
       "part": "B",
       "kind": "number",
@@ -390,6 +396,54 @@
         "expression": "sqrt(200/2*(0.5**2-0.3**2))",
         "expected": 4,
         "unit": "м/с"
+      }
+    },
+    {
+      "id": "mehanicheskie-kolebaniya:t7",
+      "code": "В4",
+      "section": "mechanics",
+      "lessonBlock": "harmonic",
+      "practiceExtension": "2027",
+      "part": "B",
+      "kind": "number",
+      "level": 2,
+      "text": "Координата меняется по закону $x=A\\cos(\\omega t+\\varphi_0)$. Период равен 4 с, начальная фаза равна π/6. Скольким градусам равна фаза колебаний через 1 с?",
+      "unit": "°",
+      "answer": 120,
+      "hint": "За целый период фаза увеличивается на 360°.",
+      "solution": [
+        {
+          "text": "За четверть периода фаза вырастает на 90°. Начальная фаза 30°, итоговая — 120°."
+        }
+      ],
+      "audit": {
+        "expression": "360/4+180/6",
+        "expected": 120,
+        "unit": "°"
+      }
+    },
+    {
+      "id": "mehanicheskie-kolebaniya:t8",
+      "code": "В5",
+      "section": "mechanics",
+      "lessonBlock": "models",
+      "practiceExtension": "2027",
+      "part": "B",
+      "kind": "number",
+      "level": 2,
+      "text": "Груз массой 0,25 кг совершает малые колебания на лёгкой пружине жёсткостью 100 Н/м. Трением пренебреги. Найди период в миллисекундах при π = 3,14.",
+      "unit": "мс",
+      "answer": 314,
+      "hint": "В формуле периода масса и жёсткость стоят под корнем.",
+      "solution": [
+        {
+          "text": "Корень из m/k равен 0,050 с. Умножаем на 2π и получаем 0,314 с, или 314 мс."
+        }
+      ],
+      "audit": {
+        "expression": "2*3.14*sqrt(0.25/100)*1000",
+        "expected": 314,
+        "unit": "мс"
       }
     }
   ]

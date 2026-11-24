@@ -158,6 +158,7 @@
   "tasks": [
     {
       "id": "magnitnyj-potok-i-indukciya:t1",
+      "lessonBlock": "flux",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -194,6 +195,7 @@
     },
     {
       "id": "magnitnyj-potok-i-indukciya:t2",
+      "lessonBlock": "induction",
       "code": "А2",
       "part": "A",
       "kind": "multi",
@@ -223,6 +225,7 @@
     },
     {
       "id": "magnitnyj-potok-i-indukciya:t3",
+      "lessonBlock": "flux",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -262,6 +265,7 @@
     },
     {
       "id": "magnitnyj-potok-i-indukciya:t4",
+      "lessonBlock": "induction",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -284,6 +288,7 @@
     },
     {
       "id": "magnitnyj-potok-i-indukciya:t5",
+      "lessonBlock": "induction",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -306,6 +311,7 @@
     },
     {
       "id": "magnitnyj-potok-i-indukciya:t6",
+      "lessonBlock": "induction",
       "code": "В3",
       "part": "B",
       "kind": "number",

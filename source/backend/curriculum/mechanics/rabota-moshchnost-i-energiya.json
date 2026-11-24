@@ -186,6 +186,7 @@
   "tasks": [
     {
       "id": "rabota-moshchnost-i-energiya:t1",
+      "lessonBlock": "work",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -222,6 +223,7 @@
     },
     {
       "id": "rabota-moshchnost-i-energiya:t2",
+      "lessonBlock": "potential",
       "code": "А2",
       "part": "A",
       "kind": "single",
@@ -258,6 +260,7 @@
     },
     {
       "id": "rabota-moshchnost-i-energiya:t3",
+      "lessonBlock": "power",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -298,6 +301,7 @@
     },
     {
       "id": "rabota-moshchnost-i-energiya:t4",
+      "lessonBlock": "work",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -321,6 +325,7 @@
     },
     {
       "id": "rabota-moshchnost-i-energiya:t5",
+      "lessonBlock": "kinetic",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -348,6 +353,7 @@
     },
     {
       "id": "rabota-moshchnost-i-energiya:t6",
+      "lessonBlock": "potential",
       "code": "В3",
       "part": "B",
       "kind": "number",
@@ -374,6 +380,34 @@
         "expression": "sqrt(2*1*10*5/100)*100",
         "expected": 100,
         "unit": "см"
+      }
+    },
+    {
+      "id": "rabota-moshchnost-i-energiya:t7",
+      "code": "А4",
+      "section": "mechanics",
+      "lessonBlock": "work",
+      "practiceExtension": "2027",
+      "part": "A",
+      "kind": "single",
+      "level": 2,
+      "text": "Шайба без вращения скользит по неподвижному горизонтальному льду и останавливается. Какая пара знаков верна для работы трения над шайбой и изменения её кинетической энергии?",
+      "options": [
+        "Плюс и минус",
+        "Минус и плюс",
+        "Минус и минус",
+        "Плюс и плюс",
+        "Ноль и минус"
+      ],
+      "answer": 3,
+      "hint": "Сравни направление трения с перемещением шайбы.",
+      "solution": [
+        {
+          "text": "Трение направлено против перемещения и совершает отрицательную работу. Остальные силы перпендикулярны перемещению. Кинетическая энергия убывает на модуль работы трения."
+        }
+      ],
+      "audit": {
+        "rationale": "Трение направлено против перемещения и совершает отрицательную работу. Остальные силы перпендикулярны перемещению. Кинетическая энергия убывает на модуль работы трения."
       }
     }
   ]

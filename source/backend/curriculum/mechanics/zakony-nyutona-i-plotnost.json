@@ -185,6 +185,7 @@
   "tasks": [
     {
       "id": "zakony-nyutona-i-plotnost:t1",
+      "lessonBlock": "density",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -221,6 +222,7 @@
     },
     {
       "id": "zakony-nyutona-i-plotnost:t2",
+      "lessonBlock": "second",
       "code": "А2",
       "part": "A",
       "kind": "single",
@@ -261,6 +263,7 @@
     },
     {
       "id": "zakony-nyutona-i-plotnost:t3",
+      "lessonBlock": "third",
       "code": "А3",
       "part": "A",
       "kind": "multi",
@@ -293,6 +296,7 @@
     },
     {
       "id": "zakony-nyutona-i-plotnost:t4",
+      "lessonBlock": "second",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -316,6 +320,7 @@
     },
     {
       "id": "zakony-nyutona-i-plotnost:t5",
+      "lessonBlock": "density",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -343,6 +348,7 @@
     },
     {
       "id": "zakony-nyutona-i-plotnost:t6",
+      "lessonBlock": "second",
       "code": "В3",
       "part": "B",
       "kind": "number",

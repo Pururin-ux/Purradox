@@ -230,6 +230,7 @@
   "tasks": [
     {
       "id": "davlenie-i-arhimed:t1",
+      "lessonBlock": "pressure",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -266,6 +267,7 @@
     },
     {
       "id": "davlenie-i-arhimed:t2",
+      "lessonBlock": "hydrostatic",
       "code": "А2",
       "part": "A",
       "kind": "single",
@@ -302,6 +304,7 @@
     },
     {
       "id": "davlenie-i-arhimed:t3",
+      "lessonBlock": "vessels",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -342,6 +345,7 @@
     },
     {
       "id": "davlenie-i-arhimed:t4",
+      "lessonBlock": "vessels",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -365,6 +369,7 @@
     },
     {
       "id": "davlenie-i-arhimed:t5",
+      "lessonBlock": "buoyancy",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -388,6 +393,7 @@
     },
     {
       "id": "davlenie-i-arhimed:t6",
+      "lessonBlock": "buoyancy",
       "code": "В3",
       "part": "B",
       "kind": "number",
@@ -411,6 +417,30 @@
         "expression": "1000*0.020-12",
         "expected": 8,
         "unit": "кг"
+      }
+    },
+    {
+      "id": "davlenie-i-arhimed:t7",
+      "code": "В4",
+      "section": "mechanics",
+      "lessonBlock": "hydrostatic",
+      "practiceExtension": "2027",
+      "part": "B",
+      "kind": "number",
+      "level": 2,
+      "text": "Над ртутью в запаянной трубке барометра практически вакуум. Уровень в трубке на 0,70 м выше уровня в открытой чашке. Определи атмосферное давление в гектопаскалях. Прими ρ = 13 600 кг/м³ и g = 10 м/с².",
+      "unit": "гПа",
+      "answer": 952,
+      "hint": "В чашке на свободную поверхность действует атмосфера.",
+      "solution": [
+        {
+          "text": "Давление равно ρgh = 95 200 Па. Один гектопаскаль равен 100 Па, поэтому показание составляет 952 гПа."
+        }
+      ],
+      "audit": {
+        "expression": "13600*10*0.70/100",
+        "expected": 952,
+        "unit": "гПа"
       }
     }
   ]

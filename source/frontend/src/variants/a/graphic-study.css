@@ -3,7 +3,7 @@ body:has(.va.va-study),
 .va.va-study,
 body:has(.va.va-study) :is(.ct-modal,.ct-calculator-surface,.shop-dialog,.study-quests-dialog) {
   --resume-bg:#f3edf9; --resume-soft:#eee4f5; --resume-ink:#45334f;
-  --resume-muted:#765f7d; --resume-wine:#77519a;
+  --resume-muted:#6b5574; --resume-wine:#77519a;
   --graphic-paper:#fffcfa; --graphic-lilac:#e9ddf8; --graphic-primary:#ffd58a;
   --graphic-leaf:#e5f0e3; --graphic-success:#476b4e; --graphic-error:#97475e;
   --background:270 50% 95%; --foreground:274 21% 25%; --card:24 100% 99%; --card-foreground:274 21% 25%;
@@ -30,6 +30,8 @@ body:has(.va.va-study) :is(.ct-modal,.ct-calculator-surface,.shop-dialog,.study-
 .va.va-study .a-stat.streak { color:#765f7d; }
 .va.va-study .a-tag { font-family:inherit; font-size:14px; line-height:1.5; letter-spacing:0; text-transform:none; }
 .va.va-study .lvl-ring .track { stroke:#ded0eb; }
+.lvl-ring .fill { transition:stroke-dashoffset 360ms cubic-bezier(.16,1,.3,1); }
+@media(prefers-reduced-motion:reduce) { .lvl-ring .fill { transition:none; } }
 body:has(.va.va-study) .study-next,
 .va.va-study .lesson-page .a-btn {
   background:linear-gradient(135deg,#ffdf9f,#ffc983); color:#553850;
@@ -118,11 +120,13 @@ body:has(.va.va-study) :is(.review-secondary,.shop-secondary,.ct-secondary):hove
 .study-review .review-task-graph > svg { display:block; width:100%; height:auto; max-width:none; }
 
 /* Collection and CT keep their existing objects, grading and economy. */
+.study-shop { --shop-accent-text:color-mix(in srgb,var(--resume-wine) 75%,var(--resume-ink)); }
 .study-shop :is(.shop-wallet,.shop-capsules,.shop-tabs-list,.shop-shelf) { background:#eae0f2; }
-.study-shop .shop-section-title > div,.study-shop .shop-tabs-list > button > div { background:#ddcce9; }
+.study-shop .shop-section-title > div,.study-shop .shop-tabs-list > button > div { background:#ddcce9; color:var(--shop-accent-text); }
 .study-shop .shop-tabs-list > button[data-state="active"] { background:var(--graphic-paper); }
-.study-shop .shop-filters > button[data-state="on"] { background:#e3d3ef; }
+.study-shop .shop-filters > button[data-state="on"] { background:#e3d3ef; color:var(--shop-accent-text); }
 .study-shop .shop-filters > button:hover { background:#e9def2; }
+.study-shop .shop-section-title > span { color:color-mix(in srgb,var(--resume-muted) 90%,var(--resume-ink)); }
 .study-shop :is(.shop-object,.shop-empty) { background:var(--graphic-paper); }
 .study-shop .shop-object:hover { background:#f6effa; }
 .study-shop .shop-shelf-space { background:#dcd0e66e; }
@@ -162,3 +166,5 @@ body:has(.va.va-study) :is(.review-secondary,.shop-secondary,.ct-secondary):hove
   body:has(.va.va-study) .study-next:is(:hover,:active),
   .va.va-study .lesson-page .a-btn:is(:hover,:active) { transform:none; }
 }
+
+.home-intentions { display:flex; flex-wrap:wrap; gap:.25rem; }

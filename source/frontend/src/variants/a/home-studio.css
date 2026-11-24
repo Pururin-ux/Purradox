@@ -62,3 +62,8 @@
  .home-prism-copy p { margin-bottom:16px; }
 }
 @media(prefers-reduced-motion:reduce) { .home-practice-card:hover img { transform:rotate(5deg); } .home-practice-card img { transition:none; } }
+
+.home-intentions { display:flex; flex-wrap:wrap; align-items:center; gap:0 14px; margin-top:5px; }
+.home-prism-copy .home-intentions a { display:inline-flex; align-items:center; min-height:44px; padding:4px 0; height:auto; color:#fff1dd; background:transparent; font-size:14px; font-weight:570;
+  text-decoration:underline; text-decoration-color:#d5b7c3; text-underline-offset:4px; }
+.home-prism-copy .home-intentions a:hover { color:#ffe0a4; }

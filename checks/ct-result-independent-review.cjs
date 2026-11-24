@@ -11,6 +11,7 @@ const { act } = React;
 const { createRoot } = req('react-dom/client');
 const { JSDOM } = req('jsdom');
 const { transformSync } = req('@babel/core');
+const { MemoryRouter } = req('react-router-dom');
 const KEY = 'kvant_game_v1';
 const DATA = { variantId:'01', minutes:210, title:'Variant 01', tasks:[
   {id:'A1',code:'A1',part:'A',kind:'multi',section:'mechanics',text:'Original A question',options:['one','two','three']},
@@ -26,19 +27,25 @@ async function fixture(run, seed) {
   global.window=dom.window;global.document=dom.window.document;global.IS_REACT_ACT_ENVIRONMENT=true;
   const raw=new Map(seed ? [[KEY,JSON.stringify(seed)]] : []),events=[];
   let now=Date.UTC(2026,10,7,12),refuseGame=false,refuseRemove=false,root,exam,game,g,saveError,modules=new Map(),submissions=0;
-  let beforeGrade;
+  let beforeGrade, lobbyVariant;
   class Clock extends Date { constructor(...a){super(...(a.length?a:[now]));} static now(){return now;} }
   const storage={get length(){return raw.size;},key:i=>[...raw.keys()][i]??null,getItem:k=>raw.get(k)??null,
-    setItem(k,v){events.push('write:'+k);if(refuseGame&&k===KEY)throw Error('progress write refused');raw.set(k,v);},
+    setItem(k,v){events.push('write:'+k);if(refuseGame&&k===KEY)throw Error('progress write refused');
+      if(refuseRemove&&k.startsWith('kvant_draft_v1:ct:')&&JSON.parse(v).value===null)throw Error('draft reset refused');
+      raw.set(k,v);},
     removeItem(k){events.push('remove:'+k);if(refuseRemove&&k.startsWith('kvant_draft_v1:ct:'))throw Error('draft removal refused');raw.delete(k);}};
   Object.defineProperty(dom.window,'localStorage',{value:storage});
   function load(file,cache=modules){
     const filename=[file,file+'.js',file+'.jsx'].find(p=>fs.existsSync(p));
     if(cache.has(filename))return cache.get(filename).exports;
     const m={exports:{}};cache.set(filename,m);
-    const code=transformSync(fs.readFileSync(filename,'utf8'),{filename,babelrc:false,configFile:false,plugins:[req.resolve('@babel/plugin-transform-modules-commonjs')]}).code;
-    vm.runInNewContext(code,{module:m,exports:m.exports,window:dom.window,localStorage:storage,Date:Clock,setInterval:()=>1,clearInterval(){},console,
-      require(n){if(n==='react')return React;if(n==='@/lib/hooks')return {submitCt:async()=>{throw Error('unexpected demo transport')}};
+    const code=transformSync(fs.readFileSync(filename,'utf8'),{filename,babelrc:false,configFile:false,presets:[[req.resolve('@babel/preset-react'),{runtime:'automatic'}]],plugins:[req.resolve('@babel/plugin-transform-modules-commonjs')]}).code;
+    vm.runInNewContext(code,{module:m,exports:m.exports,window:dom.window,document:dom.window.document,localStorage:storage,Date:Clock,setInterval:()=>1,clearInterval(){},console,
+      require(n){if(n==='react')return React;if(n==='@/lib/hooks')return {
+          submitCt:async()=>{throw Error('unexpected demo transport')},
+          useCtDemo:()=>({}), useCtVariants:()=>({data:{variants:[lobbyVariant]}}),
+        };
+        if(n==='./ShellA')return { ShellA:({children})=>children, LoadingA:()=>null };
         if(n.startsWith('@/'))return load(path.join(frontend,'src',n.slice(2)),cache);
         if(n.startsWith('.'))return load(path.resolve(path.dirname(filename),n),cache);
         return req(n);}},{filename});
@@ -69,6 +76,12 @@ async function fixture(run, seed) {
       }
       root=createRoot(dom.window.document.getElementById('root'));
       await act(()=>root.render(React.createElement(Harness)));
+    },
+    async mountLobby(data){
+      lobbyVariant = data;
+      const Lobby = load(path.join(frontend, 'src/variants/a/CtLobby.jsx')).default;
+      root = createRoot(dom.window.document.getElementById('root'));
+      await act(() => root.render(React.createElement(MemoryRouter, null, React.createElement(Lobby))));
     },
     async unmount(){if(root){await act(()=>root.unmount());root=null;}},
     async complete(){await f.action(e=>e.start());await f.action(e=>{e.setAnswer('A1',[1,3]);e.setAnswer('B1','42');});f.advance(120000);await f.action(e=>e.finish());},
@@ -209,7 +222,8 @@ test('two replies for the same answer sheet display the saved elapsed time', asy
     await f.action(exam => exam.setAnswer('B1', '42'));
     const [draftKey, envelope] = f.drafts[0];
     const peer = f.otherGame();
-    const result = { draftKey, attempt: JSON.stringify(JSON.parse(envelope).value), correct: 1, total: 2, elapsed_sec: 5,
+    const { questAnswers, ...sheet } = JSON.parse(envelope).value;
+    const result = { draftKey, attempt: JSON.stringify(sheet), correct: 1, total: 2, elapsed_sec: 5,
       review: [{ id: 'A1', correct: false, solution: [] }, { id: 'B1', given: '42', correct: true, solution: [] }],
       by_section: [{ id: 'mechanics', title: 'Механика', correct: 1, total: 2 }] };
     f.beforeGrade(() => assert.equal(peer.recordCt({ id: '01', correct: 1, result }), true));
@@ -245,4 +259,50 @@ test('legacy topic catalog no longer drops solve quests before the full course l
     const other=f.otherGame();await f.action(()=>other.syncCourseCatalog({lessonSlugs:['ravnouskorennoe-dvizhenie','new'],taskIds:['t1','t2','t3','new1','new2','new3']}));
     assert.deepEqual(f.savedGame.quests.ids,['solve3','nohint','lesson']);assert.equal(f.savedGame.quests.progress.solve3,1);
   },{trainerTaskIds:['t1','t2','t3'],solved:['t1','t2','t3'],quests:{day:'2026-11-07',ids:['solve3','nohint','lesson'],progress:{solve3:1},claimed:[]}});
+});
+
+test('a refused exam reset leaves the saved result visible and is safe to retry', async () => {
+  await fixture(async f => {
+    await f.unmount();
+    const data = { ...DATA, _assessment: { revision: 'current', legacy: {} } };
+    await f.mount(data, true);
+    await f.complete();
+    assert.equal(f.exam.stage, 'result');
+    const result = plain(f.exam.result);
+    const stored = plain(f.savedGame);
+    f.failRemove(true);
+    await f.action(exam => exam.restart());
+    assert.equal(f.exam.stage, 'result');
+    assert.equal(f.exam.saveError !== null, true);
+    assert.deepEqual(plain(f.exam.result), result);
+    assert.deepEqual(plain(f.savedGame), stored);
+    f.failRemove(false);
+    await f.action(exam => exam.retrySave());
+    assert.equal(f.exam.stage, 'intro');
+    assert.equal(f.exam.saveError, null);
+    assert.deepEqual(plain(f.savedGame), stored);
+    assert.equal(f.submissions, 1);
+  });
+});
+
+test('lobby opens the same run’s result when an older client edits a leftover draft', async () => {
+  await fixture(async f => {
+    await f.unmount();
+    const data = { ...DATA, _assessment: { revision: 'current', legacy: {} } };
+    await f.mount(data, true);
+    f.failRemove(true);
+    await f.complete();
+    const other = f.otherDraft(data);
+    assert.equal(other.write({ ...other.saved, flags: ['A1'] }), null);
+    await f.unmount();
+    await f.mountLobby(data);
+    const link = document.querySelector('a[href="/ct/variant/01"]');
+    assert.match(link.textContent, /Посмотреть результат/);
+    assert.doesNotMatch(link.closest('.ct-variant-card').textContent, /Начат/);
+    await f.unmount();
+    assert.equal(other.write({ ...other.saved, runId: 'different-run', flags: [] }), null);
+    await f.mountLobby(data);
+    assert.match(document.querySelector('a[href="/ct/variant/01"]').textContent, /Продолжить/);
+    assert.match(document.querySelector('a[href="/ct/variant/01?report=previous"]').textContent, /Предыдущий результат/);
+  });
 });

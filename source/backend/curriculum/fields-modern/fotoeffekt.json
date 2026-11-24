@@ -163,6 +163,7 @@
   "tasks": [
     {
       "id": "fotoeffekt:t1",
+      "lessonBlock": "threshold",
       "code": "А1",
       "part": "A",
       "kind": "single",
@@ -198,6 +199,7 @@
     },
     {
       "id": "fotoeffekt:t2",
+      "lessonBlock": "observations",
       "code": "А2",
       "part": "A",
       "kind": "multi",
@@ -227,6 +229,7 @@
     },
     {
       "id": "fotoeffekt:t3",
+      "lessonBlock": "threshold",
       "code": "А3",
       "part": "A",
       "kind": "single",
@@ -266,6 +269,7 @@
     },
     {
       "id": "fotoeffekt:t4",
+      "lessonBlock": "threshold",
       "code": "В1",
       "part": "B",
       "kind": "number",
@@ -288,6 +292,7 @@
     },
     {
       "id": "fotoeffekt:t5",
+      "lessonBlock": "threshold",
       "code": "В2",
       "part": "B",
       "kind": "number",
@@ -310,6 +315,7 @@
     },
     {
       "id": "fotoeffekt:t6",
+      "lessonBlock": "threshold",
       "code": "В3",
       "part": "B",
       "kind": "number",

@@ -103,11 +103,11 @@ export default function ShopA() {
   const capsuleBusy=useRef(false), itemOrigin=useRef(null), capsuleOrigin=useRef(null), collectionTab=useRef(null);
   const setTab=value=>{play("tap");setParams(value==="collection"?{tab:"collection"}:{},{replace:true});};
   const inspect=(art,origin,initialTab)=>{itemOrigin.current=origin;setOpen({art,initialTab});};
-  const startCapsule=event=>{
+  const startCapsule=async event=>{
     if(capsuleBusy.current)return;
     capsuleOrigin.current=event.currentTarget;
     capsuleBusy.current=true;
-    const result=openCapsule();
+    const result=await openCapsule();
     if(result){setNotice(null);setOpening(result);}
     else{capsuleBusy.current=false;play("bad");setNotice({kind:"capsule-error"});}
   };

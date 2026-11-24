@@ -12,7 +12,7 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 60_000,
       refetchOnWindowFocus: false,
-      retry: (count, err) => err?.response?.status !== 404 && count < 2,
+      retry: (count, err) => err?.response?.status !== 404 && err?.code !== "ETIMEDOUT" && count < 2,
     },
   },
 });
@@ -29,9 +29,9 @@ function mountApp() {
 }
 
 const { pathname } = window.location;
+prefetchStudyPage(queryClient, pathname);
 const initialPage = prepareInitialRoute(pathname);
 if (initialPage) {
-  prefetchStudyPage(queryClient, pathname);
   root.render(<div className="va va-study"><LoadingA /></div>);
   initialPage.then(mountApp, mountApp);
 } else {

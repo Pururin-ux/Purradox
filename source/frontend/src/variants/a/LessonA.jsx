@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useParams, useSearchParams } from "react-router-dom";
-import { AnimatePresence, motion, useDragControls, useReducedMotion } from "framer-motion";
+import { motion, useDragControls, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowRight, BookOpen, ChevronDown, FlaskConical, List, ListChecks, LockKeyhole, PencilLine, X } from "lucide-react";
 import { ShellA, LoadingA, Logo } from "./ShellA";
-import { CARDS } from "./cardsA";
+import { CARDS, OpticalPractice } from "./cardsA";
 import { checkLesson, useLesson } from "@/lib/hooks";
 import { LINKS } from "@/lib/nav";
 import { useSfx } from "@/lib/sound";
@@ -13,12 +13,13 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { learningDraftKey, useLearningDraft } from "@/lib/learningDraft";
-import { DraftResume, DraftSaveNotice } from "./DraftResume";
+import { DraftResume, DraftSaveNotice } from "./DraftPanels";
 import { AnswerA } from "./AnswerA";
 import { Rich } from "@/components/shared/Tex";
-import { recordQuizAnswer, useProfileGeneration } from "@/lib/game";
+import { learningResultStatus, useGame, useProfileGeneration } from "@/lib/game";
 import { canonicalQuizId } from "@/lib/progressIds";
 import { lessonEditorial } from "@/lib/lessonEditorial";
+import "./lesson.css";
 
 const shortTitles = {
   hook:"Электричка трогается", idea:"Что такое ускорение", direction:"Разгон и торможение",
@@ -27,7 +28,7 @@ const shortTitles = {
 };
 const cardTitle = (item,slug) => (slug === "ravnouskorennoe-dvizhenie" ? shortTitles[item.id] : null) || item.title || (item.kind === "check" ? "Проверить себя" : "Итог урока");
 const V = {
-  enter:d => ({x:d*24,opacity:0.65}), center:{x:0,opacity:1}, exit:d => ({x:d*-16,opacity:0.65}),
+  enter:d => ({x:d*18,opacity:0.86}), center:{x:0,opacity:1},
 };
 
 function NotFound() {
@@ -55,6 +56,16 @@ export default function LessonA() {
       </Alert>}
   </ShellA>;
   if (!data) return <ShellA bare><LoadingA /></ShellA>;
+  const block = params.get("block") && data.blocks.find(item => item.id === params.get("block") && item.kind !== "check");
+  if (block?.id === "rays" && params.get("mode") === "practice" &&
+      ["tonkie-linzy","svet-i-otrazhenie","sfericheskie-zerkala"].includes(slug)) {
+    return <ShellA bare><div className="lesson-optics-focus">
+      <header className="lesson-topbar"><Logo /><Link className="ray-return" to={"/lesson/"+slug+"?block=rays"} state={state}>
+        <ArrowLeft size={16} aria-hidden="true" />К объяснению</Link></header>
+      <OpticalPractice slug={slug} focused />
+    </div></ShellA>;
+  }
+  if (block) return <Explanation key={slug + ":" + block.id} lesson={data} block={block} origin={state?.reviewOrigin} />;
   if (params.has("question")) {
     const item = data.quiz.find(question => question.id === canonicalQuizId(params.get("question")));
     return <QuizRetry key={learningDraftKey("lesson",slug,data) + ":" + item?.id} data={data} item={item} />;
@@ -62,13 +73,36 @@ export default function LessonA() {
   return <LessonContent key={learningDraftKey("lesson",slug,data)} data={data} slug={slug} returnTo={returnTo} />;
 }
 
+function Explanation({ lesson, block, origin }) {
+  const [guess, setGuess] = useState("");
+  const Content = CARDS[block.kind];
+  const returnTo = typeof origin === "string" && /^\/ct\/(?:demo|variant\/[0-9]+)\?/.test(origin) ? origin : null;
+  return <ShellA bare><div className="lesson-page lesson-explanation">
+    <header className="lesson-topbar"><Logo /><Button asChild variant="secondary">
+      <Link to={returnTo || ("/lesson/" + lesson.slug)}><ArrowLeft aria-hidden="true" />{returnTo ? "К разбору задания" : "К уроку"}</Link>
+    </Button></header>
+    <div className="lesson-heading"><h1>{lesson.title}</h1></div>
+    <article className="lesson-stage" data-testid={"lesson-card-" + block.id}>
+      <Card className="lesson-card" data-kind={block.kind}><Content block={block} lesson={lesson} ctx={{guess,setGuess}} /></Card>
+    </article>
+  </div></ShellA>;
+}
+
 function QuizRetry({ data, item }) {
   const [attempt, setAttempt] = useState(0);
-  const [result, setResult] = useState(null);
+  const progress = useGame();
   const generation = useProfileGeneration();
+  const scope = data.slug + "-" + (item?.id.split(":").at(-1) ?? "question");
+  const draft = useLearningDraft("lesson", scope, data);
+  const result = draft.value.quiz.results[item?.id];
   const revision = data._assessment?.revision;
   const check = checkLesson(data.slug, revision);
+  const options = { revision, profileGeneration: generation };
+  const progressId = "quiz:" + item?.id;
+  const status = learningResultStatus(progress, progressId, result);
+  const needsSave = !draft.conflicted && status === "retry";
   return <ShellA><div className="lesson-page lesson-retry">
+    <DraftSaveNotice error={draft.error ?? draft.warning} />
     <header className="lesson-topbar"><Logo /><Button asChild variant="ghost" className="lesson-close">
       <Link to={LINKS.review}><ArrowLeft aria-hidden="true" />К повторению</Link>
     </Button></header>
@@ -76,14 +110,21 @@ function QuizRetry({ data, item }) {
     <Card className="lesson-card study-trainer">
       {item ? <>
         <p className="lesson-question"><Rich text={item.text} /></p>
-        <AnswerA key={attempt} item={item} check={check} tid={"retry-" + item.id} onResult={result => {
-          recordQuizAnswer(item.id, result, revision, generation);
-          setResult(result);
-        }} />
+        <AnswerA key={attempt} item={item} check={check} tid={"retry-" + item.id} initialResult={result} focusOnMount={attempt > 0}
+          draft={draft.value.answers[item.id]}
+          onDraftChange={answer => draft.update(saved => ({ ...saved, answers: { [item.id]: answer } }))}
+          onResult={outcome => draft.saveResult(progressId, outcome, options, saved => ({
+            ...saved, quiz: { ...saved.quiz, results: { [item.id]: outcome } },
+          }))} />
         {result && <Alert className="lesson-check-result" data-outcome={result.correct ? "right" : "wrong"} role="status">
           <AlertTitle>{result.correct ? "Верно" : "Есть ошибка"}</AlertTitle>
           <AlertDescription><Rich text={result.explanation} /></AlertDescription>
-          {!result.correct && <Button type="button" variant="secondary" onClick={() => { setResult(null); setAttempt(n => n + 1); }}>Попробовать ещё раз</Button>}
+          {needsSave && <Button type="button" variant="secondary" onClick={() => draft.saveResult(progressId, result, options)}>Сохранить результат</Button>}
+          {status === "stale" && <AlertDescription>В прогрессе уже есть более свежий ответ.</AlertDescription>}
+          <Button type="button" variant="ghost" onClick={() => {
+            draft.update(saved => ({ ...saved, answers: {}, quiz: { ...saved.quiz, results: {} } }));
+            setAttempt(n => n + 1);
+          }}>Попробовать ещё раз</Button>
         </Alert>}
       </> : <p>В текущей версии урока этого вопроса нет.</p>}
       <Button asChild variant="ghost"><Link to={"/lesson/" + data.slug}>Открыть урок<ArrowRight aria-hidden="true" /></Link></Button>
@@ -124,7 +165,7 @@ const introCard = {id:"intro",kind:"intro",title:"Перед уроком"};
 function LessonContent({data,slug,returnTo}) {
   const draft = useLearningDraft("lesson",slug,data);
   const {guess,quiz} = draft.value;
-  const [dir,setDir] = useState(1);
+  const [dir,setDir] = useState(0);
   const [contentsOpen,setContentsOpen] = useState(false);
   const reduceMotion = useReducedMotion();
   const revealCard = useRef(null);
@@ -136,6 +177,10 @@ function LessonContent({data,slug,returnTo}) {
   },[]);
   const setGuess = value => draft.update(s => ({...s,guess:value}));
   const setQuiz = change => draft.update(s => ({...s,quiz:typeof change === "function" ? change(s.quiz) : change}));
+  const profileGeneration = useProfileGeneration();
+  const saveQuiz = (id, result, change) => draft.saveResult("quiz:" + id, result, {
+    revision: data._assessment?.revision, profileGeneration,
+  }, change && (s => ({ ...s, quiz: { ...s.quiz, results: { ...s.quiz.results, [id]: result } } })));
   const setAnswerDraft = (id,value) => draft.update(s => ({...s,answers:{...s.answers,[id]:value}}));
   const play = useSfx();
   const controls = useDragControls();
@@ -167,7 +212,7 @@ function LessonContent({data,slug,returnTo}) {
     return () => window.removeEventListener("keydown",onKey);
   });
 
-  if (draft.pending) return <ShellA><DraftSaveNotice error={draft.warning} /><DraftResume title={data.title} savedAt={draft.savedAt}
+  if (draft.pending) return <ShellA><DraftSaveNotice error={draft.error ?? draft.warning} /><DraftResume title={data.title} savedAt={draft.savedAt}
     results={quiz.results} position={{label:"Карточка",current:i+1,total:cards.length}} detail={cardTitle(card,slug)}
     onResume={() => { revealCard.current = card.id; draft.resume(); }} onRestart={draft.restart} /></ShellA>;
   const CardContent = CARDS[card.kind];
@@ -189,9 +234,8 @@ function LessonContent({data,slug,returnTo}) {
           <CollapsibleTrigger asChild><Button variant="ghost"><List aria-hidden="true" /><span className="lesson-contents-trigger-label">Содержание урока<span>{cardTitle(card,slug)}</span></span><ChevronDown aria-hidden="true" /></Button></CollapsibleTrigger>
           <CollapsibleContent><LessonContents cards={cards} current={i} quizDone={quizDone} onSelect={goTo} slug={slug} /></CollapsibleContent>
         </Collapsible>
-        <AnimatePresence mode="wait" initial={false} custom={dir}>
           <motion.article ref={focusArticle} key={card.id} tabIndex={-1} aria-labelledby="lesson-step-title" className="lesson-stage"
-            custom={dir} variants={reduceMotion ? undefined : V} initial={reduceMotion ? false : "enter"} animate="center" exit={reduceMotion ? undefined : "exit"}
+            custom={dir} variants={reduceMotion ? undefined : V} initial={reduceMotion || !dir ? false : "enter"} animate="center"
             transition={{duration:0.18,ease:[0.16,1,0.3,1]}} drag={reduceMotion ? false : "x"} dragControls={controls} dragListener={false}
             dragConstraints={{left:0,right:0}} dragElastic={0.12}
             onDragEnd={(e,info) => { if(info.offset.x < -90) go(1); else if(info.offset.x > 90) go(-1); }}
@@ -199,10 +243,9 @@ function LessonContent({data,slug,returnTo}) {
             data-card-id={card.id} data-testid={`lesson-card-${card.id}`}>
             <Card className="lesson-card" data-kind={card.kind} data-composition={card.kind === "intro" ? editorial?.composition : undefined}>
               <CardContent block={card} lesson={data} ctx={{guess,setGuess,quiz,setQuiz,go,answerDrafts:draft.value.answers,setAnswerDraft,
-                isCurrentProfile:draft.isCurrentProfile,index:i,total:cards.length}} />
+                saveQuiz,draftConflict:draft.conflicted,isCurrentProfile:draft.isCurrentProfile,canComplete:draft.canComplete,index:i,total:cards.length}} />
             </Card>
           </motion.article>
-        </AnimatePresence>
         {card.kind !== "finish" && <footer className={`lesson-controls ${card.kind === "check" ? "lesson-check-controls" : ""}`}>
           <Button type="button" variant="ghost" className="lesson-back" onClick={() => go(-1)} disabled={i === 0} data-testid="lesson-prev-btn" aria-label="Назад"><ArrowLeft aria-hidden="true" /><span>Назад</span></Button>
           {card.kind !== "check" && <Button type="button" className="study-next lesson-next" onClick={() => go(1)} disabled={!canNext} data-testid="lesson-next-btn">

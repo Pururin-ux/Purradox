@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import { VtGraph } from "@/components/shared/VtGraph";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { lensState } from "@/lib/studyModels";
@@ -651,7 +651,7 @@ const solutionFigures = {
   "yadernye-reakcii:t1": { Figure: NuclearLedger },
 };
 
-export function TrainerFigure({ task, phase, figureId = task.id, fallbackToQuestion = false }) {
+export const TrainerFigure = memo(function TrainerFigure({ task, phase, figureId = task.id, fallbackToQuestion = false }) {
   const definition = (phase === "solution" ? solutionFigures[figureId] : questionFigures[figureId])
     ?? (fallbackToQuestion ? questionFigures[figureId] : null);
   if (!definition) return null;
@@ -660,4 +660,4 @@ export function TrainerFigure({ task, phase, figureId = task.id, fallbackToQuest
     <Figure solved={phase === "solution"} graph={task.graph} {...props} />
     {caption && <figcaption>{caption}</figcaption>}
   </figure>;
-}
+});

@@ -5,15 +5,15 @@ import { Rich } from "@/components/shared/Tex";
 import { VtGraph } from "@/components/shared/VtGraph";
 import { LINKS } from "@/lib/nav";
 import { plural } from "@/lib/format";
-import { mistakeGiven, mistakeTime, useGame } from "@/lib/game";
-import { useLegacyReviewMetadata, useReviewItems } from "@/lib/hooks";
+import { dayKey, mistakeGiven, mistakeTime, useGame } from "@/lib/game";
+import { useLegacyReviewMetadata, useReviewItems, useTrainerTasks } from "@/lib/hooks";
 import { canonicalTaskId } from "@/lib/progressIds";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const taskLink = task => '/trainer/' + task.lessonSlug + '?task=' + encodeURIComponent(task.id) + '&from=review';
+const taskLink = (task, due = false) => '/trainer/' + task.lessonSlug + '?task=' + encodeURIComponent(task.id) + '&from=review' + (due ? '&recall=' + dayKey() : '');
 
 // Ошибка старше трёх суток (или без метки времени из старых сохранений) —
 // кандидат в «Пора повторить». Свежие промахи живут в отдельной полосе.
@@ -45,8 +45,8 @@ const byChapter = list => {
   return groups;
 };
 
-const ReviewTaskRow = ({ task }) => <Button asChild variant="ghost" className="review-task" data-testid={`review-task-${task.id}`}>
-  <Link to={taskLink(task)}>
+const ReviewTaskRow = ({ task, due }) => <Button asChild variant="ghost" className="review-task" data-testid={`review-task-${task.id}`}>
+  <Link to={taskLink(task, due)}>
     <span className="review-task-code">{task.code}</span>
     <small className="review-lesson-name">{task.lessonTitle}</small>
     <span className="review-task-text"><Rich text={task.text} /></span>
@@ -71,20 +71,46 @@ function PreviousAttempt({ item, given }) {
   </details>;
 }
 
-const ChapterGroup = ({ group, mistakeAt }) => <div className="review-chapter-group">
+const ChapterGroup = ({ group, mistakeAt, recallIds }) => <div className="review-chapter-group">
   <h3 className="review-chapter">{group.title}</h3>
   <div className="review-task-list">
     {group.items.map(task => {
-      const given = mistakeGiven(mistakeAt[task.id], task.revision, task.legacyPositions);
-      return <div key={task.id} className="review-record"><ReviewTaskRow task={task} />
+      const given = mistakeGiven(mistakeAt[task.id], task.revision, task.legacyPositions, task.compatibleRevisions);
+      return <div key={task.id} className="review-record"><ReviewTaskRow task={task} due={recallIds?.has(task.id)} />
         <PreviousAttempt item={task} given={given} />
       </div>;
     })}
   </div>
 </div>;
 
+function SpacedPractice({ due, progress }) {
+  const { data } = useTrainerTasks(due.slug);
+  if (!data) return null;
+  const origin = data.tasks.find(task => task.id === due.id);
+  if (!origin) return null;
+  const alternative = data.tasks.find(task => task.id !== origin.id && task.lessonBlock === origin.lessonBlock
+    && !progress.learningChecks?.[task.id] && !progress.solved.includes(task.id) && !progress.mistakes.includes(task.id));
+  const query = alternative ? { task:alternative.id, transfer:origin.id } : { task:origin.id, from:"review", recall:dayKey() };
+  return <section className="review-band" aria-label="Повторение после перерыва">
+    <h2 className="review-band-title">Проверить после перерыва</h2>
+    <p>{data.title}. {alternative ? "Реши новую задачу по этому правилу." : "Восстанови ход решения знакомой задачи без подсказки."}</p>
+    <Button asChild variant="secondary"><Link to={"/trainer/" + due.slug + "?" + new URLSearchParams(query)}>К проверке</Link></Button>
+  </section>;
+}
+
 export default function ReviewA() {
-  const { mistakes, mistakeAt = {} } = useGame();
+  const progress = useGame();
+  const { mistakes, mistakeAt = {}, learningChecks = {}, allTaskIds = [] } = progress;
+  const dueTopics = new Map();
+  for (const [id, mark] of Object.entries(learningChecks)) {
+    if (!mark.independentAt || !mark.lessonBlock) continue;
+    const slug = id.split(":")[0];
+    const key = slug + ":" + mark.lessonBlock;
+    const at = Math.max(mark.independentAt, mark.recalledAt ?? 0);
+    if (!dueTopics.has(key) || at > dueTopics.get(key).at) dueTopics.set(key, { slug, id, at });
+  }
+  const due = [...dueTopics.values()].filter(row => row.at <= Date.now() - DUE_MS
+    && (!allTaskIds || allTaskIds.includes(row.id))).sort((a,b) => a.at - b.at)[0];
   const review = useReviewItems(mistakes);
   const items = review.data?.items ?? [];
   const taskItems = items.filter(item => !item.id.startsWith("quiz:"));
@@ -111,9 +137,10 @@ export default function ReviewA() {
     const first = tasks.find(task => (task.chapter || task.lessonTitle) === chapter);
     return { chapter, count: n, task: first };
   })();
-  const byAge = tasks.map(task => ({ task, time: failedAt(mistakeAt, task.id) })).sort((a, b) => a.time - b.time);
+  const byAge = tasks.map(task => ({ task, time: Math.max(failedAt(mistakeAt, task.id), learningChecks[task.id]?.checkedAt ?? 0) })).sort((a, b) => a.time - b.time);
   const dueBefore = Date.now() - DUE_MS;
   const dueTasks = [], recentTasks = [];
+  const recallIds = new Set(byAge.filter(row => row.time > 0 && row.time <= dueBefore).map(row => row.task.id));
   for (const { task, time } of byAge) (time < dueBefore ? dueTasks : recentTasks).push(task);
   const metadataError = legacyItems.length > 0 && metadata.isError;
   const fetching = review.isFetching || (legacyItems.length > 0 && metadata.isFetching);
@@ -133,10 +160,11 @@ export default function ReviewA() {
           width="144" height="108" decoding="async" alt="" aria-hidden="true" draggable="false" />}
       </header>
 
+      {due && <SpacedPractice due={due} progress={progress} />}
       {!hasMistakes ? <section className="review-empty" data-testid="review-empty" aria-labelledby="review-empty-title">
         <img src="/art/full-site-20261107/review-empty-tray-v1.webp" width="768" height="576" alt="" decoding="async" draggable="false" />
         <div className="review-empty-copy">
-          <h2 id="review-empty-title">Пока нечего повторять</h2>
+          <h2 id="review-empty-title">{due ? "Ошибок для разбора нет" : "Пока нечего повторять"}</h2>
           <p>Сюда попадут задачи и вопросы с ошибками.</p>
           <div className="review-empty-actions">
             <Button asChild className="study-next" data-testid="review-to-trainer-btn"><Link to={LINKS.practice}>К задачам<ArrowRight aria-hidden="true" data-icon="inline-end" /></Link></Button>
@@ -161,12 +189,12 @@ export default function ReviewA() {
 
         {review.data && <div className="review-queue" data-testid="review-tasks">
           {weakChapter && weakChapter.count > 1
-            ? <p className="review-topic" data-testid="review-weak"><span>Больше всего отметок: <strong>{weakChapter.chapter}</strong> ({weakChapter.count})</span> <Link to={taskLink(weakChapter.task)}>Открыть задачу<ArrowRight aria-hidden="true" /></Link></p>
+            ? <p className="review-topic" data-testid="review-weak"><span>Больше всего отметок: <strong>{weakChapter.chapter}</strong> ({weakChapter.count})</span> <Link to={taskLink(weakChapter.task, recallIds.has(weakChapter.task.id))}>Открыть задачу<ArrowRight aria-hidden="true" /></Link></p>
             : null}
           {dueTasks.length > 0 && <section className="review-band" aria-label="Пора повторить" data-testid="review-due">
             <h2 className="review-band-title">Пора повторить</h2>
             <p className="review-band-sub">Прошло больше трёх дней.</p>
-            {byChapter(dueTasks).map(group => <ChapterGroup key={group.title} group={group} mistakeAt={mistakeAt} />)}
+            {byChapter(dueTasks).map(group => <ChapterGroup key={group.title} group={group} mistakeAt={mistakeAt} recallIds={recallIds} />)}
           </section>}
           {recentTasks.length > 0 && <section className="review-band" aria-label="Недавние ошибки" data-testid="review-recent">
             <h2 className="review-band-title">Недавние ошибки</h2>
@@ -176,7 +204,7 @@ export default function ReviewA() {
             <h2 className="review-band-title">Из проверок уроков</h2>
             <div className="review-task-list">
               {quizItems.map(item => <div key={item.id} className="review-record"><QuizReviewRow item={item} />
-                <PreviousAttempt item={item} given={mistakeGiven(mistakeAt[item.id], item.revision, item.legacyPositions)} />
+                <PreviousAttempt item={item} given={mistakeGiven(mistakeAt[item.id], item.revision, item.legacyPositions, item.compatibleRevisions)} />
               </div>)}
             </div>
           </section>}

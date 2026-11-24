@@ -1,22 +1,18 @@
-import { Component, Suspense, lazy, useEffect, useRef, useState } from "react";
+import { Component, Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
 import { matchPath, Navigate, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import "./a.css";
 import DashboardA from "./DashboardA";
 import { LoadingA, ShellA } from "./ShellA";
-import { ProfileA } from "./ProfileA";
+import { ProfileA, ProfileLauncher } from "./ProfileA";
 import { prefetchStudyPage, useCatalog } from "@/lib/hooks";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { preloadFormulaMarkup } from "@/components/shared/Tex";
 
 import "./game.css";
 import "./workshop.css";
 import "./study.css";
-import "./lesson.css";
-import "./lesson-workbenches.css";
-import "./lesson-experiments.css";
-import "./lesson-motion-scenes.css";
-import "./lesson-demonstrations.css";
 import "./review.css";
 import "./ct-study.css";
 import "./shop-study.css";
@@ -27,7 +23,6 @@ import "./trainer-figures.css";
 import "./course.css";
 import "./home-studio.css";
 import "./profile.css";
-import "./study-labs.css";
 import "./ct-lobby.css";
 import "./crafted-shelf.css";
 import "./graphic-return.css";
@@ -37,7 +32,7 @@ import { syncCourseCatalog, useProfileGeneration } from "@/lib/game";
 class RouteLoadBoundary extends Component {
   state = { failed: false };
 
-  static getDerivedStateFromError() { return { failed: true }; }
+  static getDerivedStateFromError(error) { return { failed: true, chunkFailed: error?.name === "ChunkLoadError" }; }
 
   componentDidUpdate(previous) {
     if (this.state.failed && previous.pathname !== this.props.pathname) this.props.retry();
@@ -49,7 +44,7 @@ class RouteLoadBoundary extends Component {
       <Alert className="study-load-error" role="alert" data-testid="route-load-error">
         <AlertTitle role="heading" aria-level={1}>Страница не загрузилась</AlertTitle>
         <AlertDescription>Попробуй открыть её ещё раз.</AlertDescription>
-        <Button type="button" className="study-next" onClick={this.props.retry}>Попробовать снова</Button>
+        <Button type="button" className="study-next" onClick={() => this.props.retry(this.state.chunkFailed)}>Попробовать снова</Button>
       </Alert>
     </div></ShellA>;
   }
@@ -69,7 +64,13 @@ function deferredRoute(importPage) {
     const { pathname } = useLocation();
     const [attempt, setAttempt] = useState(() => ({ id: 0, Content: readyPage ?? lazy(load) }));
     const { id, Content } = attempt;
-    const retry = () => setAttempt(current => ({ id: current.id + 1, Content: readyPage ?? lazy(load) }));
+    const retry = (recoverNested = false) => {
+      if (recoverNested && readyPage) {
+        window.location.reload();
+        return;
+      }
+      setAttempt(current => ({ id: current.id + 1, Content: readyPage ?? lazy(load) }));
+    };
     // Create a new lazy entry on retry. React retains the failure on the old one.
     return <RouteLoadBoundary key={id} pathname={pathname} retry={retry}>
       <Suspense fallback={<ShellA><LoadingA /></ShellA>}>
@@ -81,7 +82,10 @@ function deferredRoute(importPage) {
   return Page;
 }
 
-const LessonA = deferredRoute(() => import("./LessonA"));
+const LessonA = deferredRoute(() => {
+  preloadFormulaMarkup();
+  return import("./LessonA");
+});
 const TrainerA = deferredRoute(() => import("./TrainerA"));
 const ReviewA = deferredRoute(() => import("./ReviewA"));
 const CourseCatalog = deferredRoute(() => import("./CourseCatalog"));
@@ -122,18 +126,44 @@ function CtVariantRoute() {
   return <CtA />;
 }
 
-// Оверлей профиля: адрес /profile, а страница под окном остаётся той, откуда открыли.
-function ProfileRoute() {
+function ProfileOverlay({ routedOpen, children }) {
   const navigate = useNavigate();
-  const { state } = useLocation();
-  const trigger = useRef(document.activeElement);
-  return <ProfileA open onOpenChange={open => { if (!open) navigate(-1); }} onCloseAutoFocus={event => {
-    event.preventDefault();
-    requestAnimationFrame(() => {
-      if (trigger.current?.isConnected && trigger.current.matches("button, a")) trigger.current.focus();
-      else if (state?.backgroundLocation) document.querySelector('[data-testid="hud-user-level"]')?.focus();
-    });
-  }} />;
+  const trigger = useRef(null);
+  const pending = useRef(false);
+  const [opening, setOpening] = useState(false);
+  const clearOpening = useCallback(() => {
+    pending.current = false;
+    setOpening(false);
+  }, []);
+  const launch = useCallback((button, backgroundLocation) => {
+    if (pending.current) return;
+    pending.current = true;
+    trigger.current = button;
+    // Show the dialog during the click; the router updates the URL in a transition.
+    setOpening(true);
+    navigate("/profile", { state: { backgroundLocation } });
+  }, [navigate]);
+
+  useEffect(() => {
+    if (routedOpen) clearOpening();
+  }, [routedOpen, clearOpening]);
+  useEffect(() => {
+    window.addEventListener("popstate", clearOpening);
+    return () => window.removeEventListener("popstate", clearOpening);
+  }, [clearOpening]);
+
+  return <ProfileLauncher.Provider value={launch}>
+    {children}
+    {(routedOpen || opening) && <ProfileA open onOpenChange={open => {
+      if (!open) { clearOpening(); navigate(-1); }
+    }} onCloseAutoFocus={event => {
+      event.preventDefault();
+      requestAnimationFrame(() => {
+        const button = trigger.current?.isConnected ? trigger.current : document.querySelector('[data-testid="hud-user-level"]');
+        button?.focus({ preventScroll: true });
+      });
+    }} />}
+  </ProfileLauncher.Provider>;
 }
 
 export default function VariantA() {
@@ -141,32 +171,32 @@ export default function VariantA() {
   const profileGeneration = useProfileGeneration();
   const client = useQueryClient();
   // backgroundLocation — страница, поверх которой открыт профиль по ссылке с шапки.
-  const background = location.state?.backgroundLocation;
+  const background = location.pathname === "/profile" ? location.state?.backgroundLocation : null;
   const { pathname } = background || location;
   useEffect(() => { prefetchStudyPage(client, pathname); }, [client, pathname]);
   return (
-    <div className={`va va-grain ${/^\/(trainer|lesson|review|ct|shop|learn|practice)(\/|$)/.test(pathname) || pathname === "/" ? "va-study" : ""} ${pathname.startsWith("/ct") ? "ct-study" : ""}`} data-testid="variant-a-root">
-      <CourseProgressSync generation={profileGeneration} />
-      <Routes location={background || location} key={background || pathname !== "/profile" ? profileGeneration : "profile"}>
-        <Route path="/" element={<DashboardA />} />
-        {/* Профиль остаётся модальным окном; прямой адрес открывает его поверх главной. */}
-        <Route path="/profile" element={<DashboardA openProfile />} />
-        {/* Коллекция — та же вкладка магазина, теперь доступная и коротким адресом. */}
-        <Route path="/collection" element={<Navigate to="/shop?tab=collection" replace />} />
-        <Route path="/learn" element={<CourseCatalog />} />
-        <Route path="/practice" element={<CourseCatalog practice />} />
-        <Route path="/story/*" element={<Navigate to={LINKS.trainer} replace />} />
-        <Route path="/lesson/:slug" element={<LessonA />} />
-        <Route path="/trainer/:slug" element={<TrainerA />} />
-        <Route path="/review" element={<ReviewA />} />
-        <Route path="/shop" element={<ShopA />} />
-        <Route path="/ct" element={<CtLobby />} />
-        <Route path="/ct/demo" element={<CtA />} />
-        <Route path="/ct/variant/:variantId" element={<CtVariantRoute />} />
-        {process.env.NODE_ENV === "development" && <Route path="/style-lab" element={<StyleLab />} />}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-      {background && <Routes><Route path="/profile" element={<ProfileRoute />} /></Routes>}
-    </div>
+    <ProfileOverlay routedOpen={Boolean(background)}>
+      <div className={`va va-grain ${/^\/(trainer|lesson|review|ct|shop|learn|practice|profile)(\/|$)/.test(pathname) || pathname === "/" ? "va-study" : ""} ${pathname.startsWith("/ct") ? "ct-study" : ""}`} data-testid="variant-a-root">
+        <CourseProgressSync generation={profileGeneration} />
+        <Routes location={background || location} key={background || pathname !== "/profile" ? profileGeneration ?? "local" : "profile"}>
+          <Route path="/" element={<DashboardA />} />
+          <Route path="/profile" element={<ShellA bare profileOpen />} />
+          {/* Коллекция — та же вкладка магазина, теперь доступная и коротким адресом. */}
+          <Route path="/collection" element={<Navigate to="/shop?tab=collection" replace />} />
+          <Route path="/learn" element={<CourseCatalog />} />
+          <Route path="/practice" element={<CourseCatalog practice />} />
+          <Route path="/story/*" element={<Navigate to={LINKS.trainer} replace />} />
+          <Route path="/lesson/:slug" element={<LessonA />} />
+          <Route path="/trainer/:slug" element={<TrainerA />} />
+          <Route path="/review" element={<ReviewA />} />
+          <Route path="/shop" element={<ShopA />} />
+          <Route path="/ct" element={<CtLobby />} />
+          <Route path="/ct/demo" element={<CtA />} />
+          <Route path="/ct/variant/:variantId" element={<CtVariantRoute />} />
+          {process.env.NODE_ENV === "development" && <Route path="/style-lab" element={<StyleLab />} />}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
+    </ProfileOverlay>
   );
 }

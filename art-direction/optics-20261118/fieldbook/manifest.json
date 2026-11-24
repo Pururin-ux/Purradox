@@ -1,0 +1,94 @@
+{
+  "generator": "Built-in ImageGen",
+  "editor": "Krita 5.3.3 (858d352)",
+  "method": "Six groups of optical instruments. Glass and brass separated at the material boundary, lamp filament and editable amber glow on their own layers. Website specimens are crops of the PNG rendered from the Krita master.",
+  "master": {
+    "file": "instruments.kra",
+    "sha256": "d1d2a9ff045440f396a5ee1cca86d7cddba60aa80f7665e32033925ea9b8e2b7",
+    "groups": 6,
+    "paintLayers": 14
+  },
+  "illustrations": [
+    {
+      "original": "observation.png",
+      "sha256": "84f65eff240ee01283ec8d0ced087ec7c1d43a0c1f54e6302696f33c3fbe233f",
+      "references": [
+        "art-direction/cute-style-probe-20261106/references/24-moon-cat-watercolor.png",
+        "art-direction/cute-style-probe-20261106/references/50-cat-reflected-eyes.png",
+        "art-direction/cute-style-probe-20261106/references/53-cat-amber-jar.png"
+      ],
+      "prompt": "Use case: illustration-story. Produce a wide transparent spot illustration for the Russian Purradox physics textbook, for a light ivory printed page. Reference 1 for the expressive indigo watercolor, dry-brush and pencil edges, reference 2 for the light catching an intent cat's eye, reference 3 for the purple-black amber-eyed cat's identity. The drawing tells one small visual joke from optics. At RIGHT a fluffy ink-purple kitten crouches intent, one paw stretched forward, whiskers and nose directed LEFT at an ordinary silver tablespoon resting diagonally, bowl raised and concave towards the cat. At LEFT the viewer clearly sees inside the oblique upright bowl: a recognisable tiny UPSIDE-DOWN reflection of the same cat's face, ears at the bottom of the reflection. Its handle visibly runs diagonally along the ground. Frame three-quarter view so cat and actual inverted reflection are both legible; make the spoon optically large in the foreground. The subject is lively colored-pencil linework, individual hair flicks, indigo granulating gouache shadows, golden amber reflected light and warm burnt-sienna silver, selectively unpainted highlights. It should belong to a finely drawn, humorous natural philosopher's notebook. Distinctive silhouette, complete ears, paws, spoon and long curling tail INSIDE the canvas with air all around. No background except a few grounded violet watercolor contact-shadows that dissolve into fully transparent alpha. No rectangular paper surface, no kitchen tableau, no painted frame, no lettering, no axes, no props beyond the spoon. Not a banner or UI. Wide landscape arrangement, baseline underneath, make outermost extent transparent on all four sides."
+    },
+    {
+      "original": "instruments.png",
+      "sha256": "29680b8182be8ef9c59b31c75dd267dcd4ab2e8d8a67777964ddfa555e1f3095",
+      "references": [
+        "art-direction/cute-style-probe-20261106/references/24-moon-cat-watercolor.png",
+        "art-direction/cute-style-probe-20261106/references/53-cat-amber-jar.png"
+      ],
+      "prompt": "Use case: scientific-educational. Generate one precisely aligned landscape 3-column by 2-row SPRITE SHEET on genuine transparent background for a working light-pigment optics notebook. Style refs: #1 cobalt watercolor and confident irregular pencil outlines, #2 tiny warm amber glints and navy shadows. Six complete small upright antique optical instruments, all separate on alpha, 3 per row in even invisible cells, abundant room between sprites. All seen PERFECTLY FROM THE SIDE IN ORTHOGRAPHIC CROSS SECTION like physical profiles in an 1890 optics catalogue, very tall narrow glass and a little warm brass socket with a horizontal weighted foot; make them beautifully drawn objects with graphite crosshatching, oxidized brass, deep indigo ink outlining pale sea-glass and silver, not just single geometric lines. No drawing of light beams, optical diagrams, axes, shelves, cast shadows running from one object to the next, frames, letters, grid, labels or text. Each instrument centered in its own equal slot. TOP LEFT: small squat antique incandescent point-light source, upright clear bulb with one conspicuous vivid amber glowing filament near its center in a short brass/bakelite socket, allowing a coordinate point to be placed exactly on its filament. TOP CENTER: a shallow CONCAVE MIRROR facing left, edge-on narrow curved silver ribbon shaped exactly like a tall RIGHT parenthesis ')': the tips are LEFT of the middle. BOTH tips must show and the lower tip slots into a small brass foot. TOP RIGHT: a slender CONVEX MIRROR facing left, edge-on silver ribbon shaped like a LEFT parenthesis '(': both tips are RIGHT of the middle. BOTTOM LEFT: upright symmetrical biconvex thin LENS, visibly fattest in the middle, sharply tapered at top and bottom, clear ice-blue glass with indigo engraved edges and small brass foot. BOTTOM CENTER: upright biconcave LENS, glass narrowest at middle and thicker at BOTH tips with flat end cuts, visibly hourglass side profile (not a magnifying glass), same matched foot. BOTTOM RIGHT: perfectly straight VERTICAL edge-on silver plane mirror, narrow straight flat strip, in a matching small brass foot. Concentrate on the thin actual optical element extending over at least 80% of each subject's height and a compact identifiable pedestal in its bottom fifth. No enclosing outer rings or circular stands; exact scientific profiles legible at thumbnail size. Absolutely no cat on this sheet."
+    },
+    {
+      "original": "student.png",
+      "sha256": "9c07128357e45336e74ab1292291f6949b5c578a878cbcea96284de407cf7d5f",
+      "references": [
+        "art-direction/cute-style-probe-20261106/references/28-cat-on-book.png",
+        "art-direction/cute-style-probe-20261106/references/24-moon-cat-watercolor.png",
+        "art-direction/cute-style-probe-20261106/references/53-cat-amber-jar.png"
+      ],
+      "prompt": "Use case: illustration-story. One wide horizontal unframed transparent spot drawing for the header of an optical construction exercise on an ivory reading page. The same ink-purple, black, amber-eyed Purradox kitten from reference 3, caught doing geometry: body sprawled horizontally and a little upside-down along the surface as in reference 1 with one forepaw lightly pinning the edge of a long translucent amber wooden straightedge, a sharpened dark plum pencil resting diagonally by it, nose and curious huge eyes peering down and to the LEFT along the edge. Cat on the RIGHT, ruler extends to the LEFT. Whole cat and tail, all anatomically credible and in frame. Honest, lively ink-and-watercolor on the page, reference 2's granulating blues, dark plum graphite gestural hatching, airy chalk highlights and burnt-sienna warm glints, varying stroke widths, lovely expressive posture, a few little dry pigment edges. A light sparse grounded cast shadow fading organically into genuine transparent alpha, fully transparent outer margins. No rectangular illustration backdrop or tint field, no paper rectangle, no lettering, no complete notebook, no screen, no grid, no random symbols. Flat horizontal resting pose in a panoramic 2:1 composition with tight subject framing for editorial use at about 260 px wide. No border. This is an expressive standalone drawing that must blend with existing typography."
+    }
+  ],
+  "webAssets": [
+    {
+      "file": "source/frontend/public/art/optics/study/concave-glass.webp",
+      "bytes": 34644,
+      "sha256": "0b07cb599e8825b5a11dbd4a1a737103772a5c1717f37d46821adf08261a7cc0"
+    },
+    {
+      "file": "source/frontend/public/art/optics/study/concave-mirror.webp",
+      "bytes": 34788,
+      "sha256": "b58a8b7daa99e3ce697baf486a0263ca9e32ece58b9a6a194820939e320a23bf"
+    },
+    {
+      "file": "source/frontend/public/art/optics/study/convex-glass.webp",
+      "bytes": 39166,
+      "sha256": "61fe9a436200e13ce4b64c85695a07c9bd7c59751a81a0cc804038caf04b1882"
+    },
+    {
+      "file": "source/frontend/public/art/optics/study/convex-mirror.webp",
+      "bytes": 31144,
+      "sha256": "12e338daa7067aa0d8388023fddf39a2a1997e93dd625b61029d665910f8f8eb"
+    },
+    {
+      "file": "source/frontend/public/art/optics/study/lamp.webp",
+      "bytes": 43162,
+      "sha256": "a5b6b57ef9835cd73b2b52aea1fda84a3564a3680f06f0c40ec14cd4371678c8"
+    },
+    {
+      "file": "source/frontend/public/art/optics/study/observation-480.webp",
+      "bytes": 54784,
+      "sha256": "a5b212c05117e2f746a51b4ce48bcffd9da6e45b53b236cc6900df0b6cfd84c8"
+    },
+    {
+      "file": "source/frontend/public/art/optics/study/observation-960.webp",
+      "bytes": 181788,
+      "sha256": "179e9df22b92e8aafa26495680098245b66720a8c83e56046d635705f4ca84c9"
+    },
+    {
+      "file": "source/frontend/public/art/optics/study/plane.webp",
+      "bytes": 26450,
+      "sha256": "9cb23640e97d777bc2730cad07bd5b674c1ed2dd0fcd738e0185c4a3fd845715"
+    },
+    {
+      "file": "source/frontend/public/art/optics/study/student-320.webp",
+      "bytes": 23886,
+      "sha256": "7cb7a73094c0f05ae03f4b0229087abe90ce4525cf96295454dcd8d14fa7753f"
+    },
+    {
+      "file": "source/frontend/public/art/optics/study/student-640.webp",
+      "bytes": 75906,
+      "sha256": "aef9b7926b0588685c24040dad3ee6b084b42698ea7ab366914e745fa68e1593"
+    }
+  ]
+}
